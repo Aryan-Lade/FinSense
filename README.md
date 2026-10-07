@@ -271,39 +271,39 @@ graph TD
 ## 11. Component-Level Architecture
 ```mermaid
 graph LR
-    subgraph Frontend
+    subgraph FE["Frontend"]
         FT1[React Components] --> FT2[Tailwind CSS]
         FT1 --> FT3[Upload Handler]
         FT1 --> FT4[Results Viewer]
         FT1 --> FT5[Field Review Panel]
     end
     
-    subgraph Backend
+    subgraph BE["Backend"]
         BT1[FastAPI Endpoints] --> BT2[Pydantic Models]
-        BT1 --> BT3[Background Tasks<br/>Optional: RQ + Redis]
+        BT1 --> BT3[Background Tasks]
         BT2 --> BT4[Validation Schemas]
         BT2 --> BT5[Response Models]
     end
     
-    subgraph Document Processing
+    subgraph DP["Document Processing"]
         DP1[File Validator] --> DP2[MIME Type Detector]
-        DP2 --> DP3[PDF Handler<br/>PyMuPDF]
-        DP2 --> DP4[Image Handler<br/>OpenCV/Pillow]
-        DP2 --> DP5[Spreadsheet Handler<br/>Pandas/OpenPyXL]
+        DP2 --> DP3[PDF Handler]
+        DP2 --> DP4[Image Handler]
+        DP2 --> DP5[Spreadsheet Handler]
         DP3 --> DP6[Text/Layout Extractor]
         DP4 --> DP6
         DP5 --> DP6
-        DP6 --> DP7[OCR Engine<br/>PaddleOCR]
-        DP6 --> DP8[Layout Analyzer<br/>LayoutLMv3]
+        DP6 --> DP7[OCR Engine]
+        DP6 --> DP8[Layout Analyzer]
         DP7 --> DP9[Raw Text + Boxes]
         DP8 --> DP9
     end
     
-    subgraph AI Intelligence
-        AI1[Field Localizer] --> AI2[Qwen2-VL-7B<br/>VLM Backbone]
+    subgraph AI["AI Intelligence"]
+        AI1[Field Localizer] --> AI2[VLM Backbone]
         AI3[Context Normalizer] --> AI2
         AI4[Confidence Estimator] --> AI2
-        AI2 --> AI5[Structured Field Output<br/>JSON Format]
+        AI2 --> AI5[Structured Field Output]
     end
     
     subgraph TV["Trust and Validation"]
@@ -313,23 +313,23 @@ graph LR
         TV5[Date Format Checker] --> TV2
         TV6[GSTIN Format Validator] --> TV2
         TV7[Line-Item Validator] --> TV2
-        TV2 --> TV8[Validation Results<br/>Status + Warnings]
-        TV2 --> TV9[Field-Level Confidence<br/>Integration]
+        TV2 --> TV8[Validation Results]
+        TV2 --> TV9[Confidence Integration]
     end
     
-    subgraph Data Storage
+    subgraph DS["Data Storage"]
         DS1[PostgreSQL] --> DS2[Invoices Table]
         DS1 --> DS3[Line Items Table]
         DS1 --> DS4[Processing Logs Table]
     end
     
-    Frontend --> Backend
-    Backend --> Document Processing
-    Document Processing --> AI Intelligence
-    AI Intelligence --> TV
-    TV --> Data Storage
-    Data Storage --> Backend
-    Backend --> Frontend
+    FE --> BE
+    BE --> DP
+    DP --> AI
+    AI --> TV
+    TV --> DS
+    DS --> BE
+    BE --> FE
     classDef perception fill:#e3f2fd,stroke:#1565c0;
     classDef reasoning fill:#f3e5f5,stroke:#6a1b9a;
     classDef trust fill:#ffcdd2,stroke:#c62828;
