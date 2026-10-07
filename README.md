@@ -47,60 +47,94 @@ FinSense is an end-to-end AI-powered GST invoice intelligence platform that tran
 The system automatically routes PDF/images and Excel/CSVs through specialized pipelines, ensuring robust handling of printed, digital, and handwritten invoices while maintaining financial integrity.
 
 ## 4. Proposed Solution
-FinSense implements dual processing pipelines:  
 
-**PIPELINE A — PDF / IMAGE**  
-PDF / JPG / JPEG / PNG  
-↓  
-File validation (size/magic bytes)  
-↓  
-Digital-text vs. scanned detection  
-↓  
-Image quality assessment (blur, glare, occlusion)  
-↓  
-Preprocessing (deskew, denoise, contrast enhancement)  
-↓  
-OCR + layout analysis (PaddleOCR + LayoutLMv3)  
-↓  
-Text blocks, coordinates, table regions  
-↓  
-Semantic field understanding (Qwen2-VL-7B vision-language model)  
-↓  
-Normalized invoice fields (Pydantic model)  
-↓  
-Deterministic validation (GST consistency, arithmetic rules)  
-↓  
-Confidence scoring (field-level certainty)  
-↓  
-Human review for uncertain fields  
-↓  
-Final structured record (JSON/tabular)  
+FinSense implements **two specialized processing pipelines**, automatically routing each document to the correct path.
 
-**PIPELINE B — EXCEL / CSV**  
-XLSX / CSV  
-↓  
-File validation  
-↓  
-Header/schema detection (Pandas profiling)  
-↓  
-Column mapping to GST schema  
-↓  
-Data cleaning (null handling, type casting)  
-↓  
-Indian number/date normalization  
-↓  
-Structured tabular data (cleaned DataFrame)  
-↓  
-Deterministic validation (same as Pipeline A)  
-↓  
-Confidence scoring (data quality-based)  
-↓  
-Human review if required  
-↓  
-Final structured record (JSON/tabular)  
+---
 
-*Why different pipelines?*  
-PDF/images require perception (layout, text recognition) as the primary challenge. Excel/CSVs require schema disambiguation and normalization as the primary challenge.  
+### 🖼️ Pipeline A — PDF / Image
+
+```mermaid
+flowchart TD
+    A["📄 Input\nPDF · JPG · JPEG · PNG"]:::input
+
+    subgraph PERCEIVE["👁️ PERCEIVE — Document Ingestion"]
+        B["🔍 File Validation\nSize check · Magic bytes · MIME type"]:::perception
+        C["🔎 Digital vs. Scanned Detection\nText layer presence analysis"]:::perception
+        D["📊 Image Quality Assessment\nBlur · Glare · Occlusion scoring"]:::perception
+        E["🖼️ Preprocessing\nDeskew · Denoise · Contrast enhancement"]:::perception
+    end
+
+    subgraph UNDERSTAND["🧠 UNDERSTAND — AI Reasoning"]
+        F["📝 OCR + Layout Analysis\nPaddleOCR + LayoutLMv3"]:::reasoning
+        G["📦 Structured Layout\nText blocks · Coordinates · Table regions"]:::reasoning
+        H["🤖 Semantic Field Understanding\nQwen2-VL-7B Vision-Language Model"]:::reasoning
+        I["✅ Normalized Invoice Fields\nPydantic schema model"]:::reasoning
+    end
+
+    subgraph TRUST["🛡️ VALIDATE & TRUST — Financial Integrity"]
+        J["⚖️ Deterministic Validation\nGST consistency · Arithmetic rules · GSTIN format"]:::trust
+        K["📈 Confidence Scoring\nField-level certainty 0–100%"]:::trust
+        L["👤 Human Review\nFor uncertain / low-confidence fields"]:::trust
+    end
+
+    M["📤 Final Structured Record\nJSON · CSV · Excel"]:::output
+
+    A --> B --> C --> D --> E
+    E --> F --> G --> H --> I
+    I --> J --> K --> L --> M
+
+    classDef input    fill:#1e3a5f,stroke:#4a9eff,color:#e0f0ff,font-weight:bold
+    classDef output   fill:#1a3d2e,stroke:#3ecf8e,color:#d0ffe8,font-weight:bold
+    classDef perception fill:#1a2a4a,stroke:#4a9eff,color:#cce0ff
+    classDef reasoning  fill:#2a1a4a,stroke:#a855f7,color:#e8d0ff
+    classDef trust      fill:#4a1a1a,stroke:#f87171,color:#ffd0d0
+```
+
+---
+
+### 📊 Pipeline B — Excel / CSV
+
+```mermaid
+flowchart TD
+    A["📑 Input\nXLSX · CSV"]:::input
+
+    subgraph PERCEIVE["👁️ PERCEIVE — File Ingestion"]
+        B["🔍 File Validation\nSize · Format · Encoding check"]:::perception
+        C["🗂️ Header / Schema Detection\nPandas profiling · Column inference"]:::perception
+    end
+
+    subgraph UNDERSTAND["🧠 UNDERSTAND — Schema Normalization"]
+        D["🔗 Column Mapping\nAlign headers → GST schema fields"]:::reasoning
+        E["🧹 Data Cleaning\nNull handling · Type casting · Deduplication"]:::reasoning
+        F["🇮🇳 Indian Format Normalization\nNumber formats · Date formats · Currency"]:::reasoning
+        G["📋 Structured Tabular Data\nCleaned & typed DataFrame"]:::reasoning
+    end
+
+    subgraph TRUST["🛡️ VALIDATE & TRUST — Financial Integrity"]
+        H["⚖️ Deterministic Validation\nSame rules as Pipeline A"]:::trust
+        I["📈 Confidence Scoring\nData quality & completeness based"]:::trust
+        J["👤 Human Review\nFor missing / inconsistent fields"]:::trust
+    end
+
+    K["📤 Final Structured Record\nJSON · CSV · Excel"]:::output
+
+    A --> B --> C
+    C --> D --> E --> F --> G
+    G --> H --> I --> J --> K
+
+    classDef input    fill:#1e3a5f,stroke:#4a9eff,color:#e0f0ff,font-weight:bold
+    classDef output   fill:#1a3d2e,stroke:#3ecf8e,color:#d0ffe8,font-weight:bold
+    classDef perception fill:#1a2a4a,stroke:#4a9eff,color:#cce0ff
+    classDef reasoning  fill:#2a1a4a,stroke:#a855f7,color:#e8d0ff
+    classDef trust      fill:#4a1a1a,stroke:#f87171,color:#ffd0d0
+```
+
+> **Why two different pipelines?**  
+> PDF/Images require **perception** as the core challenge — layout understanding, text recognition, and visual quality handling.  
+> Excel/CSVs require **schema normalization** as the core challenge — header disambiguation, type inference, and format standardization.
+
+---
 
 ### Requirement Traceability
 | Official PS3 Requirement | FinSense Component | Where Addressed in README |
@@ -353,14 +387,31 @@ flowchart LR
 ```
 
 ## 13. Agentic Workflow
-Agentic Workflow: Not required for the core system. FinSense uses a deterministic document-processing pipeline combined with open-source AI for document understanding and extraction. This keeps financial validation predictable and auditable. The system implements a bounded validator-guided re-read loop (a deterministic control loop, not an autonomous agent) for handling validation failures:  
-Validation failure  
-↓  
-Identify exact failed rule  
-↓  
-Targeted re-read by AI (max 1–2 retries)  
-↓  
-If still unresolved → Human review  
+
+Agentic Workflow: **Not required** for the core system. FinSense uses a deterministic document-processing pipeline combined with open-source AI for document understanding and extraction. This keeps financial validation predictable and auditable.
+
+The system implements a **bounded validator-guided re-read loop** (a deterministic control loop, not an autonomous agent) for handling validation failures:
+
+```mermaid
+flowchart TD
+    A["⚠️ Validation Failure\nRule check did not pass"]:::fail
+    B["🔍 Identify Failed Rule\nExact rule + affected field pinpointed"]:::step
+    C["🔄 Targeted AI Re-read\nQwen2-VL-7B re-examines specific region\nMax 1–2 retries"]:::step
+    D{{"✅ Resolved?"}}:::decision
+    E["📤 Pass to Output\nValidated field accepted"]:::ok
+    F["👤 Human Review Queue\nFlagged for manual correction"]:::review
+
+    A --> B --> C --> D
+    D -->|Yes| E
+    D -->|No| F
+
+    classDef fail     fill:#4a1a1a,stroke:#f87171,color:#ffd0d0,font-weight:bold
+    classDef step     fill:#1a2a4a,stroke:#4a9eff,color:#cce0ff
+    classDef decision fill:#2a2a1a,stroke:#fbbf24,color:#fff3cc
+    classDef ok       fill:#1a3d2e,stroke:#3ecf8e,color:#d0ffe8
+    classDef review   fill:#2a1a4a,stroke:#a855f7,color:#e8d0ff
+```
+
 
 ## 14. Technology Stack
 | Layer | Technology | Purpose | Why Needed |
@@ -479,14 +530,25 @@ If still unresolved → Human review
 - Final integration/testing: 20%  
 - Demo preparation: 10%  
 
-**FALLBACK LADDER**:  
-Preferred: Qwen2-VL-7B + PaddleOCR + LayoutLMv3  
-↓  
-Fallback 1: Smaller quantized VLM (e.g., Qwen2-VL-2B-INT8)  
-↓  
-Fallback 2: OCR + text-based open model (e.g., LayoutLMv3 + DistilBERT)  
-↓  
-Fallback 3: Reduced feature scope while preserving PS3 core requirements (manual review for uncertain fields)  
+**FALLBACK LADDER** — If preferred stack is unavailable during hackathon:
+
+```mermaid
+flowchart TD
+    P["🥇 Preferred Stack\nQwen2-VL-7B · PaddleOCR · LayoutLMv3"]:::preferred
+    F1["🥈 Fallback 1\nSmaller quantized VLM\nQwen2-VL-2B-INT8"]:::fallback1
+    F2["🥉 Fallback 2\nOCR + text-only model\nLayoutLMv3 + DistilBERT"]:::fallback2
+    F3["⚠️ Fallback 3\nReduced scope\nManual review for uncertain fields\nPS3 core requirements preserved"]:::fallback3
+
+    P -->|"Not available"| F1
+    F1 -->|"Not available"| F2
+    F2 -->|"Not available"| F3
+
+    classDef preferred fill:#1a3d2e,stroke:#3ecf8e,color:#d0ffe8,font-weight:bold
+    classDef fallback1 fill:#1e3a5f,stroke:#4a9eff,color:#e0f0ff
+    classDef fallback2 fill:#2a1a4a,stroke:#a855f7,color:#e8d0ff
+    classDef fallback3 fill:#4a2a1a,stroke:#fb923c,color:#ffe0cc
+```
+
 
 ## 17. Expected Final Output
 **EXPECTED OUTPUT / SAMPLE SCHEMA — illustrative, not a real result.**  
