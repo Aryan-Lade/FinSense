@@ -306,7 +306,7 @@ graph LR
         AI2 --> AI5[Structured Field Output<br/>JSON Format]
     end
     
-    subgraph Trust & Validation
+    subgraph TV["Trust and Validation"]
         TV1[Arithmetic Checker] --> TV2[Validation Engine]
         TV3[GST Consistency Checker] --> TV2
         TV4[Required Field Validator] --> TV2
@@ -326,8 +326,8 @@ graph LR
     Frontend --> Backend
     Backend --> Document Processing
     Document Processing --> AI Intelligence
-    AI Intelligence --> Trust & Validation
-    Trust & Validation --> Data Storage
+    AI Intelligence --> TV
+    TV --> Data Storage
     Data Storage --> Backend
     Backend --> Frontend
     classDef perception fill:#e3f2fd,stroke:#1565c0;
