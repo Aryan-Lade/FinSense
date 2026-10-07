@@ -1,98 +1,206 @@
 # FinSense
 ![Project](https://img.shields.io/badge/Project-FinSense-brightgreen)
-![Hackathon](https://img.shields.io/badge/Hackathon-Elevate%20AI%20Hackathon-blue)
-![Status](https://img.shields.io/badge/Status-Qualifier%20Round-yellow)
+![Hackathon](https://img.shields.io/badge/Hackathon-Hacktober%20Fest-blue)
+![Status](https://img.shields.io/badge/Status-Qualifier%20Proposal-yellow)
 ![Open Source](https://img.shields.io/badge/Open%20Source-Yes-brightgreen)
 
 **FinSense — AI-Powered GST Invoice Intelligence**  
 *From messy invoices to validated financial intelligence.*
 
+> [!NOTE]  
+> **Why this matters**  
+> Businesses lose hours daily to manual invoice processing, especially with handwritten or inconsistent formats. FinSense automates this with AI-driven understanding and deterministic validation, turning chaotic inputs into trusted financial records.
+
+> [!IMPORTANT]  
+> **Key differentiator**  
+> FinSense isn't just OCR—it combines perception (see the document), reasoning (understand the invoice), and trust (verify the finances) to deliver audit-ready output.
+
+> [!WARNING]  
+> **Handwritten invoice challenge**  
+> Handwritten invoices suffer from irregular handwriting, skewed orientations, missing fields, and ambiguous characters, making traditional OCR unreliable without semantic understanding and validation.
+
+> [!TIP]  
+> **Why open-source AI**  
+> Financial data is sensitive; open-source models enable local inference, privacy, cost control, and auditability—critical for trustworthy invoice processing.
+
+### 5 Design Decisions
+| Decision | Why |
+|----------|-----|
+| **Hybrid AI + Deterministic Validation** | AI understands context; rules enforce financial correctness. |
+| **Dual Pipelines (PDF/Image vs Excel/CSV)** | Different core challenges: perception vs schema normalization. |
+| **Field-Level Confidence Scoring** | Flags uncertain fields instead of blindly accepting low-quality extraction. |
+| **Bounded Validator-Guided Re-Read** | Controlled retry loop for validation failures, not autonomous agents. |
+| **Perceive → Understand → Validate → Trust** | Clear, auditable architecture that separates concerns. |
+
 ## 1. Project Name
 FinSense
 
 ## 2. Problem Statement
-Businesses receive GST invoices in heterogeneous formats (PDF, JPEG/JPG, PNG, Excel, CSV) with significant variation in layout, quality, and completeness. Handwritten invoices exacerbate challenges due to irregular handwriting, skewed orientations, missing fields, and ambiguous characters. Manual data entry is slow, error-prone, and leads to inconsistent GST records, creating bottlenecks in accounting workflows and compliance risks. Existing solutions focus narrowly on OCR without end-to-end validation, failing to handle real-world invoice variability or provide structured, accounting-ready output.
+Businesses receive GST invoices in diverse formats: handwritten notes, scanned PDFs, phone photos, digital invoices, Excel sheets, and CSV files. Manual processing involves reading, typing, GST calculation, error correction, and accounting entry—leading to slow workflows, transcription errors, inconsistent records, and compliance risks. Handwritten invoices amplify challenges with irregular handwriting, skewed orientations, missing fields, and ambiguous characters. Existing solutions often stop at OCR, lacking end-to-end validation and structured output for accounting systems.
 
 ## 3. Project Overview
-FinSense is an end-to-end AI-powered GST invoice intelligence platform that transforms heterogeneous invoice documents into validated, structured financial records. It combines open-source document understanding models with deterministic financial validation to ensure accuracy and compliance. The system automatically identifies input type, routes documents through appropriate processing pipelines, extracts critical GST and financial information, validates consistency, handles uncertainty, and outputs machine-readable JSON or structured tabular data for downstream accounting workflows.
+FinSense is an end-to-end AI-powered GST invoice intelligence platform that transforms heterogeneous invoice documents into validated, structured financial records. It implements a PERCEIVE → UNDERSTAND → VALIDATE → TRUST pipeline:  
+- **PERCEIVE**: Assess image quality, preprocess, and extract text/layout via OCR and document understanding  
+- **UNDERSTAND**: Apply open-source AI for semantic field identification, normalization, and contextual interpretation  
+- **VALIDATE**: Execute deterministic GST/financial validation, arithmetic checks, and consistency rules  
+- **TRUST**: Assign field-level confidence scores, flag uncertain fields for review, and output machine-readable JSON/tabular data  
+The system automatically routes PDF/images and Excel/CSVs through specialized pipelines, ensuring robust handling of printed, digital, and handwritten invoices while maintaining financial integrity.
 
 ## 4. Proposed Solution
-FinSense implements a hybrid AI-deterministic pipeline:
-1. **Input Classification**: Automatically detects file type (PDF, image, spreadsheet)
-2. **Document-Specific Routing**: Directs files to PDF/image or Excel/CSV processing streams
-3. **Perception Layer**: Applies preprocessing, OCR, and document understanding to extract raw text and layout
-4. **Reasoning Layer**: Uses open-source AI for semantic field identification, normalization, and contextual understanding
-5. **Trust Layer**: Executes deterministic GST/financial validation, assigns field-level confidence scores, and flags uncertain fields for review
-6. **Output Generation**: Produces validated structured JSON and tabular exports with audit trails
+FinSense implements dual processing pipelines:  
 
-Unlike pure OCR solutions, FinSense treats AI as central to understanding invoice semantics, while validation ensures financial integrity.
+**PIPELINE A — PDF / IMAGE**  
+PDF / JPG / JPEG / PNG  
+↓  
+File validation (size/magic bytes)  
+↓  
+Digital-text vs. scanned detection  
+↓  
+Image quality assessment (blur, glare, occlusion)  
+↓  
+Preprocessing (deskew, denoise, contrast enhancement)  
+↓  
+OCR + layout analysis (PaddleOCR + LayoutLMv3)  
+↓  
+Text blocks, coordinates, table regions  
+↓  
+Semantic field understanding (Qwen2-VL-7B vision-language model)  
+↓  
+Normalized invoice fields (Pydantic model)  
+↓  
+Deterministic validation (GST consistency, arithmetic rules)  
+↓  
+Confidence scoring (field-level certainty)  
+↓  
+Human review for uncertain fields  
+↓  
+Final structured record (JSON/tabular)  
+
+**PIPELINE B — EXCEL / CSV**  
+XLSX / CSV  
+↓  
+File validation  
+↓  
+Header/schema detection (Pandas profiling)  
+↓  
+Column mapping to GST schema  
+↓  
+Data cleaning (null handling, type casting)  
+↓  
+Indian number/date normalization  
+↓  
+Structured tabular data (cleaned DataFrame)  
+↓  
+Deterministic validation (same as Pipeline A)  
+↓  
+Confidence scoring (data quality-based)  
+↓  
+Human review if required  
+↓  
+Final structured record (JSON/tabular)  
+
+*Why different pipelines?*  
+PDF/images require perception (layout, text recognition) as the primary challenge. Excel/CSVs require schema disambiguation and normalization as the primary challenge.  
+
+### Requirement Traceability
+| Official PS3 Requirement | FinSense Component | Where Addressed in README |
+|--------------------------|-------------------|---------------------------|
+| Accept Excel (.xlsx) | Excel/CSV Pipeline | Sections 4, 12, 15 |
+| Accept CSV | Excel/CSV Pipeline | Sections 4, 12, 15 |
+| Accept PDF | PDF/Image Pipeline | Sections 4, 10-12, 15 |
+| Accept JPEG/JPG | PDF/Image Pipeline | Sections 4, 10-12, 15 |
+| Accept PNG | PDF/Image Pipeline | Sections 4, 10-12, 15 |
+| Identify input type | Input Classifier | Sections 4, 10, 14 |
+| Route input appropriately | Document Router | Sections 4, 10, 14 |
+| Excel/CSV → clean structured tabular data | Pipeline B | Sections 4, 12, 15 |
+| PDF/images → extract invoice/GST information | Pipeline A | Sections 4, 10-12, 15 |
+| Extract invoice/GST/tax/financial/line-item info | Semantic extraction | Sections 4, 9, 12, 15 |
+| Validate extracted information | Validation Engine | Sections 4, 9, 12, 15, 20 |
+| Identify/handle inconsistent/uncertain data | Confidence/Uncertainty Layer | Sections 4, 9, 12, 15, 20 |
+| Produce machine-readable output (JSON/tables) | Output Interface | Sections 4, 12, 15, 17 |
+| Evaluator-facing upload/inspect interface | Web Interface | Sections 4, 10, 14, 15 |
 
 ## 5. Objectives
-- Build a complete document intelligence pipeline supporting all specified formats (PDF, JPG/JPEG, PNG, XLSX, CSV)
-- Achieve robust handwritten GST invoice processing through specialized preprocessing and AI reasoning
-- Implement deterministic validation for GST consistency, arithmetic checks, and required field verification
-- Provide field-level confidence scoring and uncertainty handling mechanisms
-- Deliver accounting-ready structured output (JSON/CSV/Excel) suitable for ERP integration
-- Create an intuitive upload-and-inspect interface for evaluator validation
-- Ensure realistic implementation within hackathon constraints using open-source components
+- Support all required input formats (PDF, JPG/JPEG, PNG, XLSX, CSV)  
+- Automatically classify and route documents to appropriate processing pipelines  
+- Achieve robust handwritten GST invoice processing via specialized preprocessing and AI reasoning  
+- Extract invoice, GST, tax, financial, and line-item information from heterogeneous sources  
+- Normalize heterogeneous documents into a canonical GST-compliant schema  
+- Implement deterministic validation for GST consistency, arithmetic checks, and required fields  
+- Provide field-level confidence scoring and explicit uncertainty handling instead of blind acceptance  
+- Generate machine-structured JSON and tabular outputs (CSV/Excel) for accounting software integration  
+- Create an intuitive upload-and-inspect interface for real-time document processing and validation  
+- Design a modular, auditable pipeline enabling future accounting system integrations  
 
 ## 6. Target Users / Use Case
-**Primary Users**:
-- Small and medium businesses processing vendor invoices
-- Accounting and finance teams handling GST compliance
-- Bookkeeping services managing client invoice workflows
-- Tax professionals validating input tax credits
+**Primary Users**:  
+- Small and medium businesses processing vendor invoices  
+- Accounting and finance teams managing GST compliance  
+- Bookkeeping services handling client invoice workflows  
+- Tax professionals validating input tax credits  
+- Invoice-processing teams in organizations with high document volumes  
 
-**Use Case**:
-A retail business receives 50+ invoices daily via email (PDF scans), WhatsApp (photos), and supplier portals (Excel). Currently:
-- Staff manually enter data into accounting software
-- GSTIN validation and tax calculations are error-prone
-- Handwritten invoices from local vendors cause delays
-- Monthly GST reconciliation takes 3+ days
+**Use Case**:  
+A small trading business receives:  
+- Handwritten bills from local suppliers  
+- WhatsApp photos of invoices  
+- Scanned PDFs from vendors  
+- Digital invoices via email  
+- Excel sheets from corporate clients  
 
-With FinSense:
-- Staff upload mixed-format invoices through web interface
-- System auto-classifies, processes, extracts, and validates each invoice
-- Uncertain fields (e.g., blurred handwritten amounts) are highlighted for review
-- Validated invoices export as JSON/CSV for direct import into Tally, Zoho Books, or SAP
-- Processing time reduced from minutes to seconds per invoice with 90%+ fewer manual corrections
+*Current process*:  
+Staff manually enter data into accounting software → GSTIN validation and tax calculations are error-prone → handwritten invoices cause delays → monthly GST reconciliation takes 3+ days  
+
+*With FinSense*:  
+Staff upload mixed-format invoices through the web interface → system auto-classifies, processes via appropriate pipeline, extracts information, validates consistency, flags uncertain fields (e.g., blurred handwritten amounts) for review → validated invoices export as JSON/CSV for direct import into Tally, Zoho Books, or SAP → processing time reduced from minutes to seconds per invoice with 90%+ fewer manual corrections  
 
 ## 7. Open-Source AI Technology Selected
 **Primary AI Component**: **Qwen2-VL-7B** (Vision-Language Model)  
-**Supporting Components**: 
-- **PaddleOCR** for text localization and recognition
-- **LayoutLMv3** for form understanding and field-semantic alignment
+**Supporting Components**:  
+- **PaddleOCR** for text localization and recognition  
+- **LayoutLMv3** for form understanding and field-semantic alignment  
 
 ## 8. Why This Technology Was Selected
-Qwen2-VL-7B was chosen because:
-- **Document Understanding Strength**: Specifically trained on document-oriented tasks including form parsing, table understanding, and document VQA, making it ideal for invoice semantic interpretation
-- **Open-Source Availability**: Released under Apache 2.0 license permitting commercial use and modification
-- **Multimodal Capability**: Accepts both image (invoice scan) and text (OCR/layout) inputs for richer understanding
-- **Structured Output Generation**: Can be guided to produce JSON-formatted extractions via prompt engineering
-- **Handwritten Text Robustness**: Vision-language models inherently handle visual variations better than pure OCR+LLM pipelines
-- **Compute Feasibility**: 7B parameter size allows reasonable inference on consumer GPUs (T4/V100) during hackathon
-- **License Compatibility**: Apache 2.0 aligns with open-source hackathon requirements
+Qwen2-VL-7B was chosen because:  
+- **Document Understanding Strength**: Specifically trained on document-oriented tasks (form parsing, table understanding, document VQA), ideal for invoice semantic interpretation  
+- **Open-Source Availability**: Apache 2.0 license permits commercial use and modification  
+- **Multimodal Capability**: Accepts both image (invoice scan) and text (OCR/layout) inputs for richer contextual understanding  
+- **Structured Output Generation**: Can be guided via prompt engineering to produce JSON-formatted extractions  
+- **Handwritten Text Robustness**: Vision-language models inherently handle visual variations (skew, blur, inconsistent layouts) better than pure OCR+LLM pipelines  
+- **Compute Feasibility**: 7B parameter size allows reasonable inference on consumer GPUs (T4/V100) during hackathon  
+- **License Compatibility**: Apache 2.0 aligns with open-source hackathon requirements  
 
-LayoutLMv3 supplements Qwen2-VL for specialized form field understanding, while PaddleOCR provides reliable text localization—creating a complementary AI stack where each component addresses specific document intelligence challenges.
+LayoutLMv3 supplements Qwen2-VL for specialized form field understanding (tables, key-value pairs), while PaddleOCR provides reliable text localization—creating a complementary AI stack where each component addresses specific document intelligence challenges.  
 
 ## 9. AI's Role in the System
-AI performs three critical functions in FinSense:
-1. **Semantic Field Interpretation** (Qwen2-VL-7B): 
-   - *Input*: Invoice image + OCR text blocks + layout coordinates (bounding boxes)
-   - *Processing*: Identifies fields (invoice number, date, GSTIN, amounts) by correlating visual layout with textual context; normalizes variants (e.g., "Inv#" → "invoice_number"); resolves ambiguities using document-wide context
-   - *Output*: Structured field predictions with confidence scores in intermediate format
-   
-2. **Contextual Normalization** (Qwen2-VL-7B + LayoutLMv3):
-   - *Input*: Raw extracted fields + document segments
-   - *Processing*: Applies GST-specific rules (e.g., validating GSTIN format, standardizing date formats, interpreting tax codes)
-   - *Output*: Normalized field values ready for deterministic validation
+Without the AI document-understanding layer, the system cannot reliably convert varied real-world invoice layouts and handwritten content into normalized financial records.  
 
-3. **Uncertainty Quantification** (Qwen2-VL-7B):
-   - *Input*: Ambiguous field candidates
-   - *Processing*: Uses model's internal confidence mechanisms (via probability distributions over token sequences) to assign field-level certainty scores
-   - *Output*: Confidence metrics per extracted field (0-100%)
+AI performs three critical functions:  
+1. **Semantic Field Interpretation** (Qwen2-VL-7B):  
+   - *Input*: Invoice image + OCR text blocks + layout coordinates (bounding boxes)  
+   - *Processing*: Identifies fields (invoice number, date, GSTIN, amounts) by correlating visual layout with textual context; normalizes variants (e.g., "Inv#" → "invoice_number"); resolves ambiguities using document-wide context  
+   - *Output*: Structured field predictions with confidence scores in intermediate format  
 
-Without this AI layer, the system could not reliably interpret varied invoice layouts or handwritten content into normalized financial semantics—OCR alone produces raw text without meaning.
+2. **Contextual Normalization** (Qwen2-VL-7B + LayoutLMv3):  
+   - *Input*: Raw extracted fields + document segments  
+   - *Processing*: Applies GST-specific rules (e.g., validating GSTIN format, standardizing date formats, interpreting tax codes)  
+   - *Output*: Normalized field values ready for deterministic validation  
+
+3. **Uncertainty Quantification** (Qwen2-VL-7B):  
+   - *Input*: Ambiguous field candidates  
+   - *Processing*: Uses model's internal confidence mechanisms (probability distributions over token sequences) to assign field-level certainty scores  
+   - *Output*: Confidence metrics per extracted field (0-100%)  
+
+Deterministic validation then handles:  
+- Arithmetic validation (quantity × price = amount)  
+- GST relationship validation (CGST/SGST/IGST consistency)  
+- Required field presence  
+- GSTIN format validation  
+- Date format validity  
+- Line-item total matching  
+- Invoice total consistency  
+
+This hybrid architecture ensures AI provides understanding while rules enforce financial correctness—critical for auditability and trust.  
 
 ## 10. System Architecture
 ```mermaid
@@ -118,24 +226,12 @@ graph TD
     O --> P[Confidence/Uncertainty Layer]
     P --> Q[Structured Data Store<br/>PostgreSQL]
     Q --> R[Dashboard/Export<br/>JSON/CSV/Excel]
-    style A fill:#e3f2fd,stroke:#1565c0
-    style B fill:#fff3e0,stroke:#ef6c00
-    style C fill:#f3e5f5,stroke:#6a1b9a
-    style D fill:#e8f5e8,stroke:#2e7d32
-    style E fill:#fce4ec,stroke:#c2185b
-    style F fill:#ffe0b2,stroke:#ef6c00
-    style G fill:#b2dfdb,stroke:#00695c
-    style H fill:#fff9c4,stroke:#f57f17
-    style I fill:#ffecb3,stroke:#ff6f00
-    style J fill:#ffe0b2,stroke:#bf360c
-    style K fill:#c8e6c9,stroke:#2e7d32
-    style L fill:#c8e6c9,stroke:#2e7d32
-    style M fill:#bbdefb,stroke:#1565c0
-    style N fill:#bbdefb,stroke:#1565c0
-    style O fill:#ffcdd2,stroke:#c62828
-    style P fill:#ffe0b2,stroke:#bf360c
-    style Q fill:#dcedc8,stroke:#558b2f
-    style R fill:#dcedc8,stroke:#558b2f
+    classDef perception fill:#e3f2fd,stroke:#1565c0;
+    classDef reasoning fill:#f3e5f5,stroke:#6a1b9a;
+    classDef trust fill:#ffcdd2,stroke:#c62828;
+    class H,I perception;
+    class J reasoning;
+    class O,P trust;
 ```
 
 ## 11. Component-Level Architecture
@@ -200,6 +296,15 @@ graph LR
     Trust & Validation --> Data Storage
     Data Storage --> Backend
     Backend --> Frontend
+    classDef perception fill:#e3f2fd,stroke:#1565c0;
+    classDef reasoning fill:#f3e5f5,stroke:#6a1b9a;
+    classDef trust fill:#ffcdd2,stroke:#c62828;
+    class FT1,FT2,FT3,FT4,FT5 perception;
+    class BT1,BT2,BT3,BT4,BT5 reasoning;
+    class DP1,DP2,DP3,DP4,DP5,DP6,DP7,DP8,DP9 perception;
+    class AI1,AI2,AI3,AI4,AI5 reasoning;
+    class TV1,TV2,TV3,TV4,TV5,TV6,TV7,TV8,TV9 trust;
+    class DS1,DS2,DS3,DS4 reasoning;
 ```
 
 ## 12. Data / Information Flow
@@ -207,149 +312,184 @@ graph LR
 flowchart LR
     subgraph PATH_A["PATH A: PDF/Image Invoice"]
         A1[PDF/JPG/PNG Upload] --> A2[File Validation<br/>Size/Magic Bytes]
-        A2 --> A3[Preprocessing<br/>Deskew/Denoise/Contrast]
-        A3 --> A4[OCR + Layout Analysis<br/>PaddleOCR + LayoutLMv3]
-        A4 --> A5[Text Blocks + Coordinates + Table Regions]
-        A5 --> A6[Semantic Field Understanding<br/>Qwen2-VL-7B]
-        A6 --> A7[Normalized Invoice Fields<br/>Pydantic Model]
-        A7 --> A8[Deterministic Validation<br/>GST/Arithmetic Rules]
-        A8 --> A9[Confidence Scoring<br/>Field-Level Certainty]
-        A9 --> A10[Final Structured Record<br/>JSON/Tabular]
+        A2 --> A3[Digital/Scanned Detection]
+        A3 --> A4[Image Quality Assessment<br/>Blur/Glare/Occlusion]
+        A4 --> A5[Preprocessing<br/>Deskew/Denoise/Contrast]
+        A5 --> A6[OCR + Layout Analysis<br/>PaddleOCR + LayoutLMv3]
+        A6 --> A7[Text Blocks + Coordinates + Table Regions]
+        A7 --> A8[Semantic Field Understanding<br/>Qwen2-VL-7B]
+        A8 --> A9[Normalized Invoice Fields<br/>Pydantic Model]
+        A9 --> A10[Deterministic Validation<br/>GST/Arithmetic Rules]
+        A10 --> A11[Confidence Scoring<br/>Field-Level Certainty]
+        A11 --> A12[Human Review if Required]
+        A12 --> A13[Final Structured Record<br/>JSON/Tabular]
     end
     
     subgraph PATH_B["PATH B: Excel/CSV Invoice"]
-        B1[XLSX/CSV Upload] --> B2[Schema Detection<br/>Pandas Profiling]
-        B2 --> B3[Data Cleaning<br/>Null Handling/Type Casting]
-        B3 --> B4[Standardized Column Mapping<br/>GST Schema]
-        B4 --> B5[Structured Tabular Data<br/>Cleaned DataFrame]
-        B5 --> B6[Deterministic Validation<br/>Same as Path A]
-        B6 --> B7[Confidence Scoring<br/>Based on Data Quality]
-        B7 --> B8[Final Structured Record<br/>JSON/Tabular]
+        B1[XLSX/CSV Upload] --> B2[File Validation]
+        B2 --> B3[Schema Detection<br/>Pandas Profiling]
+        B3 --> B4[Column Mapping<br/>GST Schema]
+        B4 --> B5[Data Cleaning<br/>Null Handling/Type Casting]
+        B5 --> B6[Indian Number/Date Normalization]
+        B6 --> B7[Structured Tabular Data<br/>Cleaned DataFrame]
+        B7 --> B8[Deterministic Validation<br/>Same as Path A]
+        B8 --> B9[Confidence Scoring<br/>Based on Data Quality]
+        B9 --> B10[Human Review if Required]
+        B10 --> B11[Final Structured Record<br/>JSON/Tabular]
     end
     
-    A10 --> C[Output Interface<br/>JSON Download/CSV Export]
-    B8 --> C
+    A13 --> C[Output Interface<br/>JSON Download/CSV Export]
+    B11 --> C
     
-    style A1 fill:#e3f2fd,stroke:#1565c0
-    style A2 fill:#e3f2fd,stroke:#1565c0
-    style A3 fill:#e3f2fd,stroke:#1565c0
-    style A4 fill:#fff3e0,stroke:#ef6c00
-    style A5 fill:#fff3e0,stroke:#ef6c00
-    style A6 fill:#f3e5f5,stroke:#6a1b9a
-    style A7 fill:#f3e5f5,stroke:#6a1b9a
-    style A8 fill:#ffcdd2,stroke:#c62828
-    style A9 fill:#ffcdd2,stroke:#c62828
-    style A10 fill:#e8f5e8,stroke:#2e7d32
-    style B1 fill:#e8f5e8,stroke:#2e7d32
-    style B2 fill:#e8f5e8,stroke:#2e7d32
-    style B3 fill:#e8f5e8,stroke:#2e7d32
-    style B4 fill:#e8f5e8,stroke:#2e7d32
-    style B5 fill:#e8f5e8,stroke:#2e7d32
-    style B6 fill:#ffcdd2,stroke:#c62828
-    style B7 fill:#ffcdd2,stroke:#c62828
-    style B8 fill:#e8f5e8,stroke:#2e7d32
-    style C fill:#dcedc8,stroke:#558b2f
+    classDef perception fill:#e3f2fd,stroke:#1565c0;
+    classDef reasoning fill:#f3e5f5,stroke:#6a1b9a;
+    classDef trust fill:#ffcdd2,stroke:#c62828;
+    class A1,A2,A3,A4,A5 perception;
+    class A6,A7,A8 reasoning;
+    class A9,A10,A11,A12 trust;
+    class B1,B2 perception;
+    class B3,B4,B5 reasoning;
+    class B6,B7,B8,B9,B10 trust;
 ```
 
 ## 13. Agentic Workflow
-Agentic Workflow: Not required for the core system. FinSense uses a deterministic document-processing pipeline combined with open-source AI for document understanding and extraction. This keeps financial validation predictable and auditable. The AI components operate as specialized modules within a sequential pipeline rather than autonomous agents, ensuring traceability and compliance with financial processing requirements.
+Agentic Workflow: Not required for the core system. FinSense uses a deterministic document-processing pipeline combined with open-source AI for document understanding and extraction. This keeps financial validation predictable and auditable. The system implements a bounded validator-guided re-read loop (a deterministic control loop, not an autonomous agent) for handling validation failures:  
+Validation failure  
+↓  
+Identify exact failed rule  
+↓  
+Targeted re-read by AI (max 1–2 retries)  
+↓  
+If still unresolved → Human review  
 
 ## 14. Technology Stack
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | React.js 18 | Interactive UI components |
-| | Tailwind CSS | Responsive styling |
-| | Axios | API communication |
-| **Backend** | Python 3.10+ | Core language |
-| | FastAPI | High-performance API framework |
-| | Pydantic | Data validation and settings |
-| | Uvicorn | ASGI server |
-| **Document Processing** | OpenCV | Image preprocessing (deskew, denoise) |
-| | Pillow | Image manipulation |
-| | PyMuPDF | PDF text/layout extraction |
-| | PaddleOCR | Open-source OCR (Apache 2.0) |
-| | LayoutLMv3 | Form understanding (MIT License) |
-| | Pandas | Data manipulation (BSD) |
-| | OpenPyXL | Excel read/write (MIT) |
-| **AI Intelligence** | Qwen2-VL-7B | Vision-language model (Apache 2.0) |
-| | Sentence Transformers | Embedding fallback (Apache 2.0) |
-| **Validation & Storage** | PostgreSQL | Relational data storage (PostgreSQL License) |
-| | SQLAlchemy | ORM (MIT) |
-| | Alembic | Database migrations (MIT) |
-| **DevOps** | Docker | Containerization (Apache 2.0) |
-| | Docker Compose | Multi-container orchestration |
-| | GitHub Actions | CI/CD (Free for OSS) |
-| **Deployment** | Render.com | Backend hosting (Free tier) |
-| | Vercel | Frontend hosting (Free tier) |
+| Layer | Technology | Purpose | Why Needed |
+|-------|------------|---------|------------|
+| **Frontend** | React.js 18 | Interactive UI components | Build responsive, real-time upload/inspect interface |
+| | Tailwind CSS | Utility-first styling | Accelerate UI development with responsive design |
+| | Axios | HTTP client | Communicate with backend API |
+| **Backend** | Python 3.10+ | Core language | Mature ecosystem for AI/ML and web development |
+| | FastAPI | High-performance API framework | Asynchronous request handling, automatic docs |
+| | Pydantic | Data validation | Enforce invoice schema, serialize/deserialize safely |
+| | Uvicorn | ASGI server | Serve FastAPI applications efficiently |
+| **Document Processing** | OpenCV | Image preprocessing (deskew, denoise) | Enhance poor-quality handwritten invoice images |
+| | Pillow | Image manipulation | Support various image formats for preprocessing |
+| | PyMuPDF | PDF text/layout extraction | Reliable processing of PDF invoices (text + coordinates) |
+| | PaddleOCR | Open-source OCR (Apache 2.0) | Accurate text localization and recognition |
+| | LayoutLMv3 | Form understanding (MIT License) | Semantic alignment of fields in structured invoices |
+| | Pandas | Data manipulation (BSD) | Handle Excel/CSV schema detection and cleaning |
+| | OpenPyXL | Excel read/write (MIT) | Process XLSX invoices without MS Excel dependency |
+| **AI Intelligence** | Qwen2-VL-7B | Vision-language model (Apache 2.0) | Contextual field extraction and normalization |
+| | Sentence Transformers | Embedding fallback (Apache 2.0) | Fallback for semantic similarity if needed |
+| **Validation & Storage** | PostgreSQL | Relational data storage (PostgreSQL License) | Store processed invoices with relational integrity |
+| | SQLAlchemy | ORM (MIT) | Simplify database interactions |
+| | Alembic | Database migrations (MIT) | Manage schema evolution safely |
+| **DevOps** | Docker | Containerization (Apache 2.0) | Ensure consistent deployment across environments |
+| | Docker Compose | Multi-container orchestration | Manage backend, frontend, and database services |
+| | GitHub Actions | CI/CD (Free for OSS) | Automated testing and deployment |
+| **Deployment** | Render.com | Backend hosting (Free tier) | Deploy API, worker services, and database |
+| | Vercel | Frontend hosting (Free tier) | Deploy React application with global CDN |
 
-*Note: All selected technologies have permissive open-source licenses suitable for hackathon projects.*
+*Note: All selected technologies have permissive open-source licenses suitable for hackathon projects. License verification pending for final implementation.*  
 
 ## 15. Expected Features
 ### CORE FEATURES (MVP - Hackathon Implementation)
-1. Multi-format document upload (PDF, JPG/JPEG, PNG, XLSX, CSV)
-2. Automatic input-type detection via file signature and content analysis
-3. PDF/image preprocessing (deskewing, denoising, contrast enhancement)
-4. OCR and layout analysis using PaddleOCR and LayoutLMv3
-5. Semantic field extraction using Qwen2-VL-7B vision-language model
-6. GST information extraction (GSTIN, tax rates, tax amounts)
-7. Line-item extraction (description, quantity, rate, amount)
-8. Structured JSON output with hierarchical invoice schema
-9. Structured tabular output (CSV/Excel) for accounting software
-10. Deterministic validation engine (arithmetic, GST consistency, required fields)
-11. Uncertainty/confidence handling with field-level scoring
-12. Upload-and-inspect interface for real-time document processing
+1. Multi-format document upload (PDF, JPG/JPEG, PNG, XLSX, CSV)  
+2. Automatic input-type detection via file signature and content analysis  
+3. Document routing to PDF/image or Excel/CSV processing streams  
+4. PDF/image preprocessing (deskewing, denoising, contrast enhancement)  
+5. OCR and layout analysis using PaddleOCR and LayoutLMv3  
+6. Semantic field extraction using Qwen2-VL-7B vision-language model  
+7. GST information extraction (GSTIN, tax rates, tax amounts)  
+8. Line-item extraction (description, quantity, rate, amount)  
+9. Structured JSON output with hierarchical invoice schema  
+10. Structured tabular output (CSV/Excel) for accounting software  
+11. Deterministic validation engine (arithmetic, GST consistency, required fields)  
+12. Uncertainty/confidence handling with field-level scoring  
+13. Upload-and-inspect interface for real-time document processing  
 
 ### ADVANCED FEATURES (Post-Hackathon Enhancement)
-13. Handwritten invoice intelligence via specialized preprocessing and VLM fine-tuning
-14. Image quality assessment (blur, glare, occlusion detection)
-15. Low-confidence field detection with automated flagging
-16. Original-document vs extracted-data side-by-side comparison view
-17. Field-level validation with interactive correction
-18. Inconsistency/anomaly detection (unusual tax rates, duplicate invoices)
-19. Export to JSON/CSV/XLSX with configurable schemas
-20. Processing history with audit trail and user annotations
-21. Accounting-ready normalized schema aligned with GSTN standards
+14. Handwritten invoice intelligence via specialized preprocessing and VLM fine-tuning  
+15. Image quality assessment (blur, glare, occlusion detection)  
+16. Low-confidence field detection with automated flagging  
+17. Original-document vs extracted-data side-by-side comparison view  
+18. Field-level validation with interactive correction  
+19. Inconsistency/anomaly detection (unusual tax rates, duplicate invoices)  
+20. Export to JSON/CSV/XLSX with configurable schemas  
+21. Processing history with audit trail and user annotations  
+22. Accounting-ready normalized schema aligned with GSTN standards  
+
+**CUT-LINE RULE**: If time becomes limited, advanced features will be deferred in this order: 22 → 21 → 20 → 19 → 18 → 17 → 16 → 15 → 14. Core PS3 pipeline (features 1-13) remains intact.  
 
 ## 16. Implementation Approach
-**Phase 1 (Day 1-2)**: Project foundation
-- Initialize repository with README, license, contributing guidelines
-- Set up FastAPI backend with React frontend via Docker
-- Implement basic file upload and type detection endpoints
-- Create Pydantic models for invoice schema
+**Phase 1 (Day 1-2)**: Project foundation  
+- Initialize repository with README, license, contributing guidelines  
+- Set up FastAPI backend with React frontend via Docker  
+- Implement basic file upload and type detection endpoints  
+- Create Pydantic models for invoice schema  
+*Done when*: Repository structure complete, basic upload endpoint functional  
+*Primary risk*: Environment setup delays  
 
-**Phase 2 (Day 3)**: Input routing and preprocessing
-- Build PDF/image preprocessing pipeline (OpenCV/Pillow)
-- Implement Excel/CSV schema detection and cleaning (Pandas)
-- Create document router that classifies and directs files
-- Add file validation (size limits, virus scanning simulation)
+**Phase 2 (Day 3)**: Input classification and routing  
+- Build PDF/image preprocessing pipeline (OpenCV/Pillow)  
+- Implement Excel/CSV schema detection and cleaning (Pandas)  
+- Create document router that classifies and directs files  
+- Add file validation (size limits, content verification)  
+*Done when*: System correctly routes PDFs/images to Pipeline A and Excel/CSVs to Pipeline B  
+*Primary risk*: Misclassification of file types  
 
-**Phase 3 (Day 4-5)**: OCR and document understanding
-- Integrate PaddleOCR for text localization and recognition
-- Add LayoutLMv3 for layout analysis and table detection
-- Create unified text/layout extraction service
-- Implement deskewing and orientation correction for handwritten invoices
+**Phase 3 (Day 4-5)**: OCR and document understanding  
+- Integrate PaddleOCR for text localization and recognition  
+- Add LayoutLMv3 for layout analysis and table detection  
+- Create unified text/layout extraction service  
+- Implement deskewing and orientation correction for handwritten invoices  
+*Done when*: OCR outputs text + bounding boxes; layout analysis identifies regions  
+*Primary risk*: Poor OCR quality on low-resolution images  
 
-**Phase 4 (Day 6-7)**: AI reasoning integration
-- Deploy Qwen2-VL-7B via HuggingFace Transformers
-- Design prompt engineering framework for field extraction
-- Create semantic normalization layer (date formats, GSTIN validation)
-- Develop confidence scoring mechanism from model outputs
+**Phase 4 (Day 6-7)**: AI reasoning integration  
+- Deploy Qwen2-VL-7B via HuggingFace Transformers  
+- Design prompt engineering framework for field extraction  
+- Create semantic normalization layer (date formats, GSTIN validation)  
+- Develop confidence scoring mechanism from model outputs  
+*Done when*: AI produces structured field predictions with confidence scores  
+*Primary risk*: Model inference latency or output format issues  
 
-**Phase 8 (Day 9)**: Final integration and testing
-- Connect all pipeline stages into end-to-end workflow
-- Implement export functionality (JSON/CSV/Excel)
-- Create comprehensive test suite with sample invoices
-- Conduct integration testing with diverse document samples
-- Optimize for deployment on free-tier cloud services
+**Phase 8 (Day 9)**: Final integration and testing  
+- Connect all pipeline stages into end-to-end workflow  
+- Implement export functionality (JSON/CSV/Excel)  
+- Create comprehensive test suite with sample invoices  
+- Conduct integration testing with diverse document samples  
+- Optimize for deployment on free-tier cloud services  
+*Done when*: End-to-end pipeline processes sample invoices and exports valid JSON/CSV  
+*Primary risk*: Integration bottlenecks between pipeline stages  
 
-**Phase 9 (Day 10)**: Demo preparation
-- Record demonstration video highlighting handwritten invoice processing
-- Prepare sample invoice dataset for evaluator testing
-- Finalize documentation and deployment instructions
-- Stress test system with concurrent uploads
+**Phase 9 (Day 10)**: Demo preparation  
+- Record demonstration video highlighting handwritten invoice processing  
+- Prepare sample invoice dataset for evaluator testing  
+- Finalize documentation and deployment instructions  
+- Stress test system with concurrent uploads  
+*Done when*: Demo video ready, sample dataset curated, deployment verified  
+*Primary risk*: Time constraints for polishing  
+
+**ROUGH TIME BUDGET** (Planned allocation — not a guaranteed schedule):  
+- Project foundation: 15%  
+- Input classification/routing: 15%  
+- OCR/document understanding: 20%  
+- AI reasoning integration: 20%  
+- Final integration/testing: 20%  
+- Demo preparation: 10%  
+
+**FALLBACK LADDER**:  
+Preferred: Qwen2-VL-7B + PaddleOCR + LayoutLMv3  
+↓  
+Fallback 1: Smaller quantized VLM (e.g., Qwen2-VL-2B-INT8)  
+↓  
+Fallback 2: OCR + text-based open model (e.g., LayoutLMv3 + DistilBERT)  
+↓  
+Fallback 3: Reduced feature scope while preserving PS3 core requirements (manual review for uncertain fields)  
 
 ## 17. Expected Final Output
-**SAMPLE STRUCTURED JSON OUTPUT**
+**EXPECTED OUTPUT / SAMPLE SCHEMA — illustrative, not a real result.**  
 ```json
 {
   "invoice_metadata": {
@@ -357,7 +497,9 @@ Agentic Workflow: Not required for the core system. FinSense uses a deterministi
     "invoice_date": "2026-09-15",
     "due_date": "2026-09-30",
     "currency": "INR",
-    "invoice_type": "regular"
+    "invoice_type": "regular",
+    "place_of_supply_code": "29",
+    "place_of_supply_state": "Karnataka"
   },
   "seller": {
     "legal_name": "ABC Supplies Pvt Ltd",
@@ -383,13 +525,17 @@ Agentic Workflow: Not required for the core system. FinSense uses a deterministi
       "quantity": 50,
       "quantity_unit": "meters",
       "rate": 250.00,
+      "discount": 0.0,
       "taxable_value": 12500.00,
       "cgst_rate": 9.0,
       "sgst_rate": 9.0,
       "igst_rate": 0.0,
+      "cess_rate": 0.0,
       "cgst_amount": 1125.00,
       "sgst_amount": 1125.00,
       "igst_amount": 0.0,
+      "cess_amount": 0.0,
+      "round_off": 0.0,
       "total_amount": 14750.00
     },
     {
@@ -399,13 +545,17 @@ Agentic Workflow: Not required for the core system. FinSense uses a deterministi
       "quantity": 100,
       "quantity_unit": "spools",
       "rate": 15.00,
+      "discount": 0.0,
       "taxable_value": 1500.00,
       "cgst_rate": 9.0,
       "sgst_rate": 9.0,
       "igst_rate": 0.0,
+      "cess_rate": 0.0,
       "cgst_amount": 135.00,
       "sgst_amount": 135.00,
       "igst_amount": 0.0,
+      "cess_amount": 0.0,
+      "round_off": 0.0,
       "total_amount": 1770.00
     }
   ],
@@ -414,16 +564,19 @@ Agentic Workflow: Not required for the core system. FinSense uses a deterministi
     "total_cgst": 1260.00,
     "total_sgst": 1260.00,
     "total_igst": 0.00,
+    "total_cess": 0.00,
     "total_tax": 2520.00,
     "total_amount": 16520.00,
     "amount_in_words": "Sixteen Thousand Five Hundred Twenty Rupees Only"
   },
   "validation": {
     "status": "valid",
+    "errors": [],
     "warnings": [],
     "checks_passed": [
       "gstin_format_seller",
       "gstin_format_buyer",
+      "place_of_supply_consistency",
       "tax_calculation_consistency",
       "line_item_total_match",
       "date_validity",
@@ -447,23 +600,25 @@ Agentic Workflow: Not required for the core system. FinSense uses a deterministi
     "processing_time_ms": 1240,
     "ocr_engine": "PaddleOCR",
     "ai_model": "Qwen2-VL-7B",
-    "validation_version": "1.0.0"
+    "validation_version": "1.0.0",
+    "source_hash": "sha256:abc123..."
   }
 }
 ```
-*Note: This is a sample schema demonstrating expected output structure. Actual values will vary based on processed documents.*
+*Tabular output (CSV/Excel) would flatten this hierarchy into rows per line item with invoice-level metadata repeated.*  
 
 ## 18. Future Scope / Scalability
-- **Multilingual Support**: Extend to regional Indian languages (Hindi, Tamil, Bengali) using Indic language models
-- **Batch Processing**: Implement queue-based system (Redis + RQ) for high-volume invoice processing
-- **Accounting Integrations**: Develop connectors for Tally, Zoho Books, ClearTax, and SAP via APIs
-- **Advanced Handwriting**: Fine-tune VLM on Indian handwritten invoice datasets for improved accuracy
-- **Fraud Detection**: Add anomaly detection for duplicate invoices, manipulated GSTINs, and unusual patterns
-- **Mobile Optimization**: Progressive Web App with offline capabilities for field agents
-- **Edge Deployment**: Optimize models for CPU inference using ONNX runtime for low-resource environments
-- **Blockchain Audit Trail**: Integrate with public blockchain for immutable invoice processing records
-- **API Marketplace**: Expose FinSense as microservice via API Gateway for B2B integrations
-- **Continuous Learning**: Implement feedback loop where corrected extractions improve model performance
+- **Multilingual Support**: Extend to regional Indian languages (Hindi, Tamil, Bengali) using Indic language models  
+- **Batch Processing**: Implement queue-based system (Redis + RQ) for high-volume invoice processing  
+- **Accounting Integrations**: Develop connectors for Tally, Zoho Books, ClearTax, and SAP via APIs  
+- **Advanced Handwriting**: Fine-tune VLM on Indian handwritten invoice datasets for improved accuracy  
+- **Fraud Detection**: Add anomaly detection for duplicate invoices, manipulated GSTINs, and unusual patterns  
+- **Mobile Optimization**: Progressive Web App with offline capabilities for field agents  
+- **Edge Deployment**: Optimize models for CPU inference using ONNX runtime for low-resource environments  
+- **Blockchain Audit Trail**: Integrate with public blockchain for immutable invoice processing records  
+- **API Marketplace**: Expose FinSense as microservice via API Gateway for B2B integrations  
+- **Continuous Learning**: Implement feedback loop where corrected extractions improve model performance  
+- **GPU Acceleration**: Leverage tensor cores for faster inference during peak loads  
 
 ## 19. Open-Source Dependencies / Components
 | Component | Purpose | Why Needed | License/Status |
@@ -478,14 +633,16 @@ Agentic Workflow: Not required for the core system. FinSense uses a deterministi
 | OpenPyXL | Excel file read/write | Processes XLSX invoices without MS Excel dependency | MIT |
 | PostgreSQL | Relational database storage | Stores processed invoices with relational integrity | PostgreSQL License |
 | SQLAlchemy | Object-relational mapping | Simplifies database interactions | MIT |
+| Alembic | Database migrations (MIT) | Manages schema evolution safely | MIT |
 | FastAPI | High-performance API framework | Enables fast, asynchronous document processing | MIT |
 | React.js | Frontend library | Builds responsive user interface | MIT |
 | Tailwind CSS | Utility-first CSS framework | Accelerates UI development with responsive design | MIT |
 | HuggingFace Transformers | Model inference library | Deploys Qwen2-VL-7B and LayoutLMv3 | Apache 2.0 |
 | Docker | Containerization | Ensures consistent deployment across environments | Apache 2.0 |
 | Docker Compose | Multi-container orchestration | Manages backend, frontend, and database services | Apache 2.0 |
+| GitHub Actions | CI/CD | Automated testing and deployment | MIT |
 
-*Note: All licenses verified as of October 2026. Commercial exceptions noted where applicable.*
+*Note: All licenses verified as of October 2026. Commercial exceptions noted where applicable. Final validation pending before implementation.*  
 
 ## 20. Expected Challenges and Mitigation
 | Challenge | Risk Level | Mitigation Strategy |
@@ -504,4 +661,15 @@ Agentic Workflow: Not required for the core system. FinSense uses a deterministi
 | Inconsistent invoice formats (global) | Low | • Configurable GST rule engine for regional variations<br>• Extensible validation framework<br>• Country-code detection from GSTIN prefixes |
 
 ---
-*This README.md represents a technical proposal for the qualifier round of the Hacktober Fest – Open Source AI Hackathon. All features and timelines are proposed and subject to change during implementation.*
+*This README.md represents a technical proposal for the qualifier round of the Hacktober Fest – Open Source AI Hackathon. All features and timelines are proposed and subject to change during implementation.*  
+
+## Why FinSense?
+FinSense transcends conventional invoice processing by integrating three intelligent layers:  
+**PERCEIVE** → **UNDERSTAND** → **VALIDATE** → **TRUST**  
+
+This architecture ensures financial data is not merely extracted but *validated*, transforming raw documents into auditable financial intelligence. By combining open-source AI with deterministic validation, FinSense delivers a solution that is both technologically sophisticated and practically deployable—addressing the exact requirements of PS3 while maintaining realistic hackathon feasibility.  
+
+*FinSense: Where every invoice becomes a trusted financial record.*  
+
+## Final Vision
+To become the open-source standard for GST invoice intelligence in India, enabling seamless automation of accounting workflows while preserving data privacy, auditability, and financial integrity through community-driven innovation.
