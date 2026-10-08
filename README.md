@@ -473,7 +473,7 @@ flowchart TD
 **CUT-LINE RULE**: If time becomes limited, advanced features will be deferred in this order: 22 → 21 → 20 → 19 → 18 → 17 → 16 → 15 → 14. Core PS3 pipeline (features 1-13) remains intact.  
 
 ## 16. Implementation Approach
-**Phase 1 (Day 1-2)**: Project foundation  
+**Phase 1 **: Project foundation  
 - Initialize repository with README, license, contributing guidelines  
 - Set up FastAPI backend with React frontend via Docker  
 - Implement basic file upload and type detection endpoints  
@@ -481,7 +481,7 @@ flowchart TD
 *Done when*: Repository structure complete, basic upload endpoint functional  
 *Primary risk*: Environment setup delays  
 
-**Phase 2 (Day 3)**: Input classification and routing  
+**Phase 2 **: Input classification and routing  
 - Build PDF/image preprocessing pipeline (OpenCV/Pillow)  
 - Implement Excel/CSV schema detection and cleaning (Pandas)  
 - Create document router that classifies and directs files  
@@ -489,7 +489,7 @@ flowchart TD
 *Done when*: System correctly routes PDFs/images to Pipeline A and Excel/CSVs to Pipeline B  
 *Primary risk*: Misclassification of file types  
 
-**Phase 3 (Day 4-5)**: OCR and document understanding  
+**Phase 3 **: OCR and document understanding  
 - Integrate PaddleOCR for text localization and recognition  
 - Add LayoutLMv3 for layout analysis and table detection  
 - Create unified text/layout extraction service  
@@ -497,7 +497,7 @@ flowchart TD
 *Done when*: OCR outputs text + bounding boxes; layout analysis identifies regions  
 *Primary risk*: Poor OCR quality on low-resolution images  
 
-**Phase 4 (Day 6-7)**: AI reasoning integration  
+**Phase 4 **: AI reasoning integration  
 - Deploy Qwen2-VL-7B via HuggingFace Transformers  
 - Design prompt engineering framework for field extraction  
 - Create semantic normalization layer (date formats, GSTIN validation)  
@@ -505,7 +505,7 @@ flowchart TD
 *Done when*: AI produces structured field predictions with confidence scores  
 *Primary risk*: Model inference latency or output format issues  
 
-**Phase 8 (Day 9)**: Final integration and testing  
+**Phase 8 **: Final integration and testing  
 - Connect all pipeline stages into end-to-end workflow  
 - Implement export functionality (JSON/CSV/Excel)  
 - Create comprehensive test suite with sample invoices  
@@ -514,7 +514,7 @@ flowchart TD
 *Done when*: End-to-end pipeline processes sample invoices and exports valid JSON/CSV  
 *Primary risk*: Integration bottlenecks between pipeline stages  
 
-**Phase 9 (Day 10)**: Demo preparation  
+**Phase 9 **: Demo preparation  
 - Record demonstration video highlighting handwritten invoice processing  
 - Prepare sample invoice dataset for evaluator testing  
 - Finalize documentation and deployment instructions  
@@ -522,7 +522,7 @@ flowchart TD
 *Done when*: Demo video ready, sample dataset curated, deployment verified  
 *Primary risk*: Time constraints for polishing  
 
-**ROUGH TIME BUDGET** (Planned allocation — not a guaranteed schedule):  
+**ROUGH TIME BUDGET** :  
 - Project foundation: 15%  
 - Input classification/routing: 15%  
 - OCR/document understanding: 20%  
