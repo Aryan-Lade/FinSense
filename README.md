@@ -473,55 +473,67 @@ flowchart TD
 **CUT-LINE RULE**: If time becomes limited, advanced features will be deferred in this order: 22 → 21 → 20 → 19 → 18 → 17 → 16 → 15 → 14. Core PS3 pipeline (features 1-13) remains intact.  
 
 ## 16. Implementation Approach
-** Phase 1 **: Project foundation  
-- Initialize repository with README, license, contributing guidelines  
-- Set up FastAPI backend with React frontend via Docker  
-- Implement basic file upload and type detection endpoints  
-- Create Pydantic models for invoice schema  
-*Done when*: Repository structure complete, basic upload endpoint functional  
-*Primary risk*: Environment setup delays  
 
-** Phase 2 **: Input classification and routing  
-- Build PDF/image preprocessing pipeline (OpenCV/Pillow)  
-- Implement Excel/CSV schema detection and cleaning (Pandas)  
-- Create document router that classifies and directs files  
-- Add file validation (size limits, content verification)  
-*Done when*: System correctly routes PDFs/images to Pipeline A and Excel/CSVs to Pipeline B  
-*Primary risk*: Misclassification of file types  
+### **Phase 1: Project Foundation**
 
-** Phase 3 **: OCR and document understanding  
-- Integrate PaddleOCR for text localization and recognition  
-- Add LayoutLMv3 for layout analysis and table detection  
-- Create unified text/layout extraction service  
-- Implement deskewing and orientation correction for handwritten invoices  
-*Done when*: OCR outputs text + bounding boxes; layout analysis identifies regions  
-*Primary risk*: Poor OCR quality on low-resolution images  
+* Initialize repository with README, license, and contributing guidelines
+* Set up FastAPI backend with React frontend via Docker
+* Implement basic file upload and type detection endpoints
+* Create Pydantic models for invoice schema
 
-** Phase 4 **: AI reasoning integration  
-- Deploy Qwen2-VL-7B via HuggingFace Transformers  
-- Design prompt engineering framework for field extraction  
-- Create semantic normalization layer (date formats, GSTIN validation)  
-- Develop confidence scoring mechanism from model outputs  
-*Done when*: AI produces structured field predictions with confidence scores  
-*Primary risk*: Model inference latency or output format issues  
+**Done when:** Repository structure is complete and the basic upload endpoint is functional.  
+**Primary risk:** Environment setup delays
 
-** Phase 8 **: Final integration and testing  
-- Connect all pipeline stages into end-to-end workflow  
-- Implement export functionality (JSON/CSV/Excel)  
-- Create comprehensive test suite with sample invoices  
-- Conduct integration testing with diverse document samples  
-- Optimize for deployment on free-tier cloud services  
-*Done when*: End-to-end pipeline processes sample invoices and exports valid JSON/CSV  
-*Primary risk*: Integration bottlenecks between pipeline stages  
+### **Phase 2: Input Classification and Routing**
 
-** Phase 9 **: Demo preparation  
-- Record demonstration video highlighting handwritten invoice processing  
-- Prepare sample invoice dataset for evaluator testing  
-- Finalize documentation and deployment instructions  
-- Stress test system with concurrent uploads  
-*Done when*: Demo video ready, sample dataset curated, deployment verified  
-*Primary risk*: Time constraints for polishing  
+* Build PDF/image preprocessing pipeline using OpenCV/Pillow
+* Implement Excel/CSV schema detection and cleaning using Pandas
+* Create document router that classifies and directs files
+* Add file validation (size limits, content verification)
 
+**Done when:** System correctly routes PDFs/images to Pipeline A and Excel/CSVs to Pipeline B  
+**Primary risk:** Misclassification of file types
+
+### **Phase 3: OCR and Document Understanding**
+
+* Integrate PaddleOCR for text localization and recognition
+* Add LayoutLMv3 for layout analysis and table detection
+* Create unified text/layout extraction service
+* Implement deskewing and orientation correction for handwritten invoices
+
+**Done when:** OCR outputs text + bounding boxes; layout analysis identifies regions  
+**Primary risk:** Poor OCR quality on low-resolution images
+
+### **Phase 4: AI Reasoning Integration**
+
+* Deploy Qwen2-VL-7B via HuggingFace Transformers
+* Design prompt engineering framework for field extraction
+* Create semantic normalization layer (date formats, GSTIN validation)
+* Develop confidence scoring mechanism from model outputs
+
+**Done when:** AI produces structured field predictions with confidence scores  
+**Primary risk:** Model inference latency or output format issues
+
+### **Phase 8: Final Integration and Testing**
+
+* Connect all pipeline stages into end-to-end workflow
+* Implement export functionality (JSON/CSV/Excel)
+* Create comprehensive test suite with sample invoices
+* Conduct integration testing with diverse document samples
+* Optimize for deployment on free-tier cloud services
+
+**Done when:** End-to-end pipeline processes sample invoices and exports valid JSON/CSV  
+**Primary risk:** Integration bottlenecks between pipeline stages
+
+### **Phase 9: Demo Preparation**
+
+* Record demonstration video highlighting handwritten invoice processing
+* Prepare sample invoice dataset for evaluator testing
+* Finalize documentation and deployment instructions
+* Stress test system with concurrent uploads
+
+**Done when:** Demo video ready, sample dataset curated, deployment verified  
+**Primary risk:** Time constraints for polishing
 ** ROUGH TIME BUDGET ** :  
 - Project foundation: 15%  
 - Input classification/routing: 15%  
