@@ -542,7 +542,7 @@ flowchart TD
 - Final integration/testing: 20%  
 - Demo preparation: 10%  
 
-** FALLBACK LADDER ** — If preferred stack is unavailable during hackathon:
+#### ** FALLBACK LADDER ** — If preferred stack is unavailable during hackathon:
 
 ```mermaid
 flowchart TD
