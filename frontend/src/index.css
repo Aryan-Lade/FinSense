@@ -1,21 +1,106 @@
 @import "tailwindcss";
 
-/* Custom styles to match demo website */
-:root {
-  --background-color: #f2f2f2; /* rgb(242, 242, 242) from demo site */
-  --text-color: #1a1a1a;
-  --font-sans: 'Manrope', system-ui, sans-serif;
-  --font-mono: 'Fragment Mono', monospace;
+@layer base {
+  :root {
+    --bg-page: #f2f2f2;
+    --border-color: #d9d9d9;
+    --card-bg: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #4a4a4a;
+    --text-muted: #888888;
+  }
+
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Clash Grotesk', 'Manrope', sans-serif;
+    letter-spacing: -0.025em;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'Fragment Mono', monospace;
+  }
 }
 
-body {
-  background-color: var(--background-color);
-  color: var(--text-color);
-  font-family: var(--font-sans);
+/* Glassmorphism Floating Navbar from Demo Website */
+.glass-nav {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background-color: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
 }
 
-/* Ensure proper font smoothing */
-* {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Rounded Cards & Pills */
+.demo-card {
+  background-color: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 28px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.demo-pill {
+  border-radius: 9999px;
+  border: 1px solid #d9d9d9;
+  background-color: #ffffff;
+}
+
+.demo-btn-black {
+  background-color: #000000;
+  color: #ffffff;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.demo-btn-black:hover {
+  background-color: #1f1f1f;
+  transform: translateY(-1px);
+}
+
+.demo-btn-white {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #d9d9d9;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.demo-btn-white:hover {
+  background-color: #f7f7f7;
+  border-color: #bfbfbf;
+}
+
+/* Infinite Horizontal Marquee Ticker */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ticker {
+  display: flex;
+  width: max-content;
+  animation: ticker 28s linear infinite;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* Scanning beam animation for Hero Phone Preview */
+@keyframes scan-beam {
+  0% { top: 0%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 95%; opacity: 0; }
+}
+
+.animate-scan {
+  animation: scan-beam 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }

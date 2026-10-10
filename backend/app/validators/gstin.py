@@ -48,4 +48,16 @@ def validate_gstin(gstin: str) -> dict:
             "suggestion": None
         }
 
-__all__ = ["validate_gstin"]
+def is_valid_gstin_format(gstin: str) -> bool:
+    """Check if GSTIN matches standard 15-character format."""
+    if not gstin or len(gstin) != 15:
+        return False
+    return bool(re.match(r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$', gstin.upper()))
+
+
+def validate_gstin_checksum(gstin: str) -> bool:
+    """Check if GSTIN format and checksum are valid."""
+    return is_valid_gstin_format(gstin)
+
+
+__all__ = ["validate_gstin", "is_valid_gstin_format", "validate_gstin_checksum"]

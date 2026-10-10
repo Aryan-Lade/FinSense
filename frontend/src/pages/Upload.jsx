@@ -9,15 +9,17 @@ import {
   ShieldCheck, 
   Sparkles,
   ArrowRight,
-  FileSpreadsheet
+  FileSpreadsheet,
+  ScanLine,
+  Check
 } from 'lucide-react';
-import { uploadFile, seedDemo } from '../api';
+import { uploadFile } from '../api';
 
 export default function UploadPage() {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [step, setStep] = useState(0); // 0: Idle, 1: Perceive, 2: Understand, 3: Validate, 4: Trust
+  const [step, setStep] = useState(0); // 0: Idle, 1: Perceive, 2: PaddleOCR, 3: Validate, 4: Complete
   const [error, setError] = useState('');
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -40,162 +42,174 @@ export default function UploadPage() {
       setUploading(true);
       setError('');
       
-      // Step 1: Perceive
+      // Step 1: Ingestion
       setStep(1);
+      await new Promise((r) => setTimeout(r, 400));
+
+      // Step 2: PaddleOCR & Bilingual Extraction
+      setStep(2);
       await new Promise((r) => setTimeout(r, 600));
 
-      // Step 2: Understand
-      setStep(2);
-      await new Promise((r) => setTimeout(r, 700));
-
-      // Step 3: Validate
+      // Step 3: Server Processing
       setStep(3);
       const res = await uploadFile(file);
+
+      // Step 4: Complete
+      setStep(4);
       await new Promise((r) => setTimeout(r, 500));
 
-      // Step 4: Trust
-      setStep(4);
-      await new Promise((r) => setTimeout(r, 600));
-
-      // Navigate to bills list
-      navigate('/bills');
+      // Navigate to the newly created invoice or bills list
+      if (res.data?.invoice_id) {
+        navigate(`/bills/${res.data.invoice_id}`);
+      } else {
+        navigate('/bills');
+      }
     } catch (err) {
       console.error(err);
-      setError('File processing completed with local heuristics. Redirecting to bills...');
-      setTimeout(() => navigate('/bills'), 1500);
-    } finally {
+      setError(err.response?.data?.detail || 'Failed to process document. Please try a different file.');
       setUploading(false);
+      setStep(0);
     }
   };
 
-  const handleSample = async () => {
-    setUploading(true);
-    setStep(1);
-    await new Promise((r) => setTimeout(r, 400));
-    setStep(2);
-    await new Promise((r) => setTimeout(r, 400));
-    setStep(3);
-    await seedDemo();
-    setStep(4);
-    await new Promise((r) => setTimeout(r, 400));
-    navigate('/bills');
-  };
-
   const steps = [
-    { num: 1, title: 'Perceive', desc: 'Orientation, Deskew, Image Quality & Language Detection' },
-    { num: 2, title: 'Understand', desc: 'OCR & Vision-Language contextual field extraction' },
-    { num: 3, title: 'Validate', desc: 'Deterministic GSTIN check digit & arithmetic rules' },
-    { num: 4, title: 'Trust', desc: 'Confidence scoring & audit-ready financial record' },
+    { title: '1. Multi-Format Ingest', desc: 'MIME validation & blur pre-screen' },
+    { title: '2. PaddleOCR Bilingual', desc: 'Devanagari Hindi & English parsing' },
+    { title: '3. GST Validation Guard', desc: 'Checksum & tax arithmetic balance' },
+    { title: '4. Audit-Ready Record', desc: '10-day payment reminder scheduled' },
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-          Upload Bills & Invoices
+    <div className="max-w-4xl mx-auto px-4 py-12 space-y-10">
+      <div className="text-center space-y-3">
+        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white border border-[#d9d9d9] shadow-2xs">
+          <ScanLine className="w-3.5 h-3.5 text-black" />
+          <span className="text-xs font-semibold uppercase tracking-wider text-black">
+            PaddleOCR Ingestion Engine
+          </span>
+        </div>
+        <h1 className="text-4xl sm:text-5xl font-bold font-heading text-black tracking-tight">
+          Upload Invoices & Bills
         </h1>
-        <p className="text-sm text-gray-500 max-w-lg mx-auto">
-          Upload scanned PDFs, camera photos, handwritten invoices, or Excel/CSV spreadsheets in English or Hindi.
+        <p className="text-sm text-neutral-600 max-w-lg mx-auto">
+          Drag & drop photos, handwritten receipts, scanned PDFs, or Excel/CSV sheets.
+          PaddleOCR processes Hindi and English simultaneously.
         </p>
       </div>
 
-      {/* Workflow Stepper */}
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          {steps.map((s) => {
-            const isCompleted = step > s.num;
-            const isCurrent = step === s.num;
-            return (
-              <div
-                key={s.num}
-                className={`p-3 rounded-lg border transition-all ${
-                  isCurrent
-                    ? 'border-emerald-500 bg-emerald-50/60 shadow-xs'
-                    : isCompleted
-                    ? 'border-gray-200 bg-gray-50'
-                    : 'border-gray-200 bg-white opacity-70'
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <span className={`w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center ${
-                    isCurrent || isCompleted
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {isCompleted ? '✓' : s.num}
-                  </span>
-                  <span className="font-bold text-sm text-gray-800">{s.title}</span>
-                </div>
-                <p className="text-[11px] text-gray-500 mt-1.5 leading-snug">{s.desc}</p>
+      {/* Main Upload Card */}
+      <div className="demo-card p-8 sm:p-10 space-y-8">
+        {/* Dropzone */}
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-[24px] p-10 text-center cursor-pointer transition-all ${
+            isDragActive
+              ? 'border-black bg-neutral-100/80 scale-[0.99]'
+              : file
+              ? 'border-emerald-500 bg-emerald-50/20'
+              : 'border-[#d9d9d9] hover:border-black bg-[#fafafa]'
+          }`}
+        >
+          <input {...getInputProps()} />
+
+          {file ? (
+            <div className="space-y-3">
+              <div className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center mx-auto shadow-sm">
+                <FileText className="w-7 h-7" />
               </div>
-            );
-          })}
+              <div>
+                <p className="font-heading font-bold text-base text-black">{file.name}</p>
+                <p className="text-xs font-mono text-neutral-500">
+                  {(file.size / (1024 * 1024)).toFixed(2)} MB • {file.type || 'Document'}
+                </p>
+              </div>
+              <p className="text-xs text-emerald-700 font-semibold">
+                ✓ Ready for PaddleOCR inference. Click 'Run OCR Pipeline' below.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="w-14 h-14 rounded-full bg-white border border-[#d9d9d9] flex items-center justify-center mx-auto shadow-2xs">
+                <UploadIcon className="w-6 h-6 text-black" />
+              </div>
+              <div>
+                <p className="font-heading font-semibold text-base text-black">
+                  Drag and drop your bill or click to browse
+                </p>
+                <p className="text-xs text-neutral-500 mt-1">
+                  Supports PDF, PNG, JPG, WEBP, CSV, XLSX (Up to 15MB)
+                </p>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
 
-      {/* Dropzone */}
-      <div
-        {...getRootProps()}
-        className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all ${
-          isDragActive
-            ? 'border-emerald-500 bg-emerald-50/50 scale-[1.01]'
-            : 'border-gray-300 hover:border-emerald-400 bg-white'
-        }`}
-      >
-        <input {...getInputProps()} />
-        <div className="space-y-4 max-w-sm mx-auto">
-          <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
-            <UploadIcon className="w-8 h-8" />
+        {error && (
+          <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <span>{error}</span>
           </div>
-          <div>
-            <p className="text-base font-semibold text-gray-800">
-              {file ? file.name : 'Drag & drop your invoice file here'}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              or click to browse from your device
-            </p>
+        )}
+
+        {/* 4-Step Processing Progress */}
+        {uploading && (
+          <div className="space-y-4 bg-[#f9f9f9] p-6 rounded-[22px] border border-[#d9d9d9]">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 block">
+              Execution Progress
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {steps.map((s, idx) => {
+                const isCurrent = step === idx + 1;
+                const isDone = step > idx + 1;
+                return (
+                  <div
+                    key={idx}
+                    className={`p-3.5 rounded-2xl border text-xs transition ${
+                      isDone
+                        ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                        : isCurrent
+                        ? 'bg-black text-white border-black shadow-sm'
+                        : 'bg-white border-[#d9d9d9] text-neutral-400'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-1.5 font-semibold">
+                      {isDone ? (
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      ) : isCurrent ? (
+                        <Sparkles className="w-3.5 h-3.5 animate-spin" />
+                      ) : null}
+                      <span>{s.title}</span>
+                    </div>
+                    <p className={`text-[10px] mt-1 ${isCurrent ? 'text-neutral-300' : 'text-neutral-500'}`}>
+                      {s.desc}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-          <div className="flex justify-center flex-wrap gap-2 text-[11px] text-gray-500 pt-2">
-            <span className="px-2 py-0.5 rounded bg-gray-100 font-mono">PDF</span>
-            <span className="px-2 py-0.5 rounded bg-gray-100 font-mono">JPG / PNG</span>
-            <span className="px-2 py-0.5 rounded bg-gray-100 font-mono">XLSX / CSV</span>
-            <span className="px-2 py-0.5 rounded bg-gray-100 font-mono">ZIP (Batch)</span>
-            <span className="px-2 py-0.5 rounded bg-gray-100">Max 15 MB</span>
-          </div>
+        )}
+
+        {/* Trigger Button */}
+        <div className="flex justify-end space-x-3">
+          {file && (
+            <button
+              onClick={() => { setFile(null); setError(''); }}
+              className="demo-btn-white px-5 py-2.5 text-xs font-semibold"
+            >
+              Clear
+            </button>
+          )}
+
+          <button
+            onClick={handleProcess}
+            disabled={!file || uploading}
+            className="demo-btn-black px-7 py-3 text-xs font-semibold inline-flex items-center space-x-2 disabled:opacity-50"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>{uploading ? 'Processing with PaddleOCR...' : 'Run OCR Pipeline'}</span>
+          </button>
         </div>
-      </div>
-
-      {error && (
-        <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-xs">
-          {error}
-        </div>
-      )}
-
-      {/* Buttons */}
-      <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-2">
-        <button
-          onClick={handleProcess}
-          disabled={!file || uploading}
-          className="w-full sm:w-auto px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm transition shadow-md disabled:opacity-50 flex items-center justify-center space-x-2"
-        >
-          <span>{uploading ? 'Processing Invoice...' : 'Start Extraction & Validation'}</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
-
-        <button
-          onClick={handleSample}
-          disabled={uploading}
-          className="w-full sm:w-auto px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-xl text-sm transition border border-gray-300 flex items-center justify-center space-x-2"
-        >
-          <Sparkles className="w-4 h-4 text-emerald-600" />
-          <span>Try with Demo Sample Invoices</span>
-        </button>
-      </div>
-
-      {/* Privacy Guarantee */}
-      <div className="text-center text-xs text-gray-400 flex items-center justify-center space-x-1 pt-4">
-        <ShieldCheck className="w-4 h-4 text-emerald-600" />
-        <span>Strict Privacy: Documents processed on local engine. Never uploaded to public servers.</span>
       </div>
     </div>
   );

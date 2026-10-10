@@ -8,9 +8,10 @@ import {
   BarChart3, 
   Clock, 
   Sparkles, 
-  RefreshCw,
-  CheckCircle,
-  Database
+  Database,
+  Menu,
+  X,
+  ArrowUpRight
 } from 'lucide-react';
 import { seedDemo, advanceClock, getInvoices } from '../api';
 
@@ -19,6 +20,7 @@ export default function Navbar() {
   const [reviewCount, setReviewCount] = useState(0);
   const [isSeeding, setIsSeeding] = useState(false);
   const [clockMsg, setClockMsg] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const fetchBadge = () => {
     getInvoices()
@@ -50,8 +52,8 @@ export default function Navbar() {
 
   const handleClock = async () => {
     try {
-      const res = await advanceClock(2);
-      setClockMsg('+2 Days simulated');
+      await advanceClock(2);
+      setClockMsg('+2 Days');
       setTimeout(() => setClockMsg(''), 3000);
       fetchBadge();
     } catch (e) {
@@ -60,100 +62,147 @@ export default function Navbar() {
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: FileText },
-    { name: 'Bills', path: '/bills', icon: FileText },
+    { name: 'Overview', path: '/' },
+    { name: 'Bills', path: '/bills' },
     { 
-      name: 'Review Queue', 
+      name: 'Review', 
       path: '/review', 
-      icon: AlertCircle, 
       badge: reviewCount > 0 ? reviewCount : null 
     },
-    { name: 'Upload', path: '/upload', icon: Upload },
-    { name: 'Suppliers', path: '/suppliers', icon: Users },
-    { name: 'Analytics', path: '/analytics', icon: BarChart3 },
-    { name: 'Reminders', path: '/reminders', icon: Clock },
+    { name: 'Suppliers', path: '/suppliers' },
+    { name: 'Analytics', path: '/analytics' },
+    { name: 'Reminders', path: '/reminders' },
   ];
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo & Branding */}
-          <div className="flex items-center space-x-3">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                FS
-              </div>
-              <div>
-                <span className="text-xl font-bold tracking-tight text-gray-900 font-mono">
-                  FinSense
-                </span>
-                <span className="hidden md:inline-block ml-2 text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">
-                  GST Intelligence
-                </span>
-              </div>
-            </Link>
+    <header className="sticky top-3 z-50 w-full max-w-6xl mx-auto px-4 transition-all">
+      <div className="glass-nav rounded-[22px] px-5 sm:px-6 py-3 flex items-center justify-between border border-white/80 shadow-sm">
+        {/* Logo matching Demo website */}
+        <Link to="/" className="flex items-center space-x-2.5 group">
+          <div className="w-8 h-8 rounded-[9px] bg-black text-white flex items-center justify-center transform -rotate-12 group-hover:rotate-0 transition-transform duration-300 shadow-xs">
+            <Sparkles className="w-4 h-4 text-white" />
           </div>
+          <span className="text-xl sm:text-2xl font-bold font-heading tracking-tight text-black">
+            FinSense
+          </span>
+          <span className="hidden lg:inline-block ml-1 text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded-full bg-white border border-[#d9d9d9] text-neutral-600">
+            GST Intelligence
+          </span>
+        </Link>
 
-          {/* Navigation Links */}
-          <nav className="hidden md:flex space-x-1 lg:space-x-2">
-            {navItems.map((item) => {
-              const active = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1.5 ${
-                    active
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
+        {/* Center Navigation Links */}
+        <nav className="hidden md:flex items-center space-x-1 lg:space-x-1.5">
+          {navItems.map((item) => {
+            const active = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 flex items-center space-x-1.5 ${
+                  active
+                    ? 'bg-black text-white shadow-xs'
+                    : 'text-neutral-600 hover:text-black hover:bg-black/5'
+                }`}
+              >
+                <span>{item.name}</span>
+                {item.badge && (
+                  <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-white animate-pulse">
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Right Tools & Call to Action (Demo website pill styling) */}
+        <div className="flex items-center space-x-2">
+          {clockMsg && (
+            <span className="text-[11px] font-mono px-2 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 animate-bounce">
+              {clockMsg}
+            </span>
+          )}
+
+          <button
+            onClick={handleClock}
+            title="Advance Demo Clock (+2 Days)"
+            className="hidden sm:inline-flex items-center space-x-1 text-xs font-semibold px-3 py-1.5 rounded-full bg-white hover:bg-neutral-100 border border-[#d9d9d9] text-neutral-800 transition shadow-2xs"
+          >
+            <Clock className="w-3.5 h-3.5 text-neutral-500" />
+            <span>+2d Clock</span>
+          </button>
+
+          <button
+            onClick={handleSeed}
+            disabled={isSeeding}
+            title="Seed 4 Test Bills"
+            className="hidden sm:inline-flex items-center space-x-1 text-xs font-semibold px-3 py-1.5 rounded-full bg-white hover:bg-neutral-100 border border-[#d9d9d9] text-neutral-800 transition shadow-2xs disabled:opacity-50"
+          >
+            <Database className="w-3.5 h-3.5 text-neutral-500" />
+            <span>{isSeeding ? '...' : 'Seed'}</span>
+          </button>
+
+          <Link
+            to="/upload"
+            className="demo-btn-black inline-flex items-center space-x-1 px-4 py-2 text-xs font-semibold shadow-xs"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            <span>Upload Bill</span>
+          </Link>
+
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-1.5 rounded-full hover:bg-black/5 text-neutral-700"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden mt-2 glass-nav rounded-[20px] p-4 border border-white/80 shadow-lg space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-3 py-2 rounded-xl text-xs font-semibold transition ${
+                  location.pathname === item.path
+                    ? 'bg-black text-white'
+                    : 'bg-white/80 text-neutral-700 hover:bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between">
                   <span>{item.name}</span>
                   {item.badge && (
-                    <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-xs font-bold bg-amber-500 text-white animate-pulse">
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-white">
                       {item.badge}
                     </span>
                   )}
-                </Link>
-              );
-            })}
-          </nav>
+                </div>
+              </Link>
+            ))}
+          </div>
 
-          {/* Right Action Tools */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
-            <span className="hidden xl:inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-              Local CPU • Demo Mode
-            </span>
-
-            {clockMsg && (
-              <span className="text-xs px-2 py-1 bg-amber-100 text-amber-800 rounded font-mono animate-bounce">
-                {clockMsg}
-              </span>
-            )}
-
+          <div className="pt-2 border-t border-neutral-200 flex justify-between items-center">
             <button
               onClick={handleClock}
-              title="Simulate +2 Days (Demo Clock)"
-              className="text-xs px-2.5 py-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition flex items-center space-x-1 border border-gray-300"
+              className="text-xs px-3 py-1.5 rounded-full bg-white border border-[#d9d9d9] text-neutral-700"
             >
-              <Clock className="w-3.5 h-3.5 text-gray-500" />
-              <span>+2 Days</span>
+              +2 Days Demo
             </button>
-
             <button
               onClick={handleSeed}
-              disabled={isSeeding}
-              className="text-xs px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition flex items-center space-x-1 shadow-sm disabled:opacity-50"
+              className="text-xs px-3 py-1.5 rounded-full bg-white border border-[#d9d9d9] text-neutral-700"
             >
-              <Database className="w-3.5 h-3.5" />
-              <span>{isSeeding ? 'Seeding...' : 'Seed Samples'}</span>
+              Seed Sample Bills
             </button>
           </div>
         </div>
-      </div>
+      )}
     </header>
   );
 }

@@ -111,7 +111,7 @@ def validate_file_size(file_size: int, max_size_mb: int = 15) -> Tuple[bool, Opt
     return True, None
 
 
-async def validate_upload_file(
+def validate_upload_file(
     file_data: bytes, 
     filename: str,
     max_size_mb: int = 15
