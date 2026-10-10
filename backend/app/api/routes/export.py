@@ -89,7 +89,7 @@ async def export_documents_csv(
                 for key, value in doc.__dict__.items():
                     if not key.startswith('_'):
                         doc_dict[key] = value
-                doc_dicts.append(doc_dict)
+                document_dicts.append(doc_dict)
             else:
                 document_dicts.append(doc)
 
@@ -122,7 +122,7 @@ async def export_dashboard_json(
 
         # Collect dashboard data
         dashboard_data = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "summary": {
                 "total_documents": doc_repo.count(),
                 "total_invoices": invoice_repo.count(),
@@ -168,6 +168,6 @@ async def export_health_check():
     """Export simple health check."""
     return {
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "service": "FinSense Export API"
     }

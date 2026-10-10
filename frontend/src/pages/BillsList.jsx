@@ -8,9 +8,11 @@ import {
   Clock, 
   Filter,
   Check,
-  RotateCcw
+  RotateCcw,
+  Download,
+  Upload
 } from 'lucide-react';
-import { getInvoices, markPaid, markUnpaid } from '../api';
+import { getInvoices, markPaid, markUnpaid, exportInvoicesCSV, exportDashboardJSON } from '../api';
 
 export default function BillsList() {
   const [invoices, setInvoices] = useState([]);
@@ -75,12 +77,35 @@ export default function BillsList() {
             View, inspect, validate, and manage payments across all processed bills.
           </p>
         </div>
-        <Link
-          to="/upload"
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition shadow-sm"
-        >
-          + Upload Bill
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          {invoices.length > 0 && (
+            <>
+              <button
+                onClick={exportInvoicesCSV}
+                className="px-3.5 py-2 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-medium rounded-lg text-xs sm:text-sm transition shadow-xs flex items-center space-x-1.5"
+                title="Export invoices to CSV"
+              >
+                <Download className="w-4 h-4 text-gray-500" />
+                <span>Export CSV</span>
+              </button>
+              <button
+                onClick={exportDashboardJSON}
+                className="px-3.5 py-2 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-medium rounded-lg text-xs sm:text-sm transition shadow-xs flex items-center space-x-1.5"
+                title="Export canonical JSON"
+              >
+                <Download className="w-4 h-4 text-gray-500" />
+                <span>Export JSON</span>
+              </button>
+            </>
+          )}
+          <Link
+            to="/upload"
+            className="px-4 py-2 bg-black hover:bg-neutral-800 text-white font-medium rounded-lg text-xs sm:text-sm transition shadow-sm flex items-center space-x-1.5"
+          >
+            <Upload className="w-4 h-4" />
+            <span>Upload Bill</span>
+          </Link>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}

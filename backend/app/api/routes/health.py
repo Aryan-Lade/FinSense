@@ -15,6 +15,9 @@ async def health_check():
     
     Returns information about the application status and configuration.
     """
+    from app.processors.ocr_processor import get_paddle_engine
+    engine, engine_type = get_paddle_engine()
+
     return {
         "status": "healthy",
         "app": settings.APP_NAME,
@@ -23,6 +26,12 @@ async def health_check():
         "demo_mode": getattr(settings, 'DEMO_MODE', True),
         "database_url": settings.DATABASE_URL,
         "storage_backend": settings.STORAGE_BACKEND,
+        "ocr": {
+            "model": "PaddleOCR (PP-OCRv4)",
+            "model_url": "https://github.com/PaddlePaddle/PaddleOCR.git",
+            "runtime": engine_type,
+            "status": "active" if engine is not None else "unavailable"
+        }
     }
 
 

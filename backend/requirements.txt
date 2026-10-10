@@ -24,5 +24,8 @@ google-auth-oauthlib>=1.1.0
 google-api-python-client>=2.100.0
 reportlab>=4.0.0
 structlog>=24.1.0
+# Open-Source OCR: PaddlePaddle / PaddleOCR (https://github.com/PaddlePaddle/PaddleOCR.git)
+paddleocr>=2.7.0
+paddlepaddle>=2.5.0
 rapidocr-onnxruntime>=1.2.3
 pytesseract>=0.3.13

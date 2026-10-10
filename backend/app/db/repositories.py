@@ -45,6 +45,22 @@ class DocumentRepository:
             .limit(limit)\
             .all()
     
+    def list(self, skip: int = 0, limit: int = 100) -> List[Document]:
+        """List documents."""
+        return self.db.query(Document)\
+            .order_by(desc(Document.created_at))\
+            .offset(skip)\
+            .limit(limit)\
+            .all()
+
+    def get_multi(self, skip: int = 0, limit: int = 100) -> List[Document]:
+        """Get multiple documents with pagination."""
+        return self.list(skip=skip, limit=limit)
+
+    def count(self) -> int:
+        """Count total documents."""
+        return self.db.query(func.count(Document.id)).scalar() or 0
+
     def update_status(self, document_id: str, status: str, error_message: Optional[str] = None) -> Optional[Document]:
         """Update document processing status."""
         document = self.get_by_id(document_id)
@@ -115,6 +131,10 @@ class InvoiceRepository:
                 )
         
         return query.order_by(desc(Invoice.created_at)).offset(skip).limit(limit).all()
+
+    def get_multi(self, skip: int = 0, limit: int = 100, filters: Optional[Dict[str, Any]] = None) -> List[Invoice]:
+        """Get multiple invoices with pagination (alias for list)."""
+        return self.list(skip=skip, limit=limit, filters=filters)
     
     def count(self, filters: Optional[Dict[str, Any]] = None) -> int:
         """Count invoices with optional filtering."""
@@ -213,6 +233,14 @@ class SupplierRepository:
             .offset(skip)\
             .limit(limit)\
             .all()
+
+    def get_multi(self, skip: int = 0, limit: int = 100) -> List[Supplier]:
+        """Get multiple suppliers with pagination."""
+        return self.list(skip=skip, limit=limit)
+
+    def count(self) -> int:
+        """Count total suppliers."""
+        return self.db.query(func.count(Supplier.id)).scalar() or 0
     
     def update(self, supplier_id: str, update_data: Dict[str, Any]) -> Optional[Supplier]:
         """Update a supplier."""
@@ -241,6 +269,22 @@ class ReminderRepository:
     def get_by_id(self, reminder_id: str) -> Optional[Reminder]:
         """Get reminder by ID."""
         return self.db.query(Reminder).filter(Reminder.id == reminder_id).first()
+
+    def list(self, skip: int = 0, limit: int = 100) -> List[Reminder]:
+        """List reminders."""
+        return self.db.query(Reminder)\
+            .order_by(desc(Reminder.created_at))\
+            .offset(skip)\
+            .limit(limit)\
+            .all()
+
+    def get_multi(self, skip: int = 0, limit: int = 100) -> List[Reminder]:
+        """Get multiple reminders with pagination."""
+        return self.list(skip=skip, limit=limit)
+
+    def count(self) -> int:
+        """Count total reminders."""
+        return self.db.query(func.count(Reminder.id)).scalar() or 0
     
     def get_by_invoice_id(self, invoice_id: str) -> List[Reminder]:
         """Get all reminders for an invoice."""

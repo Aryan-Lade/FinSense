@@ -1,108 +1,236 @@
 """
 Authentication service for managing user authentication and authorization.
+Supports both Supabase Auth API and local database-backed authentication.
 """
 from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
-from app.core.config import settings
-from app.core.security import create_access_token, verify_password, get_password_hash
-from app.core.errors import ProcessingException
-from app.db.session import get_db
+import httpx
 from sqlalchemy.orm import Session
 import uuid
 
+from app.core.config import settings
+from app.core.security import (
+    create_access_token, 
+    decode_access_token, 
+    get_password_hash, 
+    verify_password
+)
+from app.core.errors import ProcessingException
+from app.models.users import User
+
 
 class AuthService:
-    """Service for handling authentication and authorization."""
+    """Service for handling authentication with Supabase and local DB."""
 
     def __init__(self, db: Session):
         self.db = db
 
-    def authenticate_user(self, username: str, password: str) -> Optional[Dict[str, Any]]:
-        """Authenticate a user with username and password."""
-        try:
-            # In a real implementation, we would query the user from the database
-            # For now, we'll use a simplified approach with a demo user
+    async def register_user(self, email: str, password: str, full_name: Optional[str] = None) -> Dict[str, Any]:
+        """Register a new user (with Supabase Auth if configured, and local DB)."""
+        email = email.strip().lower()
+        
+        # Check if user already exists in local DB
+        existing = self.db.query(User).filter(User.email == email).first()
+        if existing:
+            raise ProcessingException(f"User with email '{email}' already exists", "user_exists")
 
-            # Demo user credentials (in production, these would come from DB)
-            demo_username = "demo@finsense.com"
-            demo_password_hash = get_password_hash("demopassword123")  # Hash of "demopassword123"
+        supabase_user_id = None
+        supabase_token = None
 
-            if username == demo_username and verify_password(password, demo_password_hash):
-                # Create access token
-                access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-                access_token = create_access_token(
-                    data={"sub": username}, expires_delta=access_token_expires
-                )
+        # 1. If Supabase is configured, register via Supabase Auth API
+        if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_ROLE_KEY:
+            try:
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    resp = await client.post(
+                        f"{settings.SUPABASE_URL.rstrip('/')}/auth/v1/admin/users",
+                        headers={
+                            "apikey": settings.SUPABASE_SERVICE_ROLE_KEY,
+                            "Authorization": f"Bearer {settings.SUPABASE_SERVICE_ROLE_KEY}",
+                            "Content-Type": "application/json"
+                        },
+                        json={
+                            "email": email,
+                            "password": password,
+                            "email_confirm": True,
+                            "user_metadata": {"full_name": full_name or ""}
+                        }
+                    )
+                    if resp.status_code in (200, 201):
+                        supa_data = resp.json()
+                        supabase_user_id = supa_data.get("id")
+            except Exception:
+                pass
+        elif settings.SUPABASE_URL and settings.SUPABASE_ANON_KEY:
+            try:
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    resp = await client.post(
+                        f"{settings.SUPABASE_URL.rstrip('/')}/auth/v1/signup",
+                        headers={
+                            "apikey": settings.SUPABASE_ANON_KEY,
+                            "Content-Type": "application/json"
+                        },
+                        json={
+                            "email": email,
+                            "password": password,
+                            "data": {"full_name": full_name or ""}
+                        }
+                    )
+                    if resp.status_code in (200, 201):
+                        supa_data = resp.json()
+                        supabase_user_id = supa_data.get("id") or (supa_data.get("user", {}).get("id"))
+                        supabase_token = supa_data.get("access_token")
+            except Exception:
+                pass
 
-                return {
-                    "access_token": access_token,
-                    "token_type": "bearer",
-                    "user": {
-                        "id": "demo-user-id",
-                        "username": username,
-                        "email": username,
-                        "full_name": "Demo User",
-                        "is_active": True,
-                        "roles": ["user"]
-                    },
-                    "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-                }
+        # 2. Persist in local database
+        user = User(
+            id=str(uuid.uuid4()),
+            email=email,
+            full_name=full_name or email.split("@")[0].title(),
+            hashed_password=get_password_hash(password),
+            supabase_user_id=supabase_user_id,
+            role="user",
+            is_active=True
+        )
+        self.db.add(user)
+        self.db.commit()
+        self.db.refresh(user)
 
-            return None
+        # 3. Create or return access token
+        access_token = supabase_token or create_access_token(
+            data={"sub": user.id, "email": user.email, "role": user.role, "name": user.full_name}
+        )
 
-        except Exception as e:
-            raise ProcessingException(f"Authentication failed: {str(e)}", "authentication_error")
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "full_name": user.full_name,
+                "role": user.role,
+                "supabase_user_id": user.supabase_user_id
+            }
+        }
 
-    def create_access_token(self, user_data: Dict[str, Any]) -> str:
-        """Create an access token for a user."""
-        try:
-            access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-            access_token = create_access_token(
-                data={"sub": user_data.get("username", "unknown")},
-                expires_delta=access_token_expires
+    async def authenticate_user(self, email: str, password: str) -> Optional[Dict[str, Any]]:
+        """Authenticate user with email and password via Supabase Auth or local DB."""
+        email = email.strip().lower()
+        supabase_token = None
+        supabase_user_id = None
+
+        # 1. Try Supabase Auth if configured
+        if settings.SUPABASE_URL and settings.SUPABASE_ANON_KEY:
+            try:
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    resp = await client.post(
+                        f"{settings.SUPABASE_URL.rstrip('/')}/auth/v1/token?grant_type=password",
+                        headers={
+                            "apikey": settings.SUPABASE_ANON_KEY,
+                            "Content-Type": "application/json"
+                        },
+                        json={"email": email, "password": password}
+                    )
+                    if resp.status_code == 200:
+                        supa_data = resp.json()
+                        supabase_token = supa_data.get("access_token")
+                        supabase_user_id = supa_data.get("user", {}).get("id")
+            except Exception:
+                pass
+
+        # 2. Check local database
+        user = self.db.query(User).filter(User.email == email).first()
+
+        # If user authenticated with Supabase but not in local DB, auto-provision
+        if supabase_token and not user:
+            user = User(
+                id=str(uuid.uuid4()),
+                email=email,
+                full_name=email.split("@")[0].title(),
+                hashed_password=get_password_hash(password),
+                supabase_user_id=supabase_user_id,
+                role="user",
+                is_active=True
             )
-            return access_token
-        except Exception as e:
-            raise ProcessingException(f"Failed to create access token: {str(e)}", "token_creation_error")
+            self.db.add(user)
+            self.db.commit()
+            self.db.refresh(user)
 
-    def validate_token(self, token: str) -> Optional[Dict[str, Any]]:
-        """Validate an access token and return user data."""
-        try:
-            # In a real implementation, we would decode and validate the JWT
-            # For now, we'll return a simplified response
-            # This would typically involve checking the token signature, expiration, etc.
-
-            # For demo purposes, if token starts with "demo", we'll accept it
-            if token.startswith("demo"):
-                return {
-                    "user_id": "demo-user-id",
-                    "username": "demo@finsense.com",
-                    "email": "demo@finsense.com",
-                    "exp": datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-                }
-
-            return None
-        except Exception:
+        if not user:
             return None
 
+        # If Supabase didn't authenticate, check local password hash
+        if not supabase_token:
+            if not user.hashed_password or not verify_password(password, user.hashed_password):
+                return None
 
-def authenticate_user(username: str, password: str) -> Optional[Dict[str, Any]]:
-    """Convenience function to authenticate a user."""
-    db_gen = get_db()
-    db = next(db_gen)
-    try:
-        service = AuthService(db)
-        return service.authenticate_user(username, password)
-    finally:
-        db.close()
+        access_token = supabase_token or create_access_token(
+            data={"sub": user.id, "email": user.email, "role": user.role, "name": user.full_name}
+        )
 
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "full_name": user.full_name,
+                "role": user.role,
+                "supabase_user_id": user.supabase_user_id
+            }
+        }
 
-def create_access_token_for_user(user_data: Dict[str, Any]) -> str:
-    """Convenience function to create an access token."""
-    db_gen = get_db()
-    db = next(db_gen)
-    try:
-        service = AuthService(db)
-        return service.create_access_token(user_data)
-    finally:
-        db.close()
+    async def get_user_from_token(self, token: str) -> Optional[User]:
+        """Validate token and retrieve user from database."""
+        if not token:
+            return None
+
+        # 1. Try local JWT decoding
+        payload = decode_access_token(token)
+        if payload:
+            email = payload.get("email")
+            user_id = payload.get("sub")
+            if user_id:
+                user = self.db.query(User).filter(User.id == user_id).first()
+                if user:
+                    return user
+            if email:
+                user = self.db.query(User).filter(User.email == email).first()
+                if user:
+                    return user
+
+        # 2. Try validating via Supabase Auth API if configured
+        if settings.SUPABASE_URL and settings.SUPABASE_ANON_KEY:
+            try:
+                async with httpx.AsyncClient(timeout=8.0) as client:
+                    resp = await client.get(
+                        f"{settings.SUPABASE_URL.rstrip('/')}/auth/v1/user",
+                        headers={
+                            "apikey": settings.SUPABASE_ANON_KEY,
+                            "Authorization": f"Bearer {token}"
+                        }
+                    )
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        supa_id = data.get("id")
+                        supa_email = data.get("email")
+                        user = self.db.query(User).filter(
+                            (User.supabase_user_id == supa_id) | (User.email == supa_email)
+                        ).first()
+                        if not user and supa_email:
+                            user = User(
+                                id=str(uuid.uuid4()),
+                                email=supa_email,
+                                full_name=supa_email.split("@")[0].title(),
+                                supabase_user_id=supa_id,
+                                role="user",
+                                is_active=True
+                            )
+                            self.db.add(user)
+                            self.db.commit()
+                            self.db.refresh(user)
+                        return user
+            except Exception:
+                pass
+
+        return None

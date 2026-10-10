@@ -82,6 +82,86 @@ def test_invoice_data_extractor():
     assert canonical["seller"]["gstin"] == "27AAPFU0939F1ZV"
 
 
+def test_real_world_gst_invoice_multiline_extraction():
+    """Verify extraction of real-world GST invoice with multiline buyer, tax rates, and HSN items."""
+    sample = """
+    SHREE GANESH ENTERPRISES
+    Plot 12, Industrial Estate, MIDC Nagpur - 440028
+    GSTIN / UIN: 27AABCU9603R1ZM
+    State Name: Maharashtra, Code: 27
+    
+    TAX INVOICE
+    Invoice No: SGE/2026/0491
+    Dated: 14-Oct-2026
+    
+    Buyer / Bill To:
+    TATA MOTORS LIMITED
+    Pimpri, Pune - 411018
+    GSTIN: 27AAACT2727Q1ZW
+    
+    Description of Goods      HSN     Qty   Rate     Amount
+    1. Precision Bearing 6204 8482    10    1500.00  15000.00
+    
+    Taxable Amount: 15,000.00
+    CGST @ 9%: 1,350.00
+    SGST @ 9%: 1,350.00
+    Total Amount Payable: Rs. 17,700.00
+    """
+    res = InvoiceDataExtractor.extract(sample)
+    fields = res["extracted_fields"]
+    canonical = res["canonical"]
+
+    assert fields["bill_number"] == "SGE/2026/0491"
+    assert fields["supplier_name"] == "SHREE GANESH ENTERPRISES"
+    assert fields["seller_gstin"] == "27AABCU9603R1ZM"
+    assert "TATA MOTORS LIMITED" in fields["buyer_name"]
+    assert fields["buyer_gstin"] == "27AAACT2727Q1ZW"
+    assert fields["subtotal"] == 15000.0
+    assert fields["tax_amount"] == 2700.0
+    assert fields["total_amount"] == 17700.0
+    assert str(fields["invoice_date"]) == "2026-10-14"
+    assert len(canonical["line_items"]) >= 1
+
+
+def test_cash_memo_multiline_dates_and_fractional_tax():
+    """Verify retail cash memo with newline-separated labels and 2.5% tax rates."""
+    sample = """
+    RELIANCE RETAIL LIMITED
+    3rd Floor, Court House, Dhobi Talao, Mumbai 400002
+    GSTIN: 27AAACR4533K1Z2
+    
+    CASH MEMO / BILL
+    Invoice Number :
+    REL-2026-98124
+    Invoice Date:
+    10/10/2026
+    
+    Customer Name:
+    Rajesh Kumar Sharma
+    
+    Item                Qty   Rate      Total
+    Basmati Rice 5kg    1     450.00    450.00
+    Sunflower Oil 2L    1     280.00    280.00
+    
+    Sub Total: 730.00
+    CGST (2.5%): 18.25
+    SGST (2.5%): 18.25
+    Grand Total: ₹ 766.50
+    """
+    res = InvoiceDataExtractor.extract(sample)
+    fields = res["extracted_fields"]
+
+    assert fields["bill_number"] == "REL-2026-98124"
+    assert fields["supplier_name"] == "RELIANCE RETAIL LIMITED"
+    assert fields["seller_gstin"] == "27AAACR4533K1Z2"
+    assert "Rajesh Kumar Sharma" in fields["buyer_name"]
+    assert str(fields["invoice_date"]) == "2026-10-10"
+    assert fields["subtotal"] == 730.0
+    assert fields["tax_amount"] == 36.5
+    assert fields["total_amount"] == 766.5
+    assert len(res["canonical"]["line_items"]) >= 2
+
+
 def test_rapid_ocr_image_execution():
     """Verify RapidOCR pipeline executes on image bytes."""
     # Generate clean image with text
@@ -97,3 +177,4 @@ def test_rapid_ocr_image_execution():
     assert result["success"] is True
     assert "INVOICE" in result["text"].upper() or result["character_count"] > 0
     assert "language_info" in result
+

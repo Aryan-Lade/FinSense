@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, TrendingUp, PieChart, ShieldCheck, DollarSign } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BarChart3, TrendingUp, PieChart, ShieldCheck, DollarSign, Upload } from 'lucide-react';
 import { getInvoices } from '../api';
 
 export default function Analytics() {
@@ -34,12 +35,40 @@ export default function Analytics() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Financial & GST Analytics</h1>
-        <p className="text-sm text-gray-500">
-          Deterministic financial reporting separated by validated records and unreviewed estimates.
-        </p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Financial & GST Analytics</h1>
+          <p className="text-sm text-gray-500">
+            Deterministic financial reporting separated by validated records and unreviewed estimates.
+          </p>
+        </div>
+        <Link
+          to="/upload"
+          className="px-4 py-2 bg-black hover:bg-neutral-800 text-white font-medium rounded-lg text-xs sm:text-sm transition shadow-sm flex items-center space-x-1.5"
+        >
+          <Upload className="w-4 h-4" />
+          <span>Upload Bill</span>
+        </Link>
       </div>
+
+      {loading ? (
+        <div className="p-12 text-center text-gray-500">Loading financial analytics...</div>
+      ) : invoices.length === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center space-y-3 shadow-sm">
+          <BarChart3 className="w-12 h-12 text-gray-400 mx-auto" />
+          <h3 className="text-base font-semibold text-gray-900">No Invoices to Analyze Yet</h3>
+          <p className="text-sm text-gray-500 max-w-sm mx-auto">
+            Upload your bills and receipts to generate automatic GST tax credit metrics, spend volume, and payables ratios.
+          </p>
+          <Link
+            to="/upload"
+            className="inline-flex items-center space-x-1.5 px-4 py-2 bg-black text-white rounded-lg text-xs font-semibold"
+          >
+            <span>Upload First Bill</span>
+          </Link>
+        </div>
+      ) : (
+        <>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-2">
@@ -94,6 +123,8 @@ export default function Analytics() {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

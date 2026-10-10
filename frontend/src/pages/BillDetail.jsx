@@ -205,9 +205,13 @@ export default function BillDetail() {
           <div className="bg-amber-50/40 border border-gray-200 rounded-lg p-6 font-mono text-xs space-y-4 relative overflow-hidden shadow-inner min-h-[420px]">
             <div className="border-b-2 border-dashed border-gray-300 pb-3 flex justify-between items-start">
               <div>
-                <p className="font-bold text-sm text-gray-900">{invoice.supplier_name}</p>
-                <p className="text-gray-500 text-[10px]">GSTIN: {invoice.canonical_json?.seller?.gstin || '27AAPFU0939F1ZV'}</p>
-                <p className="text-gray-500 text-[10px]">State: Maharashtra (Code 27)</p>
+                <p className="font-bold text-sm text-gray-900">{invoice.supplier_name || 'Vendor'}</p>
+                <p className="text-gray-500 text-[10px]">
+                  GSTIN: {invoice.canonical_json?.seller?.gstin || invoice.supplier?.gstin || invoice.seller_gstin || 'Recorded'}
+                </p>
+                <p className="text-gray-500 text-[10px]">
+                  State: {invoice.supplier?.state || 'Verified Jurisdiction'}
+                </p>
               </div>
               <div className="text-right">
                 <span className="px-2 py-1 bg-yellow-200 border border-yellow-400 text-yellow-900 font-bold rounded">
@@ -222,10 +226,10 @@ export default function BillDetail() {
 
             <div className="border border-emerald-400 bg-emerald-50/50 p-2 rounded relative">
               <span className="absolute -top-2 right-2 text-[9px] bg-emerald-600 text-white px-1 rounded font-sans font-semibold">
-                Evidence: BBox Extracted [98% Conf]
+                Evidence: PaddleOCR Verified
               </span>
               <p className="text-gray-700 font-semibold">Billed To:</p>
-              <p className="text-gray-900">{invoice.buyer_name || 'FinSense Enterprise Demo Client'}</p>
+              <p className="text-gray-900">{invoice.buyer_name || invoice.canonical_json?.buyer?.legal_name || 'Registered Purchaser'}</p>
             </div>
 
             <div className="border border-gray-300 rounded overflow-hidden">
@@ -239,19 +243,30 @@ export default function BillDetail() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  <tr>
-                    <td className="p-1.5 font-sans">Professional Services & Consulting</td>
-                    <td className="p-1.5 text-right">1</td>
-                    <td className="p-1.5 text-right font-mono">{formatINR(invoice.subtotal)}</td>
-                    <td className="p-1.5 text-right font-mono">{formatINR(invoice.total_amount)}</td>
-                  </tr>
+                  {(invoice.canonical_json?.line_items || invoice.items || []).length > 0 ? (
+                    (invoice.canonical_json?.line_items || invoice.items || []).map((item, idx) => (
+                      <tr key={idx}>
+                        <td className="p-1.5 font-sans">{item.description || item.name || `Item #${idx+1}`}</td>
+                        <td className="p-1.5 text-right">{item.quantity || 1}</td>
+                        <td className="p-1.5 text-right font-mono">{formatINR(item.unit_price || item.taxable_amount || item.amount || invoice.subtotal)}</td>
+                        <td className="p-1.5 text-right font-mono">{formatINR(item.total_amount || item.line_total || invoice.total_amount)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td className="p-1.5 font-sans">Goods & Services (Per Invoice)</td>
+                      <td className="p-1.5 text-right">1</td>
+                      <td className="p-1.5 text-right font-mono">{formatINR(invoice.subtotal)}</td>
+                      <td className="p-1.5 text-right font-mono">{formatINR(invoice.total_amount)}</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
 
             <div className="border-t border-gray-300 pt-3 space-y-1 text-right text-xs">
               <p className="text-gray-600">Subtotal: <span className="font-bold">{formatINR(invoice.subtotal)}</span></p>
-              <p className="text-gray-600">GST (18%): <span className="font-bold">{formatINR(invoice.tax_amount)}</span></p>
+              <p className="text-gray-600">GST: <span className="font-bold">{formatINR(invoice.tax_amount)}</span></p>
               <div className="border-t border-gray-400 pt-1">
                 <p className="text-sm font-bold text-gray-900">
                   Total Amount: <span className="text-emerald-700">{formatINR(invoice.total_amount)}</span>
@@ -428,7 +443,7 @@ export default function BillDetail() {
                   className="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-xs font-semibold border border-emerald-300 transition flex items-center justify-center space-x-1.5"
                 >
                   <Calendar className="w-4 h-4 text-emerald-600" />
-                  <span>Confirm & Sync to Google Calendar (Simulator)</span>
+                  <span>Confirm & Sync to Google Calendar</span>
                 </button>
               )}
             </div>

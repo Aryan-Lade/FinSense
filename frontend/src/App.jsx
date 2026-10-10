@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import BillsList from './pages/BillsList';
@@ -13,9 +14,10 @@ import './App.css';
 
 export default function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50/60 text-gray-900 flex flex-col font-sans">
-        <Navbar />
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50/60 text-gray-900 flex flex-col font-sans">
+          <Navbar />
 
         <main className="flex-1">
           <Routes>
@@ -40,5 +42,6 @@ export default function App() {
         </footer>
       </div>
     </Router>
-  );
+  </AuthProvider>
+);
 }

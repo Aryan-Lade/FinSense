@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Calendar, CheckCircle, AlertCircle, Play, FastForward } from 'lucide-react';
-import { getReminders, advanceClock } from '../api';
+import { Clock, Calendar, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import { getReminders } from '../api';
 
 export default function Reminders() {
   const [reminders, setReminders] = useState([]);
-  const [simulatedDays, setSimulatedDays] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const loadData = () => {
@@ -25,12 +24,6 @@ export default function Reminders() {
     loadData();
   }, []);
 
-  const handleAdvance = async (days) => {
-    await advanceClock(days);
-    setSimulatedDays((prev) => prev + days);
-    loadData();
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -41,29 +34,22 @@ export default function Reminders() {
           </p>
         </div>
 
-        {/* Demo Clock Simulator */}
-        <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-center space-x-3">
-          <div>
-            <span className="text-[11px] font-bold uppercase text-amber-800 tracking-wider block">
-              Demo Clock (Simulated)
+        {/* Automation Policy Badge & Refresh */}
+        <div className="flex items-center space-x-3">
+          <div className="bg-emerald-50 border border-emerald-200 px-3.5 py-2 rounded-xl text-left">
+            <span className="text-[10px] font-bold uppercase text-emerald-800 tracking-wider block">
+              Automated Policy
             </span>
-            <span className="text-xs font-mono font-semibold text-gray-800">
-              +{simulatedDays} Days Advanced
+            <span className="text-xs font-medium text-emerald-900">
+              10 Days Post-Receipt • Repeat every 2d
             </span>
           </div>
           <button
-            onClick={() => handleAdvance(2)}
-            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-xs"
+            onClick={loadData}
+            className="px-3.5 py-2 bg-white hover:bg-neutral-50 border border-neutral-300 text-neutral-700 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 shadow-2xs"
+            title="Refresh reminders"
           >
-            <FastForward className="w-3.5 h-3.5" />
-            <span>+2 Days</span>
-          </button>
-          <button
-            onClick={() => handleAdvance(10)}
-            className="px-3 py-1.5 bg-gray-900 hover:bg-black text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-xs"
-          >
-            <FastForward className="w-3.5 h-3.5" />
-            <span>+10 Days</span>
+            <span>Refresh</span>
           </button>
         </div>
       </div>

@@ -17,9 +17,10 @@ import {
   Eye,
   Check,
   XCircle,
-  RefreshCw
+  RefreshCw,
+  Download
 } from 'lucide-react';
-import { getInvoices, seedDemo, markPaid, markUnpaid } from '../api';
+import { getInvoices, markPaid, markUnpaid, exportInvoicesCSV, exportDashboardJSON } from '../api';
 
 export default function Dashboard() {
   const [invoices, setInvoices] = useState([]);
@@ -120,9 +121,29 @@ export default function Dashboard() {
             <FileText className="w-4 h-4 text-neutral-500" />
             <span>Browse Bills ({totalBills})</span>
           </Link>
+          {totalBills > 0 && (
+            <>
+              <button
+                onClick={exportInvoicesCSV}
+                className="demo-btn-white px-5 py-3.5 text-sm font-semibold flex items-center space-x-2"
+                title="Download verified invoices in CSV"
+              >
+                <Download className="w-4 h-4 text-neutral-500" />
+                <span>Export CSV</span>
+              </button>
+              <button
+                onClick={exportDashboardJSON}
+                className="demo-btn-white px-5 py-3.5 text-sm font-semibold flex items-center space-x-2"
+                title="Download full canonical dashboard JSON"
+              >
+                <Download className="w-4 h-4 text-neutral-500" />
+                <span>Export JSON</span>
+              </button>
+            </>
+          )}
         </div>
 
-        {/* Centerpiece Device Mockup with Notch (Bill Scanner Live Preview) */}
+        {/* Centerpiece Device Mockup with Notch (Live PaddleOCR Scanner View) */}
         <div className="pt-10 max-w-xl mx-auto">
           <div className="bg-[#1c1c1c] rounded-[48px] p-4 text-white shadow-2xl border border-neutral-800 relative overflow-hidden">
             {/* Phone Notch */}
@@ -136,53 +157,95 @@ export default function Dashboard() {
               {/* Laser Scanning Beam */}
               <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-400 to-emerald-500/0 animate-scan pointer-events-none shadow-[0_0_12px_rgba(52,211,153,0.8)]"></div>
 
-              <div className="flex justify-between items-start border-b border-neutral-700 pb-3">
-                <div>
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-400 block">
-                    PaddleOCR Live Inference
-                  </span>
-                  <h4 className="font-heading font-semibold text-lg text-white">
-                    TechNova Solutions Pvt Ltd
-                  </h4>
-                  <p className="text-xs text-neutral-400 font-mono">GSTIN: 27AAPFU0939F1ZV</p>
-                </div>
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  99.8% Match
-                </span>
-              </div>
+              {invoices.length > 0 ? (
+                <>
+                  <div className="flex justify-between items-start border-b border-neutral-700 pb-3">
+                    <div>
+                      <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-400 block">
+                        PaddleOCR Active Live Record
+                      </span>
+                      <h4 className="font-heading font-semibold text-lg text-white">
+                        {invoices[0].supplier_name || 'Vendor Invoice'}
+                      </h4>
+                      <p className="text-xs text-neutral-400 font-mono">
+                        GSTIN: {invoices[0].canonical_json?.seller?.gstin || invoices[0].seller_gstin || 'Recorded'}
+                      </p>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+                      invoices[0].validation_status === 'valid'
+                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                        : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                    }`}>
+                      {invoices[0].validation_status === 'valid' ? '✓ Verified' : '! Needs Review'}
+                    </span>
+                  </div>
 
-              {/* Extracted Fields Matrix */}
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="bg-[#1e1e1e] p-3 rounded-2xl border border-neutral-700">
-                  <span className="text-neutral-400 block text-[10px] uppercase font-mono">Invoice No</span>
-                  <span className="font-mono font-bold text-white">INV-2026-089</span>
-                </div>
-                <div className="bg-[#1e1e1e] p-3 rounded-2xl border border-neutral-700">
-                  <span className="text-neutral-400 block text-[10px] uppercase font-mono">Tax Balance</span>
-                  <span className="font-mono font-bold text-emerald-400">CGST + SGST (18%)</span>
-                </div>
-                <div className="bg-[#1e1e1e] p-3 rounded-2xl border border-neutral-700">
-                  <span className="text-neutral-400 block text-[10px] uppercase font-mono">Taxable Subtotal</span>
-                  <span className="font-mono font-bold text-white">₹1,00,000.00</span>
-                </div>
-                <div className="bg-[#1e1e1e] p-3 rounded-2xl border border-neutral-700">
-                  <span className="text-neutral-400 block text-[10px] uppercase font-mono">Total Payable</span>
-                  <span className="font-mono font-bold text-white text-sm">₹1,18,000.00</span>
-                </div>
-              </div>
+                  {/* Extracted Fields Matrix */}
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="bg-[#1e1e1e] p-3 rounded-2xl border border-neutral-700">
+                      <span className="text-neutral-400 block text-[10px] uppercase font-mono">Bill Number</span>
+                      <span className="font-mono font-bold text-white truncate block">
+                        {invoices[0].bill_number || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="bg-[#1e1e1e] p-3 rounded-2xl border border-neutral-700">
+                      <span className="text-neutral-400 block text-[10px] uppercase font-mono">Tax Amount</span>
+                      <span className="font-mono font-bold text-emerald-400">
+                        {formatINR(invoices[0].tax_amount)}
+                      </span>
+                    </div>
+                    <div className="bg-[#1e1e1e] p-3 rounded-2xl border border-neutral-700">
+                      <span className="text-neutral-400 block text-[10px] uppercase font-mono">Taxable Subtotal</span>
+                      <span className="font-mono font-bold text-white">
+                        {formatINR(invoices[0].subtotal)}
+                      </span>
+                    </div>
+                    <div className="bg-[#1e1e1e] p-3 rounded-2xl border border-neutral-700">
+                      <span className="text-neutral-400 block text-[10px] uppercase font-mono">Total Payable</span>
+                      <span className="font-mono font-bold text-white text-sm">
+                        {formatINR(invoices[0].total_amount)}
+                      </span>
+                    </div>
+                  </div>
 
-              {/* Status Chips */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700 text-[10px] font-mono">
-                  ✓ GSTIN Algorithmic Checksum
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700 text-[10px] font-mono">
-                  ✓ Arithmetic Reconciled
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-700 text-[10px] font-mono">
-                  10-Day Reminder Scheduled
-                </span>
-              </div>
+                  {/* Status Chips */}
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700 text-[10px] font-mono">
+                      ✓ Deterministic Verification
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-700 text-[10px] font-mono">
+                      {invoices[0].payment_status === 'paid' ? 'Paid & Settled' : '10-Day Reminder Active'}
+                    </span>
+                    <Link
+                      to={`/bills/${invoices[0].id}`}
+                      className="px-2 py-0.5 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-600 text-[10px] font-mono inline-flex items-center space-x-1"
+                    >
+                      <span>Inspect Live Bill →</span>
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className="py-8 text-center space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+                    <Sparkles className="w-6 h-6 animate-pulse" />
+                  </div>
+                  <div>
+                    <h4 className="font-heading font-semibold text-base text-white">
+                      PaddleOCR Scanner Standby
+                    </h4>
+                    <p className="text-xs text-neutral-400 max-w-sm mx-auto mt-1">
+                      No invoices uploaded yet. Upload a bill in PDF, image, or spreadsheet format to see live extraction and validation.
+                    </p>
+                  </div>
+                  <Link
+                    to="/upload"
+                    className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-full bg-white text-black text-xs font-semibold hover:bg-neutral-200 transition shadow-sm"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Upload First Bill</span>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

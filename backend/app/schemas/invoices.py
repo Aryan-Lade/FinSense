@@ -1,7 +1,7 @@
 """
 Invoice schemas for CRUD operations and API responses.
 """
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 from pydantic import Field
 from datetime import datetime
 from .base import BaseSchema
@@ -65,7 +65,7 @@ class InvoiceResponse(InvoiceBase):
     canonical_json: Optional[Dict[str, Any]] = None
     provenance_json: Optional[Dict[str, Any]] = None
     validation_json: Optional[Dict[str, Any]] = None
-    suggestions_json: Optional[Dict[str, Any]] = None
+    suggestions_json: Optional[Union[Dict[str, Any], List[Any]]] = None
     processing_info_json: Optional[Dict[str, Any]] = None
     approved_with_override: bool = False
     created_at: datetime

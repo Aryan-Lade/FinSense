@@ -15,6 +15,7 @@ from app.models.suppliers import Supplier
 from app.models.reminders import Reminder
 import uuid
 import datetime
+import hashlib
 
 
 router = APIRouter()
@@ -33,6 +34,36 @@ async def upload_file(
     try:
         # Read file contents
         contents = await file.read()
+        file_sha256 = hashlib.sha256(contents).hexdigest()
+
+        # Check for existing document by SHA-256 (safe deduplication)
+        existing_doc = db.query(Document).filter(Document.sha256 == file_sha256).first()
+        if existing_doc:
+            existing_invoice = db.query(Invoice).filter(Invoice.document_id == existing_doc.id).first()
+            if existing_invoice:
+                return JSONResponse(
+                    status_code=200,
+                    content={
+                        "success": True,
+                        "document_id": existing_doc.id,
+                        "invoice_id": existing_invoice.id,
+                        "filename": existing_doc.original_filename,
+                        "detected_type": existing_doc.pipeline,
+                        "storage_path": existing_doc.stored_path,
+                        "file_url": f"/api/documents/{existing_doc.id}/view",
+                        "status": existing_invoice.processing_status,
+                        "invoice_number": existing_invoice.bill_number,
+                        "supplier_name": existing_invoice.supplier_name,
+                        "total_amount": existing_invoice.total_amount,
+                        "extracted_data": existing_invoice.canonical_json or {},
+                        "validation_status": existing_invoice.validation_status,
+                        "ocr_info": {
+                            "character_count": 0,
+                            "model": "PaddleOCR (PP-OCRv4)",
+                            "cached": True
+                        }
+                    }
+                )
 
         # Process the file through the appropriate pipeline
         processing_result = process_uploaded_file(
@@ -58,7 +89,7 @@ async def upload_file(
             stored_path=storage_path,
             mime_type=file.content_type or "application/octet-stream",
             size_bytes=len(contents),
-            sha256=str(uuid.uuid5(uuid.NAMESPACE_DNS, str(len(contents)) + file.filename)),
+            sha256=file_sha256,
             pipeline=processing_result.get("file_type", "unknown"),
             processing_status=processing_status,
             source_channel="website",
@@ -69,10 +100,19 @@ async def upload_file(
         db.commit()
 
         # 2. Create Invoice Record from OCR / Extraction
-        extracted_data = processing_result.get("extracted_data") or {}
-        canonical = processing_result.get("canonical_json") or {}
-        provenance = processing_result.get("provenance_json") or {}
-        validation = processing_result.get("validation_json") or {"status": "valid"}
+        def _make_serializable(val):
+            if isinstance(val, (datetime.date, datetime.datetime)):
+                return val.isoformat()
+            elif isinstance(val, dict):
+                return {k: _make_serializable(v) for k, v in val.items()}
+            elif isinstance(val, (list, tuple, set)):
+                return [_make_serializable(v) for v in val]
+            return val
+
+        extracted_data = _make_serializable(processing_result.get("extracted_data") or {})
+        canonical = _make_serializable(processing_result.get("canonical_json") or {})
+        provenance = _make_serializable(processing_result.get("provenance_json") or {})
+        validation = _make_serializable(processing_result.get("validation_json") or {"status": "valid"})
 
         invoice_id = str(uuid.uuid4())
         bill_num = extracted_data.get("bill_number") or f"BILL-{uuid.uuid4().hex[:6].upper()}"
@@ -102,15 +142,25 @@ async def upload_file(
         total_amount = float(extracted_data.get("total_amount") or (subtotal + tax_amount))
 
         inv_date = extracted_data.get("invoice_date")
-        if isinstance(inv_date, datetime.date) and not isinstance(inv_date, datetime.datetime):
+        if isinstance(inv_date, str):
+            try:
+                inv_date = datetime.datetime.fromisoformat(inv_date.replace("Z", "+00:00"))
+            except Exception:
+                inv_date = now_utc
+        elif isinstance(inv_date, datetime.date) and not isinstance(inv_date, datetime.datetime):
             inv_date = datetime.datetime.combine(inv_date, datetime.time.min, tzinfo=datetime.timezone.utc)
-        elif not inv_date:
+        elif not isinstance(inv_date, datetime.datetime):
             inv_date = now_utc
 
         due_date = extracted_data.get("due_date")
-        if isinstance(due_date, datetime.date) and not isinstance(due_date, datetime.datetime):
+        if isinstance(due_date, str):
+            try:
+                due_date = datetime.datetime.fromisoformat(due_date.replace("Z", "+00:00"))
+            except Exception:
+                due_date = inv_date + datetime.timedelta(days=15)
+        elif isinstance(due_date, datetime.date) and not isinstance(due_date, datetime.datetime):
             due_date = datetime.datetime.combine(due_date, datetime.time.min, tzinfo=datetime.timezone.utc)
-        elif not due_date:
+        elif not isinstance(due_date, datetime.datetime):
             due_date = inv_date + datetime.timedelta(days=15)
 
         is_valid = validation.get("status") == "valid"
@@ -179,7 +229,10 @@ async def upload_file(
             "ocr_info": {
                 "character_count": processing_result.get("ocr_info", {}).get("character_count", 0),
                 "language": processing_result.get("ocr_info", {}).get("language_info", {}).get("language", "en"),
-                "confidence": processing_result.get("ocr_info", {}).get("ocr_confidence", 0.95)
+                "confidence": processing_result.get("ocr_info", {}).get("ocr_confidence", 0.95),
+                "model": processing_result.get("ocr_info", {}).get("model", "PaddleOCR (PP-OCRv4)"),
+                "model_url": processing_result.get("ocr_info", {}).get("model_url", "https://github.com/PaddlePaddle/PaddleOCR.git"),
+                "engine": processing_result.get("ocr_info", {}).get("engine", "PaddleOCR")
             }
         }
 

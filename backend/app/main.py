@@ -5,8 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logging import setup_logging
-from app.api.routes import health, upload, documents, invoices, suppliers, reminders, charts, export, demo
+from app.api.routes import health, upload, documents, invoices, suppliers, reminders, charts, export, demo, auth
 from app.middleware.monitoring import MonitoringMiddleware
+from app.core.database import create_tables
 
 
 # Setup logging
@@ -34,6 +35,7 @@ app.add_middleware(MonitoringMiddleware)
 
 # Include routers
 app.include_router(health.router, prefix="/api", tags=["health"])
+app.include_router(auth.router, prefix="/api", tags=["auth"])
 app.include_router(upload.router, prefix="/api", tags=["upload"])
 app.include_router(documents.router, prefix="/api", tags=["documents"])
 app.include_router(invoices.router, prefix="/api", tags=["invoices"])
@@ -44,15 +46,14 @@ app.include_router(export.router, prefix="/api", tags=["export"])
 app.include_router(demo.router, prefix="/api", tags=["demo"])
 
 
-# Background processing placeholder
-# In a production implementation, this would be replaced with actual background workers
-# using Celery, RQ, or similar task queue systems
+# Database and background task initialization on startup
 @app.on_event("startup")
 async def startup_event():
-    """Initialize background processing on startup."""
-    # Placeholder for background task initialization
-    # In a real implementation, you would start worker processes here
-    pass
+    """Initialize database tables and workers on startup."""
+    try:
+        create_tables()
+    except Exception as e:
+        print(f"Warning: automatic table creation deferred: {e}")
 
 
 @app.get("/")

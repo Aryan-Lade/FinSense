@@ -14,6 +14,17 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "sqlite:///./finsense.db"
     
+    # Supabase Configuration
+    SUPABASE_URL: str = ""
+    SUPABASE_ANON_KEY: str = ""
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
+    SUPABASE_JWT_SECRET: str = ""
+    SUPABASE_BUCKET: str = "invoices"
+    
+    # Authentication & JWT
+    JWT_SECRET: str = "finsense_secure_jwt_secret_token_2026"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 days
+    
     # Storage
     STORAGE_BACKEND: str = "local"  # local or supabase
     UPLOAD_DIR: str = "./data/uploads"

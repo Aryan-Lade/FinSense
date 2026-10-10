@@ -10,6 +10,7 @@ from .batches import Batch, BatchItem
 from .audit import AuditLog
 from .integrations import Integration
 from .review_notes import ReviewNote
+from .users import User
 
 __all__ = [
     "Base",
@@ -24,5 +25,6 @@ __all__ = [
     "BatchItem",
     "AuditLog",
     "Integration",
-    "ReviewNote"
+    "ReviewNote",
+    "User"
 ]
