@@ -15,7 +15,7 @@ class Document(Base):
     stored_path = Column(String(500), nullable=False)
     mime_type = Column(String(100), nullable=False)
     size_bytes = Column(Integer, nullable=False)
-    sha256 = Column(String(64), nullable=False, unique=True, index=True)
+    sha256 = Column(String(64), nullable=False, index=True)
     
     # Processing info
     pipeline = Column(String(50))  # pdf_image, spreadsheet, etc.

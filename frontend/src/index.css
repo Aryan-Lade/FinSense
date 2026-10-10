@@ -2,24 +2,33 @@
 
 @layer base {
   :root {
-    --bg-page: #f2f2f2;
-    --border-color: #d9d9d9;
-    --card-bg: #ffffff;
+    --bg-page: #F2F2F2;
+    --bg-panel: #FFFFFF;
+    --bg-panel-gray: #E6E6E6;
+    --border-color: #DBDBDB;
     --text-primary: #000000;
-    --text-secondary: #4a4a4a;
-    --text-muted: #888888;
+    --text-secondary: #333333;
+    --text-muted: #999999;
+    --accent-blue: #0099FF;
+    --accent-green: #4EA100;
+    --accent-red: #FF4F4F;
+    --card-dark: #171717;
   }
 
   body {
     background-color: var(--bg-page);
     color: var(--text-primary);
-    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', sans-serif;
     letter-spacing: -0.01em;
   }
 
   h1, h2, h3, h4, .font-heading {
-    font-family: 'Clash Grotesk', 'Manrope', sans-serif;
+    font-family: 'Clash Grotesk', sans-serif;
     letter-spacing: -0.025em;
+  }
+
+  .font-ui {
+    font-family: 'Manrope', sans-serif;
   }
 
   code, pre, .font-mono {
@@ -27,80 +36,177 @@
   }
 }
 
-/* Glassmorphism Floating Navbar from Demo Website */
-.glass-nav {
+/* Glass Floating Navbar */
+.reelo-nav {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   background-color: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  border-radius: 20px;
 }
 
-/* Rounded Cards & Pills */
-.demo-card {
-  background-color: #ffffff;
-  border: 1px solid #d9d9d9;
-  border-radius: 28px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+/* Reelo Rounded Cards */
+.reelo-card {
+  background-color: #FFFFFF;
+  border: 1px solid #DBDBDB;
+  border-radius: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
-.demo-pill {
-  border-radius: 9999px;
-  border: 1px solid #d9d9d9;
-  background-color: #ffffff;
+.reelo-card-sm {
+  background-color: #FFFFFF;
+  border: 1px solid #DBDBDB;
+  border-radius: 20px;
 }
 
-.demo-btn-black {
+.reelo-card-dark {
+  background-color: #171717;
+  color: #FFFFFF;
+  border-radius: 40px;
+}
+
+/* Pill Buttons */
+.reelo-btn-black {
   background-color: #000000;
-  color: #ffffff;
+  color: #FFFFFF;
   border-radius: 9999px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.demo-btn-black:hover {
-  background-color: #1f1f1f;
+.reelo-btn-black:hover {
+  background-color: #222222;
   transform: translateY(-1px);
 }
 
-.demo-btn-white {
-  background-color: #ffffff;
+.reelo-btn-white {
+  background-color: #FFFFFF;
   color: #000000;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #DBDBDB;
   border-radius: 9999px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.demo-btn-white:hover {
-  background-color: #f7f7f7;
-  border-color: #bfbfbf;
+.reelo-btn-white:hover {
+  background-color: #F8F8F8;
+  border-color: #BEBEBE;
+  transform: translateY(-1px);
 }
 
-/* Infinite Horizontal Marquee Ticker */
-@keyframes ticker {
+.reelo-btn-blue {
+  background-color: #0099FF;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reelo-btn-blue:hover {
+  background-color: #0088EE;
+  transform: translateY(-1px);
+}
+
+.reelo-pill {
+  border-radius: 9999px;
+  border: 1px solid #DBDBDB;
+  background-color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+}
+
+/* Continuous Marquee Tickers */
+@keyframes ticker-left {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
-.animate-ticker {
-  display: flex;
-  width: max-content;
-  animation: ticker 28s linear infinite;
+@keyframes ticker-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
 }
 
-.animate-ticker:hover {
+.animate-ticker-left {
+  display: flex;
+  width: max-content;
+  animation: ticker-left 35s linear infinite;
+}
+
+.animate-ticker-right {
+  display: flex;
+  width: max-content;
+  animation: ticker-right 35s linear infinite;
+}
+
+.animate-ticker-left:hover,
+.animate-ticker-right:hover {
   animation-play-state: paused;
 }
 
-/* Scanning beam animation for Hero Phone Preview */
-@keyframes scan-beam {
-  0% { top: 0%; opacity: 0; }
-  15% { opacity: 1; }
-  85% { opacity: 1; }
-  100% { top: 95%; opacity: 0; }
+/* Subtle Video Scan beam */
+@keyframes scan-line {
+  0% { top: 0%; opacity: 0.2; }
+  50% { opacity: 0.7; }
+  100% { top: 96%; opacity: 0.2; }
 }
 
-.animate-scan {
-  animation: scan-beam 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+.animate-scan-line {
+  animation: scan-line 3s linear infinite;
+}
+
+/* FinSense UI aliases for Reelo style */
+.fin-card {
+  background-color: #FFFFFF;
+  border: 1px solid #DBDBDB;
+  border-radius: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.btn-fin-black {
+  background-color: #000000;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-fin-black:hover {
+  background-color: #222222;
+  transform: translateY(-1px);
+}
+
+.btn-fin-white {
+  background-color: #FFFFFF;
+  color: #000000;
+  border: 1px solid #DBDBDB;
+  border-radius: 9999px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-fin-white:hover {
+  background-color: #F8F8F8;
+  border-color: #BEBEBE;
+  transform: translateY(-1px);
 }

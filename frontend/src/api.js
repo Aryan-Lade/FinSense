@@ -1,8 +1,13 @@
 import axios from 'axios';
 
 const api = axios.create({
+<<<<<<< HEAD
   baseURL: '/api',
   timeout: 120000, // 2 minutes for deep PaddleOCR inferences
+=======
+  baseURL: import.meta.env.VITE_API_URL || '/api',
+  timeout: 30000,
+>>>>>>> main
 });
 
 // Attach Authorization Bearer token to requests if available

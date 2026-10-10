@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "sqlite:///./finsense.db"
     
+<<<<<<< HEAD
     # Supabase Configuration
     SUPABASE_URL: str = ""
     SUPABASE_ANON_KEY: str = ""
@@ -26,8 +27,15 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 days
     
     # Storage
+=======
+    # Storage & Supabase
+>>>>>>> main
     STORAGE_BACKEND: str = "local"  # local or supabase
     UPLOAD_DIR: str = "./data/uploads"
+    SUPABASE_URL: str = ""
+    SUPABASE_KEY: str = ""
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
+    SUPABASE_BUCKET: str = "finsense-files"
     
     # File limits
     MAX_UPLOAD_MB: int = 15

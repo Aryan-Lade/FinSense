@@ -108,7 +108,7 @@ export default function Dashboard() {
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <Link
             to="/upload"
-            className="demo-btn-black px-7 py-3.5 text-sm font-semibold flex items-center space-x-2 shadow-md"
+            className="btn-fin-black px-7 py-3.5 text-sm font-semibold flex items-center space-x-2 shadow-md"
           >
             <Upload className="w-4 h-4" />
             <span>Upload Invoice</span>
@@ -116,7 +116,7 @@ export default function Dashboard() {
           </Link>
           <Link
             to="/bills"
-            className="demo-btn-white px-7 py-3.5 text-sm font-semibold flex items-center space-x-2"
+            className="btn-fin-white px-7 py-3.5 text-sm font-semibold flex items-center space-x-2"
           >
             <FileText className="w-4 h-4 text-neutral-500" />
             <span>Browse Bills ({totalBills})</span>
@@ -285,7 +285,7 @@ export default function Dashboard() {
       <section className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Outstanding */}
-          <div className="demo-card p-6 flex flex-col justify-between">
+          <div className="fin-card p-6 flex flex-col justify-between">
             <div className="flex justify-between items-start">
               <span className="text-xs uppercase font-mono tracking-wider text-neutral-500">
                 Outstanding Payables
@@ -305,7 +305,7 @@ export default function Dashboard() {
           </div>
 
           {/* Card 2: Settled Spend */}
-          <div className="demo-card p-6 flex flex-col justify-between">
+          <div className="fin-card p-6 flex flex-col justify-between">
             <div className="flex justify-between items-start">
               <span className="text-xs uppercase font-mono tracking-wider text-neutral-500">
                 Settled Invoices
@@ -325,7 +325,7 @@ export default function Dashboard() {
           </div>
 
           {/* Card 3: Input Tax Credit (GST) */}
-          <div className="demo-card p-6 flex flex-col justify-between">
+          <div className="fin-card p-6 flex flex-col justify-between">
             <div className="flex justify-between items-start">
               <span className="text-xs uppercase font-mono tracking-wider text-neutral-500">
                 Total GST / Tax Credit
@@ -345,7 +345,7 @@ export default function Dashboard() {
           </div>
 
           {/* Card 4: Review Queue */}
-          <div className="demo-card p-6 flex flex-col justify-between">
+          <div className="fin-card p-6 flex flex-col justify-between">
             <div className="flex justify-between items-start">
               <span className="text-xs uppercase font-mono tracking-wider text-neutral-500">
                 Review Gate
@@ -386,7 +386,7 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Old way */}
-          <div className="demo-card p-8 bg-neutral-100/70 border border-[#d9d9d9] space-y-4">
+          <div className="fin-card p-8 bg-neutral-100/70 border border-[#d9d9d9] space-y-4">
             <span className="text-xs font-mono uppercase tracking-wider text-red-600 block">
               The Traditional Manual Way
             </span>
@@ -414,7 +414,7 @@ export default function Dashboard() {
           </div>
 
           {/* FinSense way */}
-          <div className="demo-card p-8 bg-white border-2 border-black space-y-4 shadow-sm">
+          <div className="fin-card p-8 bg-white border-2 border-black space-y-4 shadow-sm">
             <span className="text-xs font-mono uppercase tracking-wider text-emerald-600 block">
               The FinSense Intelligence System
             </span>
@@ -464,11 +464,10 @@ export default function Dashboard() {
               <button
                 key={f.id}
                 onClick={() => setFilter(f.id)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
-                  filter === f.id
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition ${filter === f.id
                     ? 'bg-black text-white shadow-2xs'
                     : 'text-neutral-600 hover:text-black'
-                }`}
+                  }`}
               >
                 {f.label}
               </button>
@@ -477,7 +476,7 @@ export default function Dashboard() {
         </div>
 
         {/* Invoices Table Card */}
-        <div className="demo-card overflow-hidden">
+        <div className="fin-card overflow-hidden">
           {loading ? (
             <div className="p-12 text-center text-xs text-neutral-500">
               Loading invoices...
@@ -486,7 +485,7 @@ export default function Dashboard() {
             <div className="p-12 text-center space-y-3">
               <FileText className="w-8 h-8 text-neutral-400 mx-auto" />
               <p className="text-xs text-neutral-500">No invoices matching current filter.</p>
-              <Link to="/upload" className="demo-btn-black px-4 py-2 text-xs inline-flex items-center space-x-1">
+              <Link to="/upload" className="btn-fin-black px-4 py-2 text-xs inline-flex items-center space-x-1">
                 <Upload className="w-3.5 h-3.5" />
                 <span>Upload First Invoice</span>
               </Link>
@@ -528,11 +527,10 @@ export default function Dashboard() {
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold font-mono ${
-                            inv.validation_status === 'valid'
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold font-mono ${inv.validation_status === 'valid'
                               ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                               : 'bg-amber-50 text-amber-700 border border-amber-200'
-                          }`}
+                            }`}
                         >
                           {inv.validation_status === 'valid' ? '✓ Passed' : '! Flagged'}
                         </span>
@@ -540,11 +538,10 @@ export default function Dashboard() {
                       <td className="px-6 py-4">
                         <button
                           onClick={() => handleTogglePayment(inv)}
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold transition ${
-                            inv.payment_status === 'paid'
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold transition ${inv.payment_status === 'paid'
                               ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
                               : 'bg-neutral-100 text-neutral-700 border border-neutral-300 hover:bg-neutral-200'
-                          }`}
+                            }`}
                         >
                           {inv.payment_status === 'paid' ? 'Paid' : 'Unpaid (Mark Paid)'}
                         </button>
@@ -552,7 +549,7 @@ export default function Dashboard() {
                       <td className="px-6 py-4 text-right">
                         <Link
                           to={`/bills/${inv.id}`}
-                          className="demo-btn-white px-3 py-1 text-[11px] inline-flex items-center space-x-1"
+                          className="btn-fin-white px-3 py-1 text-[11px] inline-flex items-center space-x-1"
                         >
                           <Eye className="w-3 h-3 text-neutral-500" />
                           <span>Inspect</span>
