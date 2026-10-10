@@ -258,172 +258,297 @@ export default function Home() {
     <div className="space-y-28 sm:space-y-36 pb-12 overflow-hidden">
       
       {/* =========================================================================
-          1. HERO SECTION
+          1. HERO SECTION (High-Visual Split Layout matching Reference Design)
          ========================================================================= */}
-      <section className="pt-12 sm:pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-8">
-        
-        {/* Pill Tag */}
-        <div className="flex justify-center">
-          <div className="reelo-pill shadow-sm">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#0099FF] animate-pulse"></span>
-            <span className="font-ui text-xs font-semibold tracking-wide">
-              AI GST &amp; Bill Intelligence
-            </span>
-          </div>
-        </div>
-
-        {/* H1 Headline */}
-        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-black max-w-5xl mx-auto leading-[0.98] font-heading">
-          Invoices That Reconcile Every Single Time
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-lg sm:text-xl text-[#333333] max-w-2xl mx-auto font-ui leading-relaxed">
-          FinSense turns messy invoices into validated, audit-friendly financial records using bilingual PaddleOCR, 7-point deterministic verification, and automated payment workflows.
-        </p>
-
-        {/* Dual CTA Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-          <Link
-            to="/upload"
-            className="reelo-btn-black px-8 py-4 text-base font-semibold shadow-md hover:scale-105 transition-all gap-2"
-          >
-            <Upload className="w-4 h-4" />
-            <span>Upload Invoice Now</span>
-          </Link>
-          <Link
-            to="/bills"
-            className="reelo-btn-white px-8 py-4 text-base font-semibold hover:scale-105 transition-all"
-          >
-            <span>View All Bills</span>
-          </Link>
-        </div>
-
-        {/* Center Visual: Black Phone Mockup + Notch + Floating Stat Badges */}
-        <div className="relative pt-12 pb-6 max-w-4xl mx-auto flex justify-center items-center">
+      <section className="pt-8 sm:pt-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
-          {/* Floating Stat Pills (Surrounding Phone) */}
-          <div className="hidden lg:block absolute left-4 top-20 z-20">
-            <div className="reelo-pill shadow-md border border-[#DBDBDB] animate-bounce duration-1000">
-              <ShieldCheck className="w-4 h-4 text-[#4EA100]" />
-              <span className="font-mono text-xs font-bold">100% Math Accuracy</span>
-            </div>
-          </div>
-
-          <div className="hidden lg:block absolute left-0 bottom-28 z-20">
-            <div className="reelo-pill shadow-md border border-[#DBDBDB]">
-              <TrendingUp className="w-4 h-4 text-[#0099FF]" />
-              <span className="font-ui text-xs font-semibold">
-                {invoices.length > 0 ? `₹${totalSpend.toLocaleString('en-IN')} Reconciled` : 'Live Ledger Active'}
-              </span>
-            </div>
-          </div>
-
-          <div className="hidden lg:block absolute right-8 top-16 z-20">
-            <div className="reelo-pill shadow-md border border-[#DBDBDB]">
-              <Database className="w-4 h-4 text-[#4EA100]" />
-              <span className="font-mono text-xs font-bold">
-                {isSupabaseConfigured ? 'Supabase Cloud Connected' : 'SQLite Local Ledger'}
-              </span>
-            </div>
-          </div>
-
-          <div className="hidden lg:block absolute right-2 bottom-36 z-20">
-            <div className="reelo-pill shadow-md border border-[#DBDBDB]">
-              <Zap className="w-4 h-4 text-amber-500" />
-              <span className="font-ui text-xs font-semibold">PaddleOCR PP-OCRv4</span>
-            </div>
-          </div>
-
-          {/* Platform Badges (Left & Right Flanking) */}
-          <div className="hidden sm:flex flex-col gap-3 absolute -left-8 top-1/2 -translate-y-1/2 z-10 text-xs font-bold font-mono">
-            <div className="px-3 py-2 rounded-2xl bg-white border border-[#DBDBDB] text-black shadow-lg transform -rotate-6">
-              PDF &bull; PNG &bull; CSV
-            </div>
-            <div className="px-3 py-2 rounded-2xl bg-[#0099FF] text-white shadow-lg transform rotate-3">
-              GSTR-2B Ready
-            </div>
-          </div>
-
-          <div className="hidden sm:flex flex-col gap-3 absolute -right-8 top-1/2 -translate-y-1/2 z-10 text-xs font-bold font-mono">
-            <div className="px-3 py-2 rounded-2xl bg-[#171717] text-white shadow-lg transform rotate-6">
-              SHA-256 Hash
-            </div>
-          </div>
-
-          {/* Black Phone Mockup */}
-          <div className="relative w-[280px] sm:w-[320px] bg-black rounded-[54px] p-3.5 shadow-2xl ring-1 ring-black/10">
+          {/* Left Column: Hero Content & CTAs */}
+          <div className="lg:col-span-7 xl:col-span-6 text-left space-y-7">
             
-            {/* Inner Phone Screen */}
-            <div className="relative bg-[#171717] rounded-[44px] overflow-hidden aspect-[9/18] text-white flex flex-col justify-between">
-              
-              {/* Dynamic Island Notch */}
-              <div className="w-28 h-6 bg-black rounded-full mx-auto mt-2.5 flex items-center justify-end px-2 z-30">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#262626]"></div>
+            {/* Top Rating Badges (App Store & Google Play) */}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="px-3.5 py-1.5 rounded-xl bg-white border border-[#E2E8F0] text-xs font-semibold flex items-center gap-2 shadow-xs">
+                <div className="w-5 h-5 rounded-md bg-[#007AFF] text-white flex items-center justify-center text-[10px] font-black">
+                  
+                </div>
+                <span className="font-bold text-[#0F172A]">4.9 ★</span>
+                <span className="text-[#64748B]">on App Store</span>
               </div>
 
-              {/* Scanned Invoice UI Container */}
-              <div className="absolute inset-0 z-0 overflow-hidden flex flex-col justify-between p-4 pt-12">
-                {latestInvoice ? (
-                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 space-y-2 border border-white/20 text-left">
-                    <div className="flex items-center justify-between text-[11px] font-mono">
-                      <span className="text-[#0099FF] font-bold">{latestInvoice.bill_number}</span>
-                      <span className={`font-bold ${latestInvoice.validation_status === 'valid' ? 'text-emerald-400' : 'text-amber-400'}`}>
-                        {latestInvoice.validation_status === 'valid' ? '✓ VERIFIED' : '⚠ NEEDS REVIEW'}
-                      </span>
-                    </div>
-                    <p className="text-xs font-bold truncate">{latestInvoice.supplier_name}</p>
-                    <p className="text-[10px] text-white/70 font-mono truncate">
-                      GSTIN: {latestInvoice.seller_gstin || latestInvoice.canonical_json?.seller?.gstin || '27AABCR2026A1Z5'}
-                    </p>
-                    
-                    <div className="border-t border-white/10 pt-2 grid grid-cols-2 gap-1 text-[10px] font-mono">
-                      <div>
-                        <span className="text-white/60">Taxable:</span>
-                        <p className="font-bold">₹ {Number(latestInvoice.subtotal || 0).toLocaleString('en-IN')}</p>
-                      </div>
-                      <div>
-                        <span className="text-white/60">Tax Split:</span>
-                        <p className="font-bold text-amber-300">₹ {Number(latestInvoice.tax_amount || 0).toLocaleString('en-IN')}</p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 space-y-2 border border-white/20 text-center">
-                    <Sparkles className="w-6 h-6 text-[#0099FF] mx-auto animate-pulse" />
-                    <p className="text-xs font-bold">PaddleOCR Live Scanner</p>
-                    <p className="text-[10px] text-white/70">Awaiting bill upload. Upload via form to inspect fields in real time.</p>
-                  </div>
-                )}
+              <div className="px-3.5 py-1.5 rounded-xl bg-white border border-[#E2E8F0] text-xs font-semibold flex items-center gap-2 shadow-xs">
+                <div className="w-5 h-5 rounded-md bg-gradient-to-tr from-[#EA4335] via-[#FBBC05] to-[#34A853] text-white flex items-center justify-center text-[9px] font-black">
+                  ▶
+                </div>
+                <span className="font-bold text-[#0F172A]">4.8 ★</span>
+                <span className="text-[#64748B]">on Google Play</span>
+              </div>
+            </div>
 
-                <div className="bg-black/80 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-left space-y-1.5">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-ui text-[10px] text-white/70">Active Ledger Value:</span>
-                    <span className="font-mono font-bold text-emerald-400 text-sm">
-                      ₹ {totalSpend.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </span>
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[66px] font-extrabold text-[#0F172A] tracking-[-0.035em] leading-[1.08]">
+              Send, spend,<br className="hidden sm:inline" /> and save smarter
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-base sm:text-lg text-[#475569] font-ui leading-relaxed max-w-xl">
+              Experience a new way to audit and manage bills with bilingual PaddleOCR, 7-point deterministic verification, and automated Indian GST workflows.
+            </p>
+
+            {/* Dual CTA Buttons */}
+            <div className="flex flex-wrap items-center gap-4 pt-1">
+              <Link
+                to="/upload"
+                className="px-7 py-3.5 rounded-full bg-[#0080FF] hover:bg-[#0070DF] text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all flex items-center space-x-2 transform active:scale-95"
+              >
+                <span>Get started</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to="/bills"
+                className="px-7 py-3.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold shadow-xs transition-all active:scale-95"
+              >
+                <span>Pricing</span>
+              </Link>
+            </div>
+
+            {/* Social Proof: Avatars + Counter */}
+            <div className="flex items-center space-x-3 pt-3">
+              <div className="flex -space-x-2.5">
+                <img
+                  className="w-9 h-9 rounded-full border-2 border-white object-cover shadow-xs"
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces"
+                  alt="Finance user 1"
+                />
+                <img
+                  className="w-9 h-9 rounded-full border-2 border-white object-cover shadow-xs"
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces"
+                  alt="Finance user 2"
+                />
+                <img
+                  className="w-9 h-9 rounded-full border-2 border-white object-cover shadow-xs"
+                  src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces"
+                  alt="Finance user 3"
+                />
+              </div>
+              <p className="text-xs sm:text-sm font-medium text-[#64748B] font-ui">
+                Trusted by <strong className="text-slate-900 font-semibold">400+</strong> finance teams worldwide
+              </p>
+            </div>
+
+          </div>
+
+          {/* Right Column: High-Visual Smartphone Mockup */}
+          <div className="lg:col-span-5 xl:col-span-6 relative flex justify-center items-center pt-8 lg:pt-0">
+            
+            {/* Floating Glass Pills Surrounding Phone (Image 1 + Image 2) */}
+            <div className="hidden sm:block absolute -left-6 top-8 z-30 animate-float-1">
+              <div className="px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#DBDBDB] text-xs font-bold text-slate-900 shadow-lg flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#16A34A]" />
+                <span>100% Math Accuracy</span>
+              </div>
+            </div>
+
+            <div className="hidden sm:block absolute -right-6 top-10 z-30 animate-float-2">
+              <div className="px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-[#DBDBDB] text-xs font-bold text-slate-900 shadow-lg flex items-center gap-1.5">
+                <Database className="w-3.5 h-3.5 text-[#0080FF]" />
+                <span>SQLite Local Ledger</span>
+              </div>
+            </div>
+
+            <div className="hidden sm:block absolute -left-10 bottom-24 z-30 animate-float-3">
+              <div className="flex flex-col gap-2">
+                <div className="px-3 py-1 rounded-2xl bg-white border border-[#DBDBDB] text-[11px] font-bold font-mono text-slate-900 shadow-md">
+                  PDF &bull; PNG &bull; CSV
+                </div>
+                <div className="px-3.5 py-1 rounded-full bg-[#0080FF] text-white text-[11px] font-bold font-mono shadow-md">
+                  GSTR-2B Ready
+                </div>
+              </div>
+            </div>
+
+            <div className="hidden sm:block absolute -right-8 bottom-28 z-30 animate-float-4">
+              <div className="flex flex-col items-end gap-2">
+                <div className="px-3.5 py-1 rounded-full bg-black text-white text-[11px] font-bold font-mono shadow-md">
+                  SHA-256 Hash
+                </div>
+                <div className="px-3.5 py-1 rounded-full bg-white border border-[#DBDBDB] text-[11px] font-bold text-slate-900 shadow-md flex items-center gap-1">
+                  <Zap className="w-3 h-3 text-amber-500 fill-amber-500" />
+                  <span>PaddleOCR PP-OCRv4</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Smartphone Hardware Frame */}
+            <div className="relative w-[315px] sm:w-[355px] bg-[#18181B] rounded-[52px] p-2.5 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] ring-1 ring-black/40 border-[4px] border-[#2E2E33] transition-all duration-300">
+              
+              {/* Outer Phone Bezel Buttons */}
+              <div className="absolute -left-[6px] top-24 w-[3px] h-8 bg-[#3F3F46] rounded-l-sm"></div>
+              <div className="absolute -left-[6px] top-36 w-[3px] h-8 bg-[#3F3F46] rounded-l-sm"></div>
+              <div className="absolute -right-[6px] top-28 w-[3px] h-12 bg-[#3F3F46] rounded-r-sm"></div>
+
+              {/* Inner Smartphone Screen */}
+              <div className="relative bg-[#0080FF] rounded-[44px] overflow-hidden text-white flex flex-col shadow-inner select-none">
+                
+                {/* 1. Status Bar */}
+                <div className="pt-3 px-6 pb-2 flex justify-between items-center text-xs font-semibold z-20">
+                  <span className="font-mono text-[13px] tracking-tight">9:41</span>
+                  
+                  {/* Dynamic Island Pill Notch */}
+                  <div className="w-24 h-5 bg-black rounded-full flex items-center justify-between px-2 mx-auto">
+                    <div className="w-2 h-2 rounded-full bg-[#1A1A1A] border border-neutral-700/50"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/70"></div>
                   </div>
-                  <div className="w-full bg-white/20 rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-[#0099FF] h-full w-full"></div>
+
+                  {/* System Icons (Signal, Wifi, Battery) */}
+                  <div className="flex items-center space-x-1.5 text-[11px]">
+                    <span className="text-[10px] font-mono">5G</span>
+                    <div className="w-4 h-2.5 border border-white rounded-xs flex items-center p-0.5">
+                      <div className="w-2.5 h-1.5 bg-white rounded-2xs"></div>
+                    </div>
                   </div>
-                  <p className="text-[9px] text-white/60 font-mono">
-                    {invoices.length} Bills In Ledger &bull; {validCount} Passed
+                </div>
+
+                {/* 2. User Welcome Row */}
+                <div className="px-5 pt-1.5 pb-3 flex justify-between items-center z-10">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-xs font-bold font-mono border border-white/30">
+                      JM
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-white/95">Welcome, Jeff</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2 text-white/90">
+                    <div className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center cursor-pointer">
+                      <span className="text-xs">🔔</span>
+                    </div>
+                    <div className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center cursor-pointer">
+                      <span className="text-xs">⚙️</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Horizontal Pill Tabs (No scrollbar) */}
+                <div className="px-4 py-1 flex items-center space-x-1.5 overflow-x-auto no-scrollbar text-[11px] font-semibold z-10">
+                  <span className="px-3.5 py-1 rounded-full bg-white text-[#0080FF] shadow-xs font-bold">
+                    Overview
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-white/15 text-white/80 hover:bg-white/25 transition cursor-pointer">
+                    Cards
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-white/15 text-white/80 hover:bg-white/25 transition cursor-pointer">
+                    Stocks
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-white/15 text-white/80 hover:bg-white/25 transition cursor-pointer">
+                    Cryptos
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-white/15 text-white/80 hover:bg-white/25 transition cursor-pointer">
+                    Cashb
+                  </span>
+                </div>
+
+                {/* 4. Account Balance Display */}
+                <div className="px-5 pt-4 pb-6 text-center space-y-0.5 z-10">
+                  <p className="text-[11px] text-white/80 font-medium">Personal Account ▾</p>
+                  <p className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                    <span className="text-2xl font-light opacity-90 mr-0.5">₹</span>467.20
                   </p>
                 </div>
-              </div>
 
-              {/* Laser scanning beam animation overlay */}
-              <div className="absolute top-10 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-[#0099FF] to-transparent animate-scan-line pointer-events-none z-20"></div>
+                {/* 5. Curved White Card (Lower Section) */}
+                <div className="bg-white text-slate-900 rounded-t-[34px] p-4 pt-5 flex-1 space-y-3.5 shadow-2xl -mt-2">
+                  
+                  {/* Balance Header */}
+                  <div className="flex justify-between items-center text-xs font-bold px-1">
+                    <span className="text-slate-800 font-bold text-xs hover:text-[#0080FF] transition cursor-pointer">
+                      Balance &gt;
+                    </span>
+                    <span className="text-[10px] text-[#0080FF] bg-[#0080FF]/10 px-2 py-0.5 rounded-full font-mono font-medium">
+                      Live
+                    </span>
+                  </div>
 
-              {/* Reel Mockup Overlay details */}
-              <div className="relative z-10 p-3 mt-auto text-left">
-                <div className="flex items-center justify-between text-[10px] text-white/70">
-                  <span>PaddleOCR PP-OCRv4</span>
-                  <span className="font-mono text-emerald-400 font-bold">Local Inference</span>
+                  {/* Item 1: Cash (Direct from Image 2) */}
+                  <div className="flex items-center justify-between p-2 rounded-2xl hover:bg-slate-50 transition">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-9 h-9 rounded-full bg-[#22C55E]/15 text-[#16A34A] flex items-center justify-center font-bold text-sm shadow-xs">
+                        💵
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-900">Cash</p>
+                        <p className="text-[10px] text-slate-400">Dollar &bull; Euro</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-bold text-slate-900 font-mono">₹467.20</p>
+                      <p className="text-[9px] text-slate-400 font-mono">₹370.13 &bull; €98.07</p>
+                    </div>
+                  </div>
+
+                  {/* Item 2: Stocks / GST Claim (Direct from Image 2) */}
+                  <div className="flex items-center justify-between p-2 rounded-2xl hover:bg-slate-50 transition">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-9 h-9 rounded-full bg-[#0080FF]/15 text-[#0080FF] flex items-center justify-center font-bold text-sm shadow-xs">
+                        📈
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-900">Stocks</p>
+                        <p className="text-[10px] text-slate-400">3 verified stocks</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-bold text-slate-900 font-mono">₹2,067.83</p>
+                      <p className="text-[9px] text-emerald-600 font-mono font-bold">+3.17%</p>
+                    </div>
+                  </div>
+
+                  {/* Item 3: Live Verified Bill */}
+                  <div className="flex items-center justify-between p-2 rounded-2xl hover:bg-slate-50 transition">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs shadow-xs">
+                        🧾
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-900">Refrens IT Bill</p>
+                        <p className="text-[10px] text-slate-400 font-mono">INV-387 &bull; 18% GST</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-bold text-slate-900 font-mono">₹1,34,048.00</p>
+                      <p className="text-[9px] text-emerald-600 font-mono font-bold">100% Valid</p>
+                    </div>
+                  </div>
+
+                  {/* Cards Header */}
+                  <div className="pt-1 flex justify-between items-center text-xs font-bold px-1">
+                    <span className="text-slate-800 font-bold text-xs hover:text-[#0080FF] transition cursor-pointer">
+                      Cards &gt;
+                    </span>
+                  </div>
+
+                  {/* Mini Corporate / Glow Debit Card (Image 2 style) */}
+                  <div className="bg-gradient-to-r from-[#0080FF] via-[#0070DF] to-[#0099FF] text-white p-3 rounded-2xl shadow-md flex items-center justify-between">
+                    <div className="flex items-center space-x-2.5">
+                      <div className="w-7 h-5 rounded-md bg-white/20 border border-white/30 flex items-center justify-center text-[9px] font-bold">
+                        💳
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-bold">Main</p>
+                        <p className="text-[9px] text-white/80 font-mono">Debit - 2424</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-bold font-mono">₹368.13</p>
+                    </div>
+                  </div>
+
                 </div>
+
               </div>
 
             </div>
+
           </div>
 
         </div>

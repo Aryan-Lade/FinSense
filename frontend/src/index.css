@@ -210,3 +210,43 @@
   border-color: #BEBEBE;
   transform: translateY(-1px);
 }
+
+/* Hide scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Float animations for hero badges */
+@keyframes subtle-float-1 {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50% { transform: translateY(-6px) rotate(-2deg); }
+}
+@keyframes subtle-float-2 {
+  0%, 100% { transform: translateY(0px) rotate(2deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+@keyframes subtle-float-3 {
+  0%, 100% { transform: translateY(0px) rotate(-5deg); }
+  50% { transform: translateY(-5px) rotate(-5deg); }
+}
+@keyframes subtle-float-4 {
+  0%, 100% { transform: translateY(0px) rotate(4deg); }
+  50% { transform: translateY(-7px) rotate(4deg); }
+}
+
+.animate-float-1 {
+  animation: subtle-float-1 4s ease-in-out infinite;
+}
+.animate-float-2 {
+  animation: subtle-float-2 4.5s ease-in-out infinite 0.5s;
+}
+.animate-float-3 {
+  animation: subtle-float-3 5s ease-in-out infinite 1s;
+}
+.animate-float-4 {
+  animation: subtle-float-4 4.2s ease-in-out infinite 1.5s;
+}
