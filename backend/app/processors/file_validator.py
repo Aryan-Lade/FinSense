@@ -12,6 +12,7 @@ class FileType(str, Enum):
     PDF = "pdf"
     PNG = "png"
     JPEG = "jpeg"
+    WEBP = "webp"
     CSV = "csv"
     TSV = "tsv"
     XLSX = "xlsx"
@@ -21,24 +22,45 @@ class FileType(str, Enum):
 
 def detect_file_type(file_data: BinaryIO) -> FileType:
     """
-    Detect file type by examining magic bytes.
+    Detect file type by examining magic bytes and PIL fallback.
     """
     # Save current position
     initial_pos = file_data.tell()
     
     try:
         file_data.seek(0)
-        header = file_data.read(8)
+        header = file_data.read(12)
         
         # Check against known signatures
         if header.startswith(b"%PDF"):
             return FileType.PDF
         elif header.startswith(b"\x89PNG\r\n\x1a\n"):
             return FileType.PNG
-        elif header.startswith(b"\xff\xd8\xff"):
+        elif header.startswith(b"\xff\xd8"):
             return FileType.JPEG
+        elif header.startswith(b"RIFF") and len(header) >= 12 and header[8:12] == b"WEBP":
+            return FileType.WEBP
+        elif header.startswith(b"BM"):
+            return FileType.PNG
         elif header.startswith(b"PK\x03\x04"):
             return FileType.ZIP
+
+        # Fallback for images using PIL
+        try:
+            file_data.seek(0)
+            from PIL import Image
+            with Image.open(file_data) as img:
+                fmt = (img.format or "").upper()
+                if fmt in ["JPEG", "JPG"]:
+                    return FileType.JPEG
+                elif fmt == "PNG":
+                    return FileType.PNG
+                elif fmt == "WEBP":
+                    return FileType.WEBP
+                elif fmt in ["BMP", "TIFF"]:
+                    return FileType.PNG
+        except Exception:
+            pass
         
         # If no magic signature matched, try to detect as text-based (CSV/TSV)
         file_data.seek(0)
@@ -74,14 +96,15 @@ def detect_file_type(file_data: BinaryIO) -> FileType:
 def validate_file_type(file_type: FileType, filename: str) -> Tuple[bool, Optional[str]]:
     """Validate that the file type matches the extension and is supported."""
     if file_type == FileType.UNKNOWN:
-        return False, "Unable to detect file type"
+        return False, "Unable to detect file type. Supported formats: PDF, PNG, JPG, JPEG, WEBP, CSV, XLSX."
     
     extension = filename.lower().split('.')[-1] if '.' in filename else ''
     
     allowed_extensions = {
         FileType.PDF: ['pdf'],
-        FileType.PNG: ['png'],
-        FileType.JPEG: ['jpg', 'jpeg'],
+        FileType.PNG: ['png', 'bmp', 'tiff'],
+        FileType.JPEG: ['jpg', 'jpeg', 'jfif'],
+        FileType.WEBP: ['webp'],
         FileType.CSV: ['csv'],
         FileType.TSV: ['tsv'],
         FileType.XLSX: ['xlsx'],
@@ -93,7 +116,7 @@ def validate_file_type(file_type: FileType, filename: str) -> Tuple[bool, Option
             return False, f"File extension '.{extension}' does not match detected file type {file_type.value}"
     
     supported_types = {
-        FileType.PDF, FileType.PNG, FileType.JPEG, 
+        FileType.PDF, FileType.PNG, FileType.JPEG, FileType.WEBP,
         FileType.CSV, FileType.TSV, FileType.XLSX, FileType.ZIP
     }
     

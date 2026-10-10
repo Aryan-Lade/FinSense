@@ -80,57 +80,51 @@ class QualityProcessor:
         issues = []
         warnings = []
 
-        # Check required fields
-        required_fields = ['invoice_number', 'invoice_date', 'customer_name', 'total_amount']
-        for field in required_fields:
-            if field not in extracted_data or not extracted_data[field]:
-                quality_score -= 20.0
-                issues.append(f"Missing required field: {field}")
+        # Check required fields (with aliases)
+        has_inv_num = bool(extracted_data.get('invoice_number') or extracted_data.get('bill_number'))
+        if not has_inv_num:
+            quality_score -= 20.0
+            issues.append("Missing required field: invoice_number")
+
+        has_date = bool(extracted_data.get('invoice_date'))
+        if not has_date:
+            quality_score -= 15.0
+            issues.append("Missing required field: invoice_date")
+
+        has_party = bool(extracted_data.get('customer_name') or extracted_data.get('buyer_name') or extracted_data.get('supplier_name'))
+        if not has_party:
+            quality_score -= 15.0
+            issues.append("Missing required field: customer_name / supplier_name")
+
+        has_total = bool(extracted_data.get('total_amount'))
+        if not has_total:
+            quality_score -= 25.0
+            issues.append("Missing required field: total_amount")
 
         # Validate GSTIN if present
-        if 'customer_gstin' in extracted_data and extracted_data['customer_gstin']:
-            is_valid, error = QualityProcessor.validate_gstin(extracted_data['customer_gstin'])
-            if not is_valid:
-                quality_score -= 15.0
-                issues.append(f"Invalid GSTIN: {error}")
-
-        # Validate invoice number
-        if 'invoice_number' in extracted_data and extracted_data['invoice_number']:
-            is_valid, error = QualityProcessor.validate_invoice_number(extracted_data['invoice_number'])
+        gstin = extracted_data.get('seller_gstin') or extracted_data.get('customer_gstin') or extracted_data.get('buyer_gstin')
+        if gstin:
+            is_valid, error = QualityProcessor.validate_gstin(gstin)
             if not is_valid:
                 quality_score -= 10.0
-                issues.append(f"Invalid invoice number: {error}")
+                issues.append(f"Invalid GSTIN: {error}")
 
-        # Validate amounts
-        amount_fields = ['total_amount', 'taxable_value', 'cgst_amount', 'sgst_amount', 'igst_amount']
-        for field in amount_fields:
-            if field in extracted_data and extracted_data[field] is not None:
-                is_valid, error, _ = QualityProcessor.validate_amount(extracted_data[field])
-                if not is_valid:
-                    quality_score -= 10.0
-                    issues.append(f"Invalid {field}: {error}")
+        # Check for consistency: subtotal + taxes should equal total_amount
+        subtotal = float(extracted_data.get('subtotal') or extracted_data.get('taxable_value') or 0.0)
+        taxes = float(extracted_data.get('tax_amount') or 0.0)
+        if taxes == 0.0:
+            taxes = float(extracted_data.get('cgst_amount') or 0.0) + float(extracted_data.get('sgst_amount') or 0.0) + float(extracted_data.get('igst_amount') or 0.0)
+        total = float(extracted_data.get('total_amount') or 0.0)
 
-        # Check for consistency: taxable_value + taxes should approximately equal total_amount
-        if all(field in extracted_data for field in ['taxable_value', 'cgst_amount', 'sgst_amount', 'igst_amount']):
-            try:
-                taxable = float(extracted_data.get('taxable_value', 0) or 0)
-                cgst = float(extracted_data.get('cgst_amount', 0) or 0)
-                sgst = float(extracted_data.get('sgst_amount', 0) or 0)
-                igst = float(extracted_data.get('igst_amount', 0) or 0)
-                calculated_total = taxable + cgst + sgst + igst
+        if subtotal > 0 and total > 0:
+            if abs((subtotal + taxes) - total) <= 1.0:
+                quality_score = min(100.0, quality_score + 10.0)
+            else:
+                quality_score -= 15.0
+                issues.append(f"Math discrepancy: Subtotal ({subtotal}) + Taxes ({taxes}) != Total ({total})")
 
-                if 'total_amount' in extracted_data and extracted_data['total_amount'] is not None:
-                    total_float, _, _ = QualityProcessor.validate_amount(extracted_data['total_amount'])
-                    if total_float is not None:
-                        # Allow small difference due to rounding
-                        if abs(calculated_total - total_float) > 1.0:  # 1 rupee tolerance
-                            quality_score -= 5.0
-                            warnings.append("Total amount doesn't match sum of taxable value and taxes")
-            except (ValueError, TypeError):
-                pass  # Skip consistency check if amounts can't be parsed
-
-        # Ensure quality score doesn't go below 0
-        quality_score = max(0.0, quality_score)
+        # Ensure quality score bounds
+        quality_score = max(0.0, min(100.0, quality_score))
 
         # Determine confidence level
         if quality_score >= 90:
@@ -140,12 +134,15 @@ class QualityProcessor:
         else:
             confidence = "low"
 
+        is_passed = quality_score >= 70 and len(issues) == 0
+
         return {
+            "status": "valid" if is_passed else "invalid",
             "quality_score": quality_score,
             "confidence": confidence,
             "issues": issues,
             "warnings": warnings,
-            "passed": quality_score >= 70  # Consider passed if score >= 70
+            "passed": is_passed
         }
 
 

@@ -57,7 +57,7 @@ class OCRProcessor:
     @staticmethod
     def is_ocr_supported(file_type: FileType) -> bool:
         """Check if OCR/text extraction is supported for the given file type."""
-        return file_type in [FileType.PDF, FileType.PNG, FileType.JPEG]
+        return file_type in [FileType.PDF, FileType.PNG, FileType.JPEG, FileType.WEBP]
 
     @staticmethod
     def assess_image_quality(img_np: np.ndarray) -> Dict[str, Any]:

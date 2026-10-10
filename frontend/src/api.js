@@ -5,6 +5,17 @@ const api = axios.create({
   timeout: 30000,
 });
 
+// Reject HTML responses from missing backend or SPA routing rewrites
+api.interceptors.response.use(
+  (response) => {
+    if (typeof response.data === 'string' && (response.data.trim().startsWith('<!doctype') || response.data.trim().startsWith('<html'))) {
+      return Promise.reject(new Error('Backend API not reachable.'));
+    }
+    return response;
+  },
+  (error) => Promise.reject(error)
+);
+
 export const getHealth = () => api.get('/health');
 export const getInvoices = (params) => api.get('/invoices/', { params });
 export const getInvoice = (id) => api.get(`/invoices/${id}`);
@@ -25,6 +36,7 @@ export const uploadFile = (file) => {
   formData.append('file', file);
   return api.post('/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 120000, // 2 minutes for on-premise PaddleOCR CPU inference
   });
 };
 

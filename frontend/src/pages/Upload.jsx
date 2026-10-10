@@ -37,6 +37,13 @@ export default function UploadPage() {
     onDrop,
     maxSize: 15 * 1024 * 1024,
     multiple: false,
+    accept: {
+      'application/pdf': ['.pdf'],
+      'image/*': ['.png', '.jpg', '.jpeg', '.webp', '.bmp', '.tiff'],
+      'text/csv': ['.csv'],
+      'text/tab-separated-values': ['.tsv'],
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+    },
   });
 
   const handleProcess = async () => {
@@ -68,8 +75,18 @@ export default function UploadPage() {
         navigate('/bills');
       }
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.detail || 'Failed to process document with PaddleOCR. Please check the file format.');
+      console.error('Invoice upload failed:', err);
+      let errorMsg = err.response?.data?.detail;
+      if (!errorMsg) {
+        if (err.message?.includes('Backend API not reachable') || err.code === 'ERR_NETWORK') {
+          errorMsg = 'Cannot reach backend server. Please make sure the FastAPI backend is running on http://127.0.0.1:8000.';
+        } else if (err.code === 'ECONNABORTED') {
+          errorMsg = 'PaddleOCR processing timed out. Please try with a smaller document or clearer image.';
+        } else {
+          errorMsg = err.message || 'Failed to process document with PaddleOCR. Please check the file format.';
+        }
+      }
+      setError(errorMsg);
       setUploading(false);
       setStep(0);
     }
@@ -148,7 +165,7 @@ export default function UploadPage() {
                   Drag and drop your invoice here, or click to browse
                 </p>
                 <p className="text-xs text-[#666666] max-w-md mx-auto">
-                  Supports scanned PDF, PNG, JPG, JPEG, TIFF, Excel (XLSX), CSV (Up to 15MB)
+                  Supports scanned PDF, PNG, JPG, JPEG, WEBP, Excel (XLSX), CSV (Up to 15MB)
                 </p>
               </div>
               <div className="pt-2 flex flex-wrap justify-center gap-2">

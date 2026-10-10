@@ -68,7 +68,7 @@ class ProcessingPipeline:
                     if quality_result.get("cleaned_data"):
                         result["extracted_data"] = quality_result["cleaned_data"]
 
-            elif file_type in [FileType.PDF, FileType.PNG, FileType.JPEG]:
+            elif file_type in [FileType.PDF, FileType.PNG, FileType.JPEG, FileType.WEBP]:
                 # Pipeline A: AI/OCR processing
                 result["processing_steps"].append("ocr_processing")
 
@@ -91,7 +91,7 @@ class ProcessingPipeline:
                     # Run quality & deterministic validation
                     quality_result = process_invoice_quality(extraction["extracted_fields"])
                     result["quality_assessment"] = quality_result
-                    result["validation_json"] = quality_result
+                    result["validation_json"] = extraction.get("validation") or quality_result
                     result["processing_steps"].append("validation_completed")
                 else:
                     result["extracted_data"] = {}

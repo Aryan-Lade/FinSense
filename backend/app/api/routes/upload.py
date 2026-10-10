@@ -151,11 +151,13 @@ async def upload_file(
             supplier = db.query(Supplier).filter(Supplier.legal_name == supplier_name).first()
 
         if not supplier and (seller_gstin or supplier_name):
+            from app.processors.invoice_extractor import GST_STATE_CODES
+            seller_state = canonical.get("seller", {}).get("state") or (GST_STATE_CODES.get(seller_gstin[:2]) if seller_gstin else "India")
             supplier = Supplier(
                 id=str(uuid.uuid4()),
                 legal_name=supplier_name or "Direct Vendor",
                 gstin=seller_gstin,
-                state="Maharashtra",
+                state=seller_state or "India",
                 address="India"
             )
             db.add(supplier)

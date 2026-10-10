@@ -39,12 +39,19 @@ export default function BillDetail() {
     getInvoice(id)
       .then((res) => {
         setInvoice(res.data);
+        const totals = res.data.canonical_json?.totals || {};
+        const cgst = totals.total_cgst || 0;
+        const sgst = totals.total_sgst || 0;
+        const tax = res.data.tax_amount || (cgst + sgst);
         setEditFields({
           bill_number: res.data.bill_number || '',
           supplier_name: res.data.supplier_name || '',
-          total_amount: res.data.total_amount || 0,
+          buyer_name: res.data.buyer_name || '',
           subtotal: res.data.subtotal || 0,
-          tax_amount: res.data.tax_amount || 0,
+          cgst: cgst,
+          sgst: sgst,
+          tax_amount: tax,
+          total_amount: res.data.total_amount || 0,
         });
       })
       .catch((err) => console.error(err))
@@ -78,7 +85,14 @@ export default function BillDetail() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await updateInvoice(id, editFields);
+      await updateInvoice(id, {
+        bill_number: editFields.bill_number,
+        supplier_name: editFields.supplier_name,
+        buyer_name: editFields.buyer_name,
+        subtotal: editFields.subtotal,
+        tax_amount: editFields.tax_amount,
+        total_amount: editFields.total_amount,
+      });
       loadInvoice();
     } catch (e) {
       console.error(e);
@@ -133,6 +147,18 @@ export default function BillDetail() {
   const validation = invoice.validation_json || {};
   const errors = validation.errors || [];
   const checksPassed = validation.checks_passed || [];
+  const canonical = invoice.canonical_json || {};
+  const totals = canonical.totals || {};
+  const lineItems = canonical.line_items || [];
+  const sellerGstin = canonical.seller?.gstin;
+  const sellerState = canonical.seller?.state || 'India';
+  const sellerStateCode = canonical.seller?.state_code || (sellerGstin ? sellerGstin.substring(0, 2) : '');
+  const buyerGstin = canonical.buyer?.gstin;
+  const cgst = totals.total_cgst || 0;
+  const sgst = totals.total_sgst || 0;
+  const igst = totals.total_igst || 0;
+  const cgstRate = totals.cgst_rate || (cgst > 0 && invoice.subtotal > 0 ? Math.round((cgst / invoice.subtotal) * 100) : 0);
+  const sgstRate = totals.sgst_rate || (sgst > 0 && invoice.subtotal > 0 ? Math.round((sgst / invoice.subtotal) * 100) : 0);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-ui">
@@ -213,13 +239,17 @@ export default function BillDetail() {
             </span>
           </div>
 
-          {/* Simulated High-Res Document Preview */}
+          {/* Document Preview Card */}
           <div className="bg-[#FAF9F6] border border-[#DBDBDB] rounded-3xl p-6 font-mono text-xs space-y-4 relative overflow-hidden shadow-inner min-h-[420px]">
             <div className="border-b border-dashed border-[#DBDBDB] pb-3 flex justify-between items-start">
               <div>
                 <p className="font-bold text-sm text-black">{invoice.supplier_name}</p>
-                <p className="text-[#696969] text-[10px]">GSTIN: {invoice.canonical_json?.seller?.gstin || '27AAPFU0939F1ZV'}</p>
-                <p className="text-[#696969] text-[10px]">Jurisdiction: Maharashtra (27)</p>
+                <p className="text-[#696969] text-[10px]">
+                  GSTIN: {sellerGstin || 'Not Specified'}
+                </p>
+                <p className="text-[#696969] text-[10px]">
+                  State: {sellerState} {sellerStateCode ? `(${sellerStateCode})` : ''}
+                </p>
               </div>
               <div className="text-right">
                 <span className="px-2 py-0.5 bg-yellow-100 border border-yellow-300 text-yellow-900 font-bold text-[10px] rounded-full">
@@ -227,7 +257,7 @@ export default function BillDetail() {
                 </span>
                 <p className="text-black text-[10px] mt-1 font-bold">{invoice.bill_number}</p>
                 <p className="text-[#696969] text-[10px]">
-                  {invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : 'N/A'}
+                  {invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString('en-IN') : 'N/A'}
                 </p>
               </div>
             </div>
@@ -238,31 +268,74 @@ export default function BillDetail() {
               </span>
               <p className="text-[#696969] text-[10px] font-semibold">Billed To:</p>
               <p className="text-black font-bold">{invoice.buyer_name || 'FinSense Enterprise Client'}</p>
+              {buyerGstin && (
+                <p className="text-[#696969] text-[10px]">Buyer GSTIN: {buyerGstin}</p>
+              )}
             </div>
 
+            {/* Line Items Table */}
             <div className="border border-[#DBDBDB] rounded-2xl overflow-hidden bg-white">
               <table className="w-full text-[10px]">
                 <thead className="bg-[#F2F2F2] border-b border-[#DBDBDB] font-bold text-[#696969]">
                   <tr>
                     <th className="p-2 text-left">Item Description</th>
+                    <th className="p-2 text-center">HSN/Qty</th>
                     <th className="p-2 text-right">Taxable</th>
                     <th className="p-2 text-right">Total</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#DBDBDB]">
-                  <tr>
-                    <td className="p-2 font-sans">Business Supplies &amp; Services</td>
-                    <td className="p-2 text-right font-mono">{formatINR(invoice.subtotal)}</td>
-                    <td className="p-2 text-right font-mono font-bold">{formatINR(invoice.total_amount)}</td>
-                  </tr>
+                  {lineItems.length > 0 ? (
+                    lineItems.map((item, idx) => (
+                      <tr key={idx}>
+                        <td className="p-2 font-sans font-medium">{item.description}</td>
+                        <td className="p-2 text-center text-[#696969]">
+                          {item.hsn_sac || '-'}{item.quantity ? ` (${item.quantity} ${item.unit || ''})` : ''}
+                        </td>
+                        <td className="p-2 text-right font-mono">
+                          {formatINR(item.taxable_amount || item.unit_price * (item.quantity || 1))}
+                        </td>
+                        <td className="p-2 text-right font-mono font-bold">
+                          {formatINR(item.total_amount || item.taxable_amount || item.unit_price * (item.quantity || 1))}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td className="p-2 font-sans">Business Supplies &amp; Services</td>
+                      <td className="p-2 text-center text-[#696969]">998311 (1 pcs)</td>
+                      <td className="p-2 text-right font-mono">{formatINR(invoice.subtotal)}</td>
+                      <td className="p-2 text-right font-mono font-bold">{formatINR(invoice.total_amount)}</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
 
-            <div className="border-t border-[#DBDBDB] pt-3 space-y-1 text-right text-xs">
-              <p className="text-[#696969]">Subtotal: <span className="font-bold text-black">{formatINR(invoice.subtotal)}</span></p>
-              <p className="text-[#696969]">GST (18%): <span className="font-bold text-black">{formatINR(invoice.tax_amount)}</span></p>
-              <div className="border-t border-[#DBDBDB] pt-1">
+            {/* Financial Summary with Explicit GST Breakdown */}
+            <div className="border-t border-[#DBDBDB] pt-3 space-y-1.5 text-right text-xs">
+              <p className="text-[#696969]">
+                Subtotal (Taxable): <span className="font-bold text-black">{formatINR(invoice.subtotal)}</span>
+              </p>
+              {cgst > 0 && (
+                <p className="text-[#696969]">
+                  CGST ({cgstRate > 0 ? `${cgstRate}%` : 'Central'}): <span className="font-bold text-black">{formatINR(cgst)}</span>
+                </p>
+              )}
+              {sgst > 0 && (
+                <p className="text-[#696969]">
+                  SGST ({sgstRate > 0 ? `${sgstRate}%` : 'State'}): <span className="font-bold text-black">{formatINR(sgst)}</span>
+                </p>
+              )}
+              {igst > 0 && (
+                <p className="text-[#696969]">
+                  IGST (Integrated): <span className="font-bold text-black">{formatINR(igst)}</span>
+                </p>
+              )}
+              <p className="text-[#696969] font-medium">
+                Total GST: <span className="font-bold text-[#0099FF]">{formatINR(invoice.tax_amount)}</span>
+              </p>
+              <div className="border-t border-[#DBDBDB] pt-1.5">
                 <p className="text-sm font-bold text-black font-mono">
                   Total Reconciled: <span className="text-emerald-600">{formatINR(invoice.total_amount)}</span>
                 </p>
@@ -367,19 +440,50 @@ export default function BillDetail() {
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-[#696969]">Subtotal (₹)</label>
+                <label className="block text-xs font-bold text-[#696969]">Buyer / Customer Name</label>
+                <input
+                  type="text"
+                  value={editFields.buyer_name}
+                  onChange={(e) => setEditFields({ ...editFields, buyer_name: e.target.value })}
+                  className="w-full px-3.5 py-2 border border-[#DBDBDB] bg-[#F2F2F2] rounded-2xl text-xs text-black focus:outline-none focus:border-black focus:bg-white transition"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-[#696969]">Subtotal / Taxable (₹)</label>
                 <input
                   type="number"
+                  step="0.01"
                   value={editFields.subtotal}
-                  onChange={(e) => setEditFields({ ...editFields, subtotal: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) => {
+                    const newSub = parseFloat(e.target.value) || 0;
+                    const newTotal = Math.round((newSub + (editFields.tax_amount || 0)) * 100) / 100;
+                    setEditFields({ ...editFields, subtotal: newSub, total_amount: newTotal });
+                  }}
                   className="w-full px-3.5 py-2 border border-[#DBDBDB] bg-[#F2F2F2] rounded-2xl text-xs font-mono text-black focus:outline-none focus:border-black focus:bg-white transition"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-[#696969]">Total Amount (₹)</label>
+                <label className="block text-xs font-bold text-[#696969]">Total Tax / GST (₹)</label>
                 <input
                   type="number"
+                  step="0.01"
+                  value={editFields.tax_amount}
+                  onChange={(e) => {
+                    const newTax = parseFloat(e.target.value) || 0;
+                    const newTotal = Math.round(((editFields.subtotal || 0) + newTax) * 100) / 100;
+                    setEditFields({ ...editFields, tax_amount: newTax, total_amount: newTotal });
+                  }}
+                  className="w-full px-3.5 py-2 border border-[#DBDBDB] bg-[#F2F2F2] rounded-2xl text-xs font-mono text-black focus:outline-none focus:border-black focus:bg-white transition"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-[#696969]">Reconciled Total Amount (₹)</label>
+                <input
+                  type="number"
+                  step="0.01"
                   value={editFields.total_amount}
                   onChange={(e) => setEditFields({ ...editFields, total_amount: parseFloat(e.target.value) || 0 })}
                   className="w-full px-3.5 py-2 border border-[#DBDBDB] bg-[#F2F2F2] rounded-2xl text-xs font-mono font-bold text-black focus:outline-none focus:border-black focus:bg-white transition"
@@ -387,7 +491,10 @@ export default function BillDetail() {
               </div>
             </div>
 
-            <div className="flex justify-end pt-2">
+            <div className="flex justify-between items-center pt-2 border-t border-[#DBDBDB]">
+              <p className="text-[11px] text-[#696969]">
+                Math Reconciled: ₹{editFields.subtotal || 0} + ₹{editFields.tax_amount || 0} = <strong>₹{editFields.total_amount || 0}</strong>
+              </p>
               <button
                 onClick={handleSave}
                 disabled={saving}
