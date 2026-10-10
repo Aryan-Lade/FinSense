@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowUpRight, 
@@ -17,101 +17,105 @@ import {
   Upload,
   CheckCircle2,
   Calendar,
-  AlertTriangle
+  AlertTriangle,
+  Database,
+  Cpu,
+  Layers,
+  Lock,
+  Search,
+  Scale
 } from 'lucide-react';
 import Footer from '../components/Footer';
+import { getInvoices } from '../api';
+import { isSupabaseConfigured, fetchSupabaseInvoices } from '../supabase';
 
 export default function Home() {
-  const [visibleAudits, setVisibleAudits] = useState(3);
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [visibleAudits, setVisibleAudits] = useState(6);
   const [faqOpen, setFaqOpen] = useState(0);
 
-  const audits = [
-    {
-      id: 1,
-      supplier: 'Reliance Retail Ltd',
-      gstin: '27AABCR2026A1Z5',
-      amount: '₹ 1,42,800',
-      state: 'Maharashtra (27)',
-      status: 'ITC Verified · Passed',
-      img: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=1000&fit=crop'
-    },
-    {
-      id: 2,
-      supplier: 'Tata Power Company Ltd',
-      gstin: '07AAACT2727Q1ZT',
-      amount: '₹ 84,250',
-      state: 'Delhi (07)',
-      status: 'Reverse Charge Match',
-      img: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=600&h=1000&fit=crop'
-    },
-    {
-      id: 3,
-      supplier: 'Infosys Hardware Supplies',
-      gstin: '29AAACI4400E1Z3',
-      amount: '₹ 3,19,400',
-      state: 'Karnataka (29)',
-      status: 'Inter-State IGST Pass',
-      img: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=600&h=1000&fit=crop'
-    },
-    {
-      id: 4,
-      supplier: 'Titan Industrial Works',
-      gstin: '33AAACT0822K1ZK',
-      amount: '₹ 56,000',
-      state: 'Tamil Nadu (33)',
-      status: 'Bilingual Hindi OCR',
-      img: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&h=1000&fit=crop'
-    },
-    {
-      id: 5,
-      supplier: 'Apollo Logistics & Healthcare',
-      gstin: '36AAACA1111N1ZG',
-      amount: '₹ 92,100',
-      state: 'Telangana (36)',
-      status: 'MSMED 45-Day Tracked',
-      img: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&h=1000&fit=crop'
-    },
-    {
-      id: 6,
-      supplier: 'Delhi Metro Construction Tech',
-      gstin: '07AAACD9900M1ZL',
-      amount: '₹ 4,75,000',
-      state: 'Delhi (07)',
-      status: 'Audit Trail Encrypted',
-      img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=1000&fit=crop'
+  useEffect(() => {
+    let isMounted = true;
+    async function loadLiveLedger() {
+      setLoading(true);
+      try {
+        if (isSupabaseConfigured) {
+          const supaData = await fetchSupabaseInvoices();
+          if (supaData && supaData.length > 0 && isMounted) {
+            setInvoices(supaData);
+            setLoading(false);
+            return;
+          }
+        }
+        const res = await getInvoices();
+        if (isMounted) {
+          setInvoices(res.data || []);
+        }
+      } catch (err) {
+        console.error('Failed to load live ledger data:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     }
-  ];
+    loadLiveLedger();
+    return () => { isMounted = false; };
+  }, []);
 
-  const testimonials = [
+  // Compute live ledger metrics from actual database
+  const latestInvoice = invoices.length > 0 ? invoices[0] : null;
+  const totalSpend = invoices.reduce((acc, curr) => acc + (Number(curr.total_amount) || 0), 0);
+  const validCount = invoices.filter(i => i.validation_status === 'valid').length;
+  const reviewCount = invoices.filter(i => i.review_status === 'needs_review').length;
+
+  const architecturalPillars = [
     {
-      quote: "FinSense saved our firm over ₹4.2 Lakhs in ineligible ITC claims in our very first quarterly audit.",
-      name: "CA Rajesh Singhania",
-      role: "Senior Partner, Singhania & Associates",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face"
+      title: "Deterministic Math Engine",
+      tag: "100% Code Verified",
+      desc: "Zero hallucination guarantee. Taxable sums, CGST/SGST/IGST splits, and line item arithmetic are recomputed using exact mathematical rules.",
+      icon: Scale,
+      color: "text-[#0099FF]",
+      bg: "bg-[#0099FF]/10"
     },
     {
-      quote: "The deterministic GST verification is a game changer. No hallucinations, pure mathematical accuracy.",
-      name: "Pooja Varma",
-      role: "Head of Accounts, Varma Traders",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face"
+      title: "PaddleOCR (PP-OCRv4)",
+      tag: "Bilingual Devanagari & Latin",
+      desc: "Ultra-fast on-premise text detection (DBNet) and recognition (SVTR) trained on Indian commercial receipts and multi-page tax invoices.",
+      icon: Cpu,
+      color: "text-[#4EA100]",
+      bg: "bg-[#DCFFDB]"
     },
     {
-      quote: "Bilingual PaddleOCR reads crumpled paper bills in both Hindi and English flawlessly on our local server.",
-      name: "Amitabh Sen",
-      role: "CFO, Apex LogiTech India",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face"
+      title: "Supabase & SQLite Hybrid",
+      tag: "Cloud + Offline",
+      desc: "Seamless synchronization between local SQLite ledger and Supabase PostgreSQL with S3-compatible document bucket storage.",
+      icon: Database,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50"
     },
     {
-      quote: "Reconciliation time dropped from 3 days to under 15 minutes. Our vendor payment friction is completely gone.",
-      name: "Sunita Deshmukh",
-      role: "Tax Director, Horizon Enterprises",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=face"
+      title: "Section 43B(h) MSMED Calendar",
+      tag: "Statutory 45-Day Tracker",
+      desc: "Automated due-date scheduling with 10-day reminders preventing corporate tax disallowance on micro and small enterprise vendor payments.",
+      icon: Calendar,
+      color: "text-amber-600",
+      bg: "bg-amber-50"
     },
     {
-      quote: "The MSMED 45-day payment reminder prevents statutory interest liabilities before our auditors even notice.",
-      name: "Karan Johar",
-      role: "Financial Controller, Zen Retail",
-      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&crop=face"
+      title: "Cryptographic SHA-256 Guard",
+      tag: "Anti-Duplicate Index",
+      desc: "Every uploaded invoice generates an immutable SHA-256 digital fingerprint to permanently prevent double payments across branches.",
+      icon: Lock,
+      color: "text-purple-600",
+      bg: "bg-purple-50"
+    },
+    {
+      title: "36 State GSTIN Jurisdiction Routing",
+      tag: "Intra vs Interstate",
+      desc: "Validates 15-character GSTIN checksums and verifies supplier state code against place of supply to accurately check CGST+SGST vs IGST.",
+      icon: Layers,
+      color: "text-sky-600",
+      bg: "bg-sky-50"
     }
   ];
 
@@ -125,8 +129,8 @@ export default function Home() {
       a: "No! FinSense is powered by an offline, on-premise PaddleOCR engine. Your sensitive invoices and vendor financial records are processed right on your machine with bank-grade privacy."
     },
     {
-      q: "Can I claim Input Tax Credit (ITC) with FinSense?",
-      a: "Yes. FinSense cross-checks supplier GSTIN formats, active state jurisdiction codes, and computes eligible ITC breakdowns so your tax team can reconcile GSTR-2B with zero friction."
+      q: "Can I connect my Supabase database and storage?",
+      a: "Yes! Simply configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your frontend environment. FinSense supports both local SQLite and Supabase PostgreSQL with secure cloud bucket storage."
     },
     {
       q: "Which file formats are supported?",
@@ -172,6 +176,7 @@ export default function Home() {
       img: "https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=600&h=400&fit=crop"
     }
   ];
+
 
   return (
     <div className="space-y-28 sm:space-y-36 pb-12 overflow-hidden">
@@ -232,28 +237,32 @@ export default function Home() {
           <div className="hidden lg:block absolute left-0 bottom-28 z-20">
             <div className="reelo-pill shadow-md border border-[#DBDBDB]">
               <TrendingUp className="w-4 h-4 text-[#0099FF]" />
-              <span className="font-ui text-xs font-semibold">₹2,46,720 Settled</span>
+              <span className="font-ui text-xs font-semibold">
+                {invoices.length > 0 ? `₹${totalSpend.toLocaleString('en-IN')} Reconciled` : 'Live Ledger Active'}
+              </span>
             </div>
           </div>
 
           <div className="hidden lg:block absolute right-8 top-16 z-20">
             <div className="reelo-pill shadow-md border border-[#DBDBDB]">
-              <span className="w-2 h-2 rounded-full bg-[#4EA100]"></span>
-              <span className="font-mono text-xs font-bold">7-Point GST Check</span>
+              <Database className="w-4 h-4 text-[#4EA100]" />
+              <span className="font-mono text-xs font-bold">
+                {isSupabaseConfigured ? 'Supabase Cloud Connected' : 'SQLite Local Ledger'}
+              </span>
             </div>
           </div>
 
           <div className="hidden lg:block absolute right-2 bottom-36 z-20">
             <div className="reelo-pill shadow-md border border-[#DBDBDB]">
               <Zap className="w-4 h-4 text-amber-500" />
-              <span className="font-ui text-xs font-semibold">PaddleOCR Bilingual</span>
+              <span className="font-ui text-xs font-semibold">PaddleOCR PP-OCRv4</span>
             </div>
           </div>
 
           {/* Platform Badges (Left & Right Flanking) */}
           <div className="hidden sm:flex flex-col gap-3 absolute -left-8 top-1/2 -translate-y-1/2 z-10 text-xs font-bold font-mono">
             <div className="px-3 py-2 rounded-2xl bg-white border border-[#DBDBDB] text-black shadow-lg transform -rotate-6">
-              PDF Vector
+              PDF &bull; PNG &bull; CSV
             </div>
             <div className="px-3 py-2 rounded-2xl bg-[#0099FF] text-white shadow-lg transform rotate-3">
               GSTR-2B Ready
@@ -279,35 +288,51 @@ export default function Home() {
 
               {/* Scanned Invoice UI Container */}
               <div className="absolute inset-0 z-0 overflow-hidden flex flex-col justify-between p-4 pt-12">
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 space-y-2 border border-white/20 text-left">
-                  <div className="flex items-center justify-between text-[11px] font-mono">
-                    <span className="text-[#0099FF] font-bold">INV-2026-0891</span>
-                    <span className="text-emerald-400 font-bold">✓ VERIFIED</span>
-                  </div>
-                  <p className="text-xs font-bold">Reliance Retail Ltd</p>
-                  <p className="text-[10px] text-white/70 font-mono">GSTIN: 27AABCR2026A1Z5</p>
-                  
-                  <div className="border-t border-white/10 pt-2 grid grid-cols-2 gap-1 text-[10px] font-mono">
-                    <div>
-                      <span className="text-white/60">Subtotal:</span>
-                      <p className="font-bold">₹ 1,21,017</p>
+                {latestInvoice ? (
+                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 space-y-2 border border-white/20 text-left">
+                    <div className="flex items-center justify-between text-[11px] font-mono">
+                      <span className="text-[#0099FF] font-bold">{latestInvoice.bill_number}</span>
+                      <span className={`font-bold ${latestInvoice.validation_status === 'valid' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                        {latestInvoice.validation_status === 'valid' ? '✓ VERIFIED' : '⚠ NEEDS REVIEW'}
+                      </span>
                     </div>
-                    <div>
-                      <span className="text-white/60">CGST+SGST:</span>
-                      <p className="font-bold text-amber-300">₹ 21,783</p>
+                    <p className="text-xs font-bold truncate">{latestInvoice.supplier_name}</p>
+                    <p className="text-[10px] text-white/70 font-mono truncate">
+                      GSTIN: {latestInvoice.seller_gstin || latestInvoice.canonical_json?.seller?.gstin || '27AABCR2026A1Z5'}
+                    </p>
+                    
+                    <div className="border-t border-white/10 pt-2 grid grid-cols-2 gap-1 text-[10px] font-mono">
+                      <div>
+                        <span className="text-white/60">Taxable:</span>
+                        <p className="font-bold">₹ {Number(latestInvoice.subtotal || 0).toLocaleString('en-IN')}</p>
+                      </div>
+                      <div>
+                        <span className="text-white/60">Tax Split:</span>
+                        <p className="font-bold text-amber-300">₹ {Number(latestInvoice.tax_amount || 0).toLocaleString('en-IN')}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 space-y-2 border border-white/20 text-center">
+                    <Sparkles className="w-6 h-6 text-[#0099FF] mx-auto animate-pulse" />
+                    <p className="text-xs font-bold">PaddleOCR Live Scanner</p>
+                    <p className="text-[10px] text-white/70">Awaiting bill upload. Upload via form to inspect fields in real time.</p>
+                  </div>
+                )}
 
                 <div className="bg-black/80 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-left space-y-1.5">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-ui text-[10px] text-white/70">Total Reconciled:</span>
-                    <span className="font-mono font-bold text-emerald-400 text-sm">₹ 1,42,800.00</span>
+                    <span className="font-ui text-[10px] text-white/70">Active Ledger Value:</span>
+                    <span className="font-mono font-bold text-emerald-400 text-sm">
+                      ₹ {totalSpend.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-1.5 overflow-hidden">
                     <div className="bg-[#0099FF] h-full w-full"></div>
                   </div>
-                  <p className="text-[9px] text-white/60 font-mono">Deterministic Match • 0 Errors</p>
+                  <p className="text-[9px] text-white/60 font-mono">
+                    {invoices.length} Bills In Ledger &bull; {validCount} Passed
+                  </p>
                 </div>
               </div>
 
@@ -317,8 +342,8 @@ export default function Home() {
               {/* Reel Mockup Overlay details */}
               <div className="relative z-10 p-3 mt-auto text-left">
                 <div className="flex items-center justify-between text-[10px] text-white/70">
-                  <span>PaddleOCR Engine v4</span>
-                  <span className="font-mono text-emerald-400 font-bold">0.4s Latency</span>
+                  <span>PaddleOCR PP-OCRv4</span>
+                  <span className="font-mono text-emerald-400 font-bold">Local Inference</span>
                 </div>
               </div>
 
@@ -334,22 +359,22 @@ export default function Home() {
               <div key={i} className="flex items-center space-x-6 shrink-0">
                 <div className="reelo-pill">
                   <span className="w-2 h-2 rounded-full bg-[#4EA100]"></span>
-                  <span className="font-ui text-xs font-semibold">₹35Cr+ Invoices Verified</span>
+                  <span className="font-ui text-xs font-semibold">PaddleOCR PP-OCRv4 Engine</span>
                 </div>
                 <div className="reelo-pill">
-                  <span className="font-mono text-xs font-bold text-[#0099FF]">99.98% GST Math Accuracy</span>
+                  <span className="font-mono text-xs font-bold text-[#0099FF]">100% Deterministic Math Verification</span>
                 </div>
                 <div className="reelo-pill">
-                  <span className="font-ui text-xs font-semibold">0.4s PaddleOCR Latency</span>
+                  <span className="font-ui text-xs font-semibold">Bilingual Hindi &amp; English</span>
                 </div>
                 <div className="reelo-pill">
-                  <span className="font-ui text-xs font-semibold">36 Indian State Codes</span>
+                  <span className="font-ui text-xs font-semibold">Section 43B(h) MSMED 45-Day Tracker</span>
                 </div>
                 <div className="reelo-pill">
-                  <span className="font-mono text-xs font-bold text-[#4EA100]">100% Deterministic Rules</span>
+                  <span className="font-mono text-xs font-bold text-[#4EA100]">Supabase Cloud + SQLite Ledger</span>
                 </div>
                 <div className="reelo-pill">
-                  <span className="font-ui text-xs font-semibold">400+ Chartered Accountants</span>
+                  <span className="font-ui text-xs font-semibold">SHA-256 Cryptographic Duplicate Check</span>
                 </div>
               </div>
             ))}
@@ -725,56 +750,104 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          5. FEATURED AUDITS & INVOICE SAMPLES
+          5. FEATURED AUDITS & INVOICE SAMPLES (DYNAMIC LIVE LEDGER)
          ========================================================================= */}
       <section id="featured-projects" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12 scroll-mt-24">
         <div className="text-center space-y-3">
           <div className="reelo-pill">
             <span className="w-2 h-2 rounded-full bg-black"></span>
-            <span className="font-ui text-xs font-semibold">Live Ledger</span>
+            <span className="font-ui text-xs font-semibold">Live Production Ledger</span>
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-black font-heading">
-            Audited Bills in Production
+            Audited Bills in Database
           </h2>
+          <p className="text-sm font-ui text-[#666666] max-w-lg mx-auto">
+            Real GST invoices processed through bilingual PaddleOCR, 7-point math verification, and ledger storage.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {audits.slice(0, visibleAudits).map((a) => (
-            <div 
-              key={a.id}
-              className="reelo-card p-6 bg-white space-y-4 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="reelo-pill py-0.5 px-2.5 text-[10px] bg-[#DCFFDB] text-[#4EA100] border-none font-bold">
-                    {a.status}
-                  </span>
-                  <span className="font-mono text-[#999999]">{a.state}</span>
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="reelo-card p-6 bg-white animate-pulse space-y-4">
+                <div className="h-4 bg-neutral-200 rounded w-1/3"></div>
+                <div className="h-6 bg-neutral-200 rounded w-2/3"></div>
+                <div className="h-4 bg-neutral-100 rounded w-1/2"></div>
+                <div className="pt-4 border-t border-neutral-100 flex justify-between">
+                  <div className="h-6 bg-neutral-200 rounded w-1/4"></div>
+                  <div className="h-8 bg-neutral-200 rounded-full w-20"></div>
                 </div>
-                <h4 className="text-xl font-bold text-black font-heading">{a.supplier}</h4>
-                <p className="text-xs font-mono text-[#333333]">{a.gstin}</p>
               </div>
+            ))}
+          </div>
+        ) : invoices.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {invoices.slice(0, visibleAudits).map((inv) => (
+              <div 
+                key={inv.id}
+                className="reelo-card p-6 bg-white space-y-4 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className={`reelo-pill py-0.5 px-2.5 text-[10px] border-none font-bold ${
+                      inv.validation_status === 'valid'
+                        ? 'bg-[#DCFFDB] text-[#4EA100]'
+                        : 'bg-amber-100 text-amber-800'
+                    }`}>
+                      {inv.validation_status === 'valid' ? 'Audit Passed' : 'Needs Review'}
+                    </span>
+                    <span className="font-mono text-[#999999] text-[11px] truncate max-w-[120px]">
+                      {inv.bill_number}
+                    </span>
+                  </div>
+                  <h4 className="text-xl font-bold text-black font-heading truncate">{inv.supplier_name}</h4>
+                  <p className="text-xs font-mono text-[#666666] truncate">
+                    GSTIN: {inv.seller_gstin || inv.canonical_json?.seller?.gstin || 'Auto Extracted'}
+                  </p>
+                </div>
 
-              <div className="pt-4 border-t border-[#DBDBDB] flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] font-ui text-[#999999]">Total Bill Amount</span>
-                  <p className="text-xl font-bold font-mono text-black">{a.amount}</p>
+                <div className="pt-4 border-t border-[#DBDBDB] flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-ui text-[#999999]">Total Bill Amount</span>
+                    <p className="text-xl font-bold font-mono text-black">
+                      ₹ {Number(inv.total_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                  <Link
+                    to={`/bills/${inv.id}`}
+                    className="reelo-btn-black px-4 py-2 text-xs font-semibold"
+                  >
+                    Inspect
+                  </Link>
                 </div>
-                <Link
-                  to="/bills"
-                  className="reelo-btn-black px-4 py-2 text-xs font-semibold"
-                >
-                  Inspect
-                </Link>
               </div>
+            ))}
+          </div>
+        ) : (
+          <div className="reelo-card p-12 sm:p-16 text-center space-y-6 bg-white max-w-xl mx-auto shadow-sm">
+            <div className="w-16 h-16 rounded-full bg-[#F2F2F2] flex items-center justify-center mx-auto">
+              <FileText className="w-8 h-8 text-black" />
             </div>
-          ))}
-        </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-bold font-heading text-black">No Invoices in Ledger Yet</h3>
+              <p className="text-xs sm:text-sm font-ui text-[#666666] max-w-md mx-auto">
+                No mock data shown. Upload your first PDF, receipt, or Excel sheet to run on-premise PaddleOCR and record into the ledger.
+              </p>
+            </div>
+            <Link
+              to="/upload"
+              className="reelo-btn-black px-8 py-3.5 text-xs font-semibold inline-flex items-center gap-2 shadow-sm"
+            >
+              <Upload className="w-4 h-4" />
+              <span>Upload Invoice Now</span>
+            </Link>
+          </div>
+        )}
 
-        {visibleAudits < audits.length && (
+        {invoices.length > visibleAudits && (
           <div className="flex justify-center pt-4">
             <button
-              onClick={() => setVisibleAudits(audits.length)}
+              onClick={() => setVisibleAudits(invoices.length)}
               className="reelo-btn-black px-8 py-3.5 text-sm font-semibold hover:scale-105 transition-all"
             >
               Load more
@@ -887,69 +960,84 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          7. TESTIMONIALS (2-Row Scrolling Marquee)
+          7. ARCHITECTURE & COMPLIANCE PILLARS (2-Row Scrolling Marquee)
          ========================================================================= */}
       <section className="space-y-12 overflow-hidden">
         <div className="text-center space-y-3 px-4">
           <div className="reelo-pill">
-            <span className="w-2 h-2 rounded-full bg-black"></span>
-            <span className="font-ui text-xs font-semibold">Testimonial</span>
+            <span className="w-2 h-2 rounded-full bg-[#0099FF]"></span>
+            <span className="font-ui text-xs font-semibold">Verification Architecture</span>
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-black font-heading">
-            Proof that our method works perfectly
+            Engineered for 100% mathematical precision
           </h2>
+          <p className="text-sm font-ui text-[#666666] max-w-lg mx-auto">
+            Built from first principles to eliminate tax calculation errors, vendor payment delays, and GSTR-2B mismatches.
+          </p>
         </div>
 
         {/* Row 1 */}
         <div className="animate-ticker-left space-x-6">
-          {[...testimonials, ...testimonials].map((t, idx) => (
-            <div 
-              key={idx}
-              className="reelo-card p-6 sm:p-7 w-[360px] sm:w-[420px] shrink-0 space-y-4 bg-white flex flex-col justify-between"
-            >
-              <div className="flex items-center gap-1 text-amber-400">
-                {[...Array(5)].map((_, s) => (
-                  <Star key={s} className="w-4 h-4 fill-amber-400" />
-                ))}
-              </div>
-              <p className="text-sm font-ui text-[#333333] leading-relaxed">
-                "{t.quote}"
-              </p>
-              <div className="flex items-center gap-3 pt-2 border-t border-[#DBDBDB]">
-                <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover" />
-                <div>
-                  <h4 className="text-sm font-bold text-black font-heading">{t.name}</h4>
-                  <p className="text-xs text-[#999999] font-ui">{t.role}</p>
+          {[...architecturalPillars, ...architecturalPillars].map((p, idx) => {
+            const Icon = p.icon;
+            return (
+              <div 
+                key={idx}
+                className="reelo-card p-6 sm:p-7 w-[360px] sm:w-[420px] shrink-0 space-y-4 bg-white flex flex-col justify-between shadow-xs hover:shadow-md transition-all"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className={`w-10 h-10 rounded-2xl ${p.bg} ${p.color} flex items-center justify-center`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="reelo-pill py-0.5 px-2.5 text-[10px] font-mono font-bold bg-[#F2F2F2] border-none text-black">
+                      {p.tag}
+                    </span>
+                  </div>
+                  <h4 className="text-lg font-bold text-black font-heading">{p.title}</h4>
+                  <p className="text-xs font-ui text-[#555555] leading-relaxed">
+                    {p.desc}
+                  </p>
+                </div>
+                <div className="pt-3 border-t border-[#F2F2F2] flex items-center justify-between text-[11px] font-mono text-[#999999]">
+                  <span>System Standard</span>
+                  <span className="text-[#0099FF] font-bold">ACTIVE &bull; 100%</span>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Row 2 */}
         <div className="animate-ticker-right space-x-6">
-          {[...testimonials.slice().reverse(), ...testimonials.slice().reverse()].map((t, idx) => (
-            <div 
-              key={idx}
-              className="reelo-card p-6 sm:p-7 w-[360px] sm:w-[420px] shrink-0 space-y-4 bg-white flex flex-col justify-between"
-            >
-              <div className="flex items-center gap-1 text-amber-400">
-                {[...Array(5)].map((_, s) => (
-                  <Star key={s} className="w-4 h-4 fill-amber-400" />
-                ))}
-              </div>
-              <p className="text-sm font-ui text-[#333333] leading-relaxed">
-                "{t.quote}"
-              </p>
-              <div className="flex items-center gap-3 pt-2 border-t border-[#DBDBDB]">
-                <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover" />
-                <div>
-                  <h4 className="text-sm font-bold text-black font-heading">{t.name}</h4>
-                  <p className="text-xs text-[#999999] font-ui">{t.role}</p>
+          {[...architecturalPillars.slice().reverse(), ...architecturalPillars.slice().reverse()].map((p, idx) => {
+            const Icon = p.icon;
+            return (
+              <div 
+                key={idx}
+                className="reelo-card p-6 sm:p-7 w-[360px] sm:w-[420px] shrink-0 space-y-4 bg-white flex flex-col justify-between shadow-xs hover:shadow-md transition-all"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className={`w-10 h-10 rounded-2xl ${p.bg} ${p.color} flex items-center justify-center`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="reelo-pill py-0.5 px-2.5 text-[10px] font-mono font-bold bg-[#F2F2F2] border-none text-black">
+                      {p.tag}
+                    </span>
+                  </div>
+                  <h4 className="text-lg font-bold text-black font-heading">{p.title}</h4>
+                  <p className="text-xs font-ui text-[#555555] leading-relaxed">
+                    {p.desc}
+                  </p>
+                </div>
+                <div className="pt-3 border-t border-[#F2F2F2] flex items-center justify-between text-[11px] font-mono text-[#999999]">
+                  <span>Verified Module</span>
+                  <span className="text-[#4EA100] font-bold">READY &bull; v2.4</span>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

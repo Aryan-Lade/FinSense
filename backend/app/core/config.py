@@ -14,9 +14,13 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "sqlite:///./finsense.db"
     
-    # Storage
+    # Storage & Supabase
     STORAGE_BACKEND: str = "local"  # local or supabase
     UPLOAD_DIR: str = "./data/uploads"
+    SUPABASE_URL: str = ""
+    SUPABASE_KEY: str = ""
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
+    SUPABASE_BUCKET: str = "finsense-files"
     
     # File limits
     MAX_UPLOAD_MB: int = 15
