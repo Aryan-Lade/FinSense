@@ -1,17 +1,21 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Upload as UploadIcon, 
-  FileText, 
-  CheckCircle, 
-  AlertCircle, 
-  ShieldCheck, 
+import {
+  Upload as UploadIcon,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  ShieldCheck,
   Sparkles,
   ArrowRight,
   FileSpreadsheet,
   ScanLine,
-  Check
+  Check,
+  Cpu,
+  Lock,
+  Globe2,
+  FileCheck
 } from 'lucide-react';
 import { uploadFile } from '../api';
 
@@ -19,7 +23,7 @@ export default function UploadPage() {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [step, setStep] = useState(0); // 0: Idle, 1: Perceive, 2: PaddleOCR, 3: Validate, 4: Complete
+  const [step, setStep] = useState(0); // 0: Idle, 1: Ingest, 2: PaddleOCR, 3: Validate, 4: Complete
   const [error, setError] = useState('');
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -41,24 +45,23 @@ export default function UploadPage() {
     try {
       setUploading(true);
       setError('');
-      
-      // Step 1: Ingestion
+
+      // Step 1: Pre-Screening & Quality Check
       setStep(1);
-      await new Promise((r) => setTimeout(r, 400));
+      await new Promise((r) => setTimeout(r, 450));
 
-      // Step 2: PaddleOCR & Bilingual Extraction
+      // Step 2: Open-Source PaddleOCR Inference
       setStep(2);
-      await new Promise((r) => setTimeout(r, 600));
+      await new Promise((r) => setTimeout(r, 650));
 
-      // Step 3: Server Processing
+      // Step 3: Server GST Validation & Ledger Writing
       setStep(3);
       const res = await uploadFile(file);
 
-      // Step 4: Complete
+      // Step 4: Finished
       setStep(4);
-      await new Promise((r) => setTimeout(r, 500));
+      await new Promise((r) => setTimeout(r, 400));
 
-      // Navigate to the newly created invoice or bills list
       if (res.data?.invoice_id) {
         navigate(`/bills/${res.data.invoice_id}`);
       } else {
@@ -66,97 +69,123 @@ export default function UploadPage() {
       }
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to process document. Please try a different file.');
+      setError(err.response?.data?.detail || 'Failed to process document with PaddleOCR. Please check the file format.');
       setUploading(false);
       setStep(0);
     }
   };
 
   const steps = [
-    { title: '1. Multi-Format Ingest', desc: 'MIME validation & blur pre-screen' },
-    { title: '2. PaddleOCR Bilingual', desc: 'Devanagari Hindi & English parsing' },
-    { title: '3. GST Validation Guard', desc: 'Checksum & tax arithmetic balance' },
-    { title: '4. Audit-Ready Record', desc: '10-day payment reminder scheduled' },
+    { title: '1. Ingest & Screening', desc: 'Laplacian variance blur & contrast check' },
+    { title: '2. PaddleOCR PP-OCRv4', desc: 'Bilingual Devanagari Hindi & English recognition' },
+    { title: '3. Deterministic GST Check', desc: '15-digit GSTIN checksum & tax arithmetic' },
+    { title: '4. Ledger & MSMED Calendar', desc: 'Saved to SQLite ledger with payment reminders' },
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 space-y-10">
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white border border-[#d9d9d9] shadow-2xs">
-          <ScanLine className="w-3.5 h-3.5 text-black" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-black">
-            PaddleOCR Ingestion Engine
-          </span>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-10">
+      
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <div className="flex justify-center">
+          <div className="reelo-pill shadow-xs">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#0099FF] animate-pulse"></span>
+            <span className="font-ui text-xs font-semibold tracking-wide">
+              PaddleOCR Open-Source Engine (PP-OCRv4)
+            </span>
+          </div>
         </div>
-        <h1 className="text-4xl sm:text-5xl font-bold font-heading text-black tracking-tight">
-          Upload Invoices & Bills
+        
+        <h1 className="text-4xl sm:text-6xl font-bold font-heading text-black tracking-tight">
+          Upload Invoices &amp; Bills
         </h1>
-        <p className="text-sm text-neutral-600 max-w-lg mx-auto">
-          Drag & drop photos, handwritten receipts, scanned PDFs, or Excel/CSV sheets.
-          PaddleOCR processes Hindi and English simultaneously.
+        
+        <p className="text-base text-[#333333] max-w-xl mx-auto font-ui">
+          On-premise bilingual optical character recognition powered by PaddlePaddle OCR.
+          Processes crumpled receipts, multi-page PDFs, and spreadsheets with bank-grade privacy.
         </p>
       </div>
 
       {/* Main Upload Card */}
-      <div className="demo-card p-8 sm:p-10 space-y-8">
+      <div className="reelo-card p-6 sm:p-12 space-y-8 bg-white shadow-sm">
+        
         {/* Dropzone */}
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-[24px] p-10 text-center cursor-pointer transition-all ${
+          className={`border-2 border-dashed rounded-[32px] p-10 sm:p-14 text-center cursor-pointer transition-all ${
             isDragActive
-              ? 'border-black bg-neutral-100/80 scale-[0.99]'
+              ? 'border-black bg-neutral-100 scale-[0.99]'
               : file
-              ? 'border-emerald-500 bg-emerald-50/20'
-              : 'border-[#d9d9d9] hover:border-black bg-[#fafafa]'
+                ? 'border-[#4EA100] bg-[#DCFFDB]/30'
+                : 'border-[#DBDBDB] hover:border-black bg-[#F8F8F8]'
           }`}
         >
           <input {...getInputProps()} />
 
           {file ? (
-            <div className="space-y-3">
-              <div className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center mx-auto shadow-sm">
-                <FileText className="w-7 h-7" />
+            <div className="space-y-4">
+              <div className="w-16 h-16 rounded-full bg-black text-white flex items-center justify-center mx-auto shadow-md">
+                <FileCheck className="w-8 h-8 text-[#DCFFDB]" />
               </div>
-              <div>
-                <p className="font-heading font-bold text-base text-black">{file.name}</p>
-                <p className="text-xs font-mono text-neutral-500">
-                  {(file.size / (1024 * 1024)).toFixed(2)} MB • {file.type || 'Document'}
+              <div className="space-y-1">
+                <p className="font-heading font-bold text-lg text-black">{file.name}</p>
+                <p className="text-xs font-mono text-[#666666]">
+                  {(file.size / (1024 * 1024)).toFixed(2)} MB &bull; {file.type || 'Document'}
                 </p>
               </div>
-              <p className="text-xs text-emerald-700 font-semibold">
-                ✓ Ready for PaddleOCR inference. Click 'Run OCR Pipeline' below.
-              </p>
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#DCFFDB] text-[#4EA100] text-xs font-semibold">
+                <Check className="w-3.5 h-3.5" />
+                <span>Ready for PaddleOCR inference</span>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="w-14 h-14 rounded-full bg-white border border-[#d9d9d9] flex items-center justify-center mx-auto shadow-2xs">
-                <UploadIcon className="w-6 h-6 text-black" />
+              <div className="w-16 h-16 rounded-full bg-white border border-[#DBDBDB] flex items-center justify-center mx-auto shadow-sm">
+                <UploadIcon className="w-7 h-7 text-black" />
               </div>
-              <div>
-                <p className="font-heading font-semibold text-base text-black">
-                  Drag and drop your bill or click to browse
+              <div className="space-y-1">
+                <p className="font-heading font-semibold text-lg text-black">
+                  Drag and drop your invoice here, or click to browse
                 </p>
-                <p className="text-xs text-neutral-500 mt-1">
-                  Supports PDF, PNG, JPG, WEBP, CSV, XLSX (Up to 15MB)
+                <p className="text-xs text-[#666666] max-w-md mx-auto">
+                  Supports scanned PDF, PNG, JPG, JPEG, TIFF, Excel (XLSX), CSV (Up to 15MB)
                 </p>
+              </div>
+              <div className="pt-2 flex flex-wrap justify-center gap-2">
+                <span className="reelo-pill text-[11px] py-1 px-3 bg-white text-[#333333]">
+                  Hindi &amp; English Bilingual
+                </span>
+                <span className="reelo-pill text-[11px] py-1 px-3 bg-white text-[#333333]">
+                  200 DPI Rasterization
+                </span>
+                <span className="reelo-pill text-[11px] py-1 px-3 bg-white text-[#333333]">
+                  100% Offline / No Data Leak
+                </span>
               </div>
             </div>
           )}
         </div>
 
+        {/* Error Alert */}
         {error && (
           <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center space-x-2">
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-[#FF4F4F] shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {/* 4-Step Processing Progress */}
         {uploading && (
-          <div className="space-y-4 bg-[#f9f9f9] p-6 rounded-[22px] border border-[#d9d9d9]">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 block">
-              Execution Progress
-            </span>
+          <div className="space-y-4 bg-[#F2F2F2] p-6 rounded-[28px] border border-[#DBDBDB]">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] font-bold">
+                PaddleOCR Pipeline Execution
+              </span>
+              <span className="reelo-pill py-0.5 px-2.5 text-[10px] bg-black text-white font-mono border-none">
+                Step {step} of 4
+              </span>
+            </div>
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {steps.map((s, idx) => {
                 const isCurrent = step === idx + 1;
@@ -164,23 +193,23 @@ export default function UploadPage() {
                 return (
                   <div
                     key={idx}
-                    className={`p-3.5 rounded-2xl border text-xs transition ${
+                    className={`p-3.5 rounded-2xl border text-xs transition-all ${
                       isDone
-                        ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                        ? 'bg-[#DCFFDB] border-[#4EA100]/30 text-[#171717]'
                         : isCurrent
-                        ? 'bg-black text-white border-black shadow-sm'
-                        : 'bg-white border-[#d9d9d9] text-neutral-400'
+                          ? 'bg-black text-white border-black shadow-md scale-[1.02]'
+                          : 'bg-white border-[#DBDBDB] text-[#999999]'
                     }`}
                   >
                     <div className="flex items-center space-x-1.5 font-semibold">
                       {isDone ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <Check className="w-3.5 h-3.5 text-[#4EA100]" />
                       ) : isCurrent ? (
-                        <Sparkles className="w-3.5 h-3.5 animate-spin" />
+                        <Sparkles className="w-3.5 h-3.5 text-[#0099FF] animate-spin" />
                       ) : null}
                       <span>{s.title}</span>
                     </div>
-                    <p className={`text-[10px] mt-1 ${isCurrent ? 'text-neutral-300' : 'text-neutral-500'}`}>
+                    <p className={`text-[10px] mt-1 ${isCurrent ? 'text-neutral-300' : 'text-[#666666]'}`}>
                       {s.desc}
                     </p>
                   </div>
@@ -190,27 +219,71 @@ export default function UploadPage() {
           </div>
         )}
 
-        {/* Trigger Button */}
-        <div className="flex justify-end space-x-3">
-          {file && (
-            <button
-              onClick={() => { setFile(null); setError(''); }}
-              className="demo-btn-white px-5 py-2.5 text-xs font-semibold"
-            >
-              Clear
-            </button>
-          )}
+        {/* Action Controls */}
+        <div className="flex items-center justify-between pt-2 border-t border-[#F2F2F2]">
+          <div className="text-xs text-[#666666] font-ui flex items-center space-x-2">
+            <Lock className="w-3.5 h-3.5 text-[#4EA100]" />
+            <span>Bank-grade encryption &bull; Local inference</span>
+          </div>
 
-          <button
-            onClick={handleProcess}
-            disabled={!file || uploading}
-            className="demo-btn-black px-7 py-3 text-xs font-semibold inline-flex items-center space-x-2 disabled:opacity-50"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>{uploading ? 'Processing with PaddleOCR...' : 'Run OCR Pipeline'}</span>
-          </button>
+          <div className="flex space-x-3">
+            {file && (
+              <button
+                type="button"
+                onClick={() => { setFile(null); setError(''); }}
+                className="reelo-btn-white px-5 py-2.5 text-xs font-semibold"
+              >
+                Clear
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={handleProcess}
+              disabled={!file || uploading}
+              className="reelo-btn-black px-7 py-3 text-xs font-semibold inline-flex items-center space-x-2 disabled:opacity-50 shadow-sm"
+            >
+              <Cpu className="w-4 h-4 text-[#0099FF]" />
+              <span>{uploading ? 'Processing with PaddleOCR...' : 'Run PaddleOCR Pipeline'}</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Engine Specs Card */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="reelo-card p-6 bg-white space-y-3">
+          <div className="w-10 h-10 rounded-full bg-[#F2F2F2] flex items-center justify-center">
+            <ScanLine className="w-5 h-5 text-[#0099FF]" />
+          </div>
+          <h3 className="font-heading font-bold text-base text-black">PP-OCRv4 Architecture</h3>
+          <p className="text-xs text-[#666666] leading-relaxed">
+            Ultra-lightweight text detection (DBNet) and recognition (SVTR) trained on diverse Indian commercial typography.
+          </p>
+        </div>
+
+        <div className="reelo-card p-6 bg-white space-y-3">
+          <div className="w-10 h-10 rounded-full bg-[#F2F2F2] flex items-center justify-center">
+            <Globe2 className="w-5 h-5 text-[#4EA100]" />
+          </div>
+          <h3 className="font-heading font-bold text-base text-black">Bilingual Hindi &amp; English</h3>
+          <p className="text-xs text-[#666666] leading-relaxed">
+            Automatic Devanagari Unicode detection with dual-script parsing for state transport, petrol, and local Mandi bills.
+          </p>
+        </div>
+
+        <div className="reelo-card p-6 bg-white space-y-3">
+          <div className="w-10 h-10 rounded-full bg-[#F2F2F2] flex items-center justify-center">
+            <ShieldCheck className="w-5 h-5 text-black" />
+          </div>
+          <h3 className="font-heading font-bold text-base text-black">Open-Source &amp; Private</h3>
+          <p className="text-xs text-[#666666] leading-relaxed">
+            Directly derived from <a href="https://github.com/PaddlePaddle/PaddleOCR.git" target="_blank" rel="noreferrer" className="text-[#0099FF] underline font-medium">PaddleOCR GitHub</a>. Zero data leaves your infrastructure.
+          </p>
         </div>
       </div>
+
     </div>
   );
 }

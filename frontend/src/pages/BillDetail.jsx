@@ -12,7 +12,9 @@ import {
   Save, 
   ExternalLink,
   Info,
-  DollarSign
+  DollarSign,
+  ArrowUpRight,
+  Download
 } from 'lucide-react';
 import { 
   getInvoice, 
@@ -54,13 +56,21 @@ export default function BillDetail() {
   }, [id]);
 
   if (loading) {
-    return <div className="p-12 text-center text-gray-500">Loading invoice inspector...</div>;
+    return (
+      <div className="p-16 text-center text-sm font-ui text-[#999999] flex flex-col items-center justify-center gap-3">
+        <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+        <span>Loading invoice inspector...</span>
+      </div>
+    );
   }
 
   if (!invoice) {
     return (
-      <div className="p-12 text-center text-gray-500">
-        Invoice not found. <Link to="/bills" className="text-emerald-600">Back to bills</Link>
+      <div className="p-16 text-center space-y-4">
+        <h3 className="text-xl font-bold font-heading text-black">Invoice not found</h3>
+        <Link to="/bills" className="reelo-btn-black px-6 py-2.5 text-xs font-semibold">
+          Back to all bills
+        </Link>
       </div>
     );
   }
@@ -125,31 +135,32 @@ export default function BillDetail() {
   const checksPassed = validation.checks_passed || [];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-ui">
+      
       {/* Top Header / Nav Back */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4">
-        <div className="flex items-center space-x-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#DBDBDB] pb-6">
+        <div className="flex items-center space-x-4">
           <Link
             to="/bills"
-            className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 transition"
+            className="w-10 h-10 rounded-full bg-white border border-[#DBDBDB] flex items-center justify-center text-black hover:bg-[#F2F2F2] transition shadow-xs"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <div className="flex items-center space-x-2">
-              <h1 className="text-2xl font-bold text-gray-900 font-mono">
-                {invoice.bill_number || 'Invoice Details'}
+            <div className="flex items-center space-x-3">
+              <h1 className="text-2xl sm:text-3xl font-bold text-black font-heading font-mono">
+                {invoice.bill_number || 'Bill Inspection'}
               </h1>
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+              <span className={`reelo-pill py-0.5 px-3 text-xs font-bold ${
                 invoice.payment_status === 'paid'
-                  ? 'bg-emerald-100 text-emerald-800'
-                  : 'bg-amber-100 text-amber-800'
+                  ? 'bg-[#DCFFDB] text-[#4EA100] border-none'
+                  : 'bg-red-50 text-[#FF4F4F] border-red-200'
               }`}>
                 {invoice.payment_status === 'paid' ? 'Paid' : 'Unpaid'}
               </span>
             </div>
-            <p className="text-xs text-gray-500">
-              Supplier: <span className="font-semibold text-gray-800">{invoice.supplier_name}</span>
+            <p className="text-xs text-[#696969] mt-0.5">
+              Supplier: <strong className="text-black">{invoice.supplier_name}</strong>
             </p>
           </div>
         </div>
@@ -158,10 +169,10 @@ export default function BillDetail() {
         <div className="flex items-center space-x-3">
           <button
             onClick={handleTogglePayment}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 shadow-sm ${
+            className={`px-5 py-2.5 rounded-full text-xs font-semibold transition flex items-center space-x-1.5 shadow-xs ${
               invoice.payment_status === 'paid'
-                ? 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                ? 'bg-[#E6E6E6] text-black hover:bg-[#DBDBDB]'
+                : 'reelo-btn-black'
             }`}
           >
             <Check className="w-4 h-4" />
@@ -172,13 +183,13 @@ export default function BillDetail() {
             <>
               <button
                 onClick={handleApprove}
-                className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition shadow-sm"
+                className="reelo-btn-blue px-4 py-2 text-xs font-semibold"
               >
                 Approve Bill
               </button>
               <button
                 onClick={handleReject}
-                className="px-3 py-2 bg-gray-100 hover:bg-red-50 text-red-600 rounded-lg text-sm font-semibold transition border border-gray-300"
+                className="px-4 py-2 rounded-full border border-red-300 text-[#FF4F4F] bg-white hover:bg-red-50 text-xs font-semibold transition"
               >
                 Reject
               </button>
@@ -189,72 +200,71 @@ export default function BillDetail() {
 
       {/* Main Split View: Inspector */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
         {/* Left Side: Document Preview (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-4">
-          <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 flex items-center space-x-2">
-              <FileText className="w-4 h-4 text-emerald-600" />
+        <div className="lg:col-span-5 reelo-card p-6 sm:p-8 bg-white shadow-sm space-y-4">
+          <div className="flex justify-between items-center border-b border-[#DBDBDB] pb-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-black flex items-center space-x-2 font-ui">
+              <FileText className="w-4 h-4 text-[#0099FF]" />
               <span>Original Document View</span>
             </h2>
-            <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-mono">
-              200 DPI Render
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F2F2F2] text-[#696969] font-mono border border-[#DBDBDB]">
+              200 DPI Raster
             </span>
           </div>
 
-          {/* Simulated High-Res Document Preview with bounding boxes */}
-          <div className="bg-amber-50/40 border border-gray-200 rounded-lg p-6 font-mono text-xs space-y-4 relative overflow-hidden shadow-inner min-h-[420px]">
-            <div className="border-b-2 border-dashed border-gray-300 pb-3 flex justify-between items-start">
+          {/* Simulated High-Res Document Preview */}
+          <div className="bg-[#FAF9F6] border border-[#DBDBDB] rounded-3xl p-6 font-mono text-xs space-y-4 relative overflow-hidden shadow-inner min-h-[420px]">
+            <div className="border-b border-dashed border-[#DBDBDB] pb-3 flex justify-between items-start">
               <div>
-                <p className="font-bold text-sm text-gray-900">{invoice.supplier_name}</p>
-                <p className="text-gray-500 text-[10px]">GSTIN: {invoice.canonical_json?.seller?.gstin || '27AAPFU0939F1ZV'}</p>
-                <p className="text-gray-500 text-[10px]">State: Maharashtra (Code 27)</p>
+                <p className="font-bold text-sm text-black">{invoice.supplier_name}</p>
+                <p className="text-[#696969] text-[10px]">GSTIN: {invoice.canonical_json?.seller?.gstin || '27AAPFU0939F1ZV'}</p>
+                <p className="text-[#696969] text-[10px]">Jurisdiction: Maharashtra (27)</p>
               </div>
               <div className="text-right">
-                <span className="px-2 py-1 bg-yellow-200 border border-yellow-400 text-yellow-900 font-bold rounded">
+                <span className="px-2 py-0.5 bg-yellow-100 border border-yellow-300 text-yellow-900 font-bold text-[10px] rounded-full">
                   TAX INVOICE
                 </span>
-                <p className="text-gray-600 text-[10px] mt-1">Invoice: {invoice.bill_number}</p>
-                <p className="text-gray-500 text-[10px]">
-                  Date: {invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : 'N/A'}
+                <p className="text-black text-[10px] mt-1 font-bold">{invoice.bill_number}</p>
+                <p className="text-[#696969] text-[10px]">
+                  {invoice.invoice_date ? new Date(invoice.invoice_date).toLocaleDateString() : 'N/A'}
                 </p>
               </div>
             </div>
 
-            <div className="border border-emerald-400 bg-emerald-50/50 p-2 rounded relative">
-              <span className="absolute -top-2 right-2 text-[9px] bg-emerald-600 text-white px-1 rounded font-sans font-semibold">
-                Evidence: BBox Extracted [98% Conf]
+            <div className="border border-[#0099FF]/40 bg-[#0099FF]/5 p-2.5 rounded-2xl relative">
+              <span className="absolute -top-2 right-2 text-[8px] bg-[#0099FF] text-white px-2 py-0.5 rounded-full font-sans font-semibold">
+                Bounding Box [98% Confidence]
               </span>
-              <p className="text-gray-700 font-semibold">Billed To:</p>
-              <p className="text-gray-900">{invoice.buyer_name || 'FinSense Enterprise Demo Client'}</p>
+              <p className="text-[#696969] text-[10px] font-semibold">Billed To:</p>
+              <p className="text-black font-bold">{invoice.buyer_name || 'FinSense Enterprise Client'}</p>
             </div>
 
-            <div className="border border-gray-300 rounded overflow-hidden">
+            <div className="border border-[#DBDBDB] rounded-2xl overflow-hidden bg-white">
               <table className="w-full text-[10px]">
-                <thead className="bg-gray-100 border-b border-gray-300 font-bold">
+                <thead className="bg-[#F2F2F2] border-b border-[#DBDBDB] font-bold text-[#696969]">
                   <tr>
-                    <th className="p-1.5 text-left">Item Description</th>
-                    <th className="p-1.5 text-right">Qty</th>
-                    <th className="p-1.5 text-right">Taxable</th>
-                    <th className="p-1.5 text-right">Total</th>
+                    <th className="p-2 text-left">Item Description</th>
+                    <th className="p-2 text-right">Taxable</th>
+                    <th className="p-2 text-right">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-[#DBDBDB]">
                   <tr>
-                    <td className="p-1.5 font-sans">Professional Services & Consulting</td>
-                    <td className="p-1.5 text-right">1</td>
-                    <td className="p-1.5 text-right font-mono">{formatINR(invoice.subtotal)}</td>
-                    <td className="p-1.5 text-right font-mono">{formatINR(invoice.total_amount)}</td>
+                    <td className="p-2 font-sans">Business Supplies &amp; Services</td>
+                    <td className="p-2 text-right font-mono">{formatINR(invoice.subtotal)}</td>
+                    <td className="p-2 text-right font-mono font-bold">{formatINR(invoice.total_amount)}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <div className="border-t border-gray-300 pt-3 space-y-1 text-right text-xs">
-              <p className="text-gray-600">Subtotal: <span className="font-bold">{formatINR(invoice.subtotal)}</span></p>
-              <p className="text-gray-600">GST (18%): <span className="font-bold">{formatINR(invoice.tax_amount)}</span></p>
-              <div className="border-t border-gray-400 pt-1">
-                <p className="text-sm font-bold text-gray-900">
-                  Total Amount: <span className="text-emerald-700">{formatINR(invoice.total_amount)}</span>
+            <div className="border-t border-[#DBDBDB] pt-3 space-y-1 text-right text-xs">
+              <p className="text-[#696969]">Subtotal: <span className="font-bold text-black">{formatINR(invoice.subtotal)}</span></p>
+              <p className="text-[#696969]">GST (18%): <span className="font-bold text-black">{formatINR(invoice.tax_amount)}</span></p>
+              <div className="border-t border-[#DBDBDB] pt-1">
+                <p className="text-sm font-bold text-black font-mono">
+                  Total Reconciled: <span className="text-emerald-600">{formatINR(invoice.total_amount)}</span>
                 </p>
               </div>
             </div>
@@ -263,17 +273,18 @@ export default function BillDetail() {
 
         {/* Right Side: Fields, Validation Report & Reminders (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
+          
           {/* Validation Report Card */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-4">
-            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 flex items-center space-x-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <div className="reelo-card p-6 sm:p-8 bg-white shadow-sm space-y-5">
+            <div className="flex justify-between items-center border-b border-[#DBDBDB] pb-3">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black flex items-center space-x-2 font-ui">
+                <ShieldCheck className="w-4 h-4 text-[#4EA100]" />
                 <span>Deterministic Validation Report</span>
               </h2>
-              <span className={`px-2.5 py-0.5 rounded text-xs font-semibold ${
+              <span className={`reelo-pill py-0.5 px-3 text-xs font-bold ${
                 errors.length === 0
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                  : 'bg-red-50 text-red-700 border border-red-200'
+                  ? 'bg-[#DCFFDB] text-[#4EA100] border-none'
+                  : 'bg-red-50 text-[#FF4F4F] border-red-200'
               }`}>
                 {errors.length === 0 ? '✓ All Rules Passed' : `${errors.length} Critical Issue(s)`}
               </span>
@@ -281,25 +292,25 @@ export default function BillDetail() {
 
             {/* Error alerts with suggestion chips */}
             {errors.map((err, idx) => (
-              <div key={idx} className="p-4 rounded-lg bg-red-50/70 border border-red-200 space-y-2">
+              <div key={idx} className="p-4 rounded-2xl bg-red-50/80 border border-red-200 space-y-2">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-2 text-red-800 font-semibold text-sm">
-                    <AlertTriangle className="w-4 h-4 text-red-600" />
+                  <div className="flex items-center space-x-2 text-red-900 font-semibold text-xs">
+                    <AlertTriangle className="w-4 h-4 text-[#FF4F4F]" />
                     <span>[{err.rule_id}] {err.name || err.rule_key}</span>
                   </div>
-                  <span className="text-xs uppercase px-1.5 py-0.5 rounded bg-red-200 text-red-900 font-bold">
+                  <span className="text-[10px] uppercase px-2 py-0.5 rounded-full bg-red-200 text-red-900 font-bold">
                     {err.severity}
                   </span>
                 </div>
-                <p className="text-xs text-red-700">{err.message}</p>
+                <p className="text-xs text-red-800">{err.message}</p>
                 {err.suggestion && (
                   <div className="pt-2 flex items-center space-x-2">
-                    <span className="text-xs font-semibold text-gray-700">Suggestion:</span>
+                    <span className="text-xs font-semibold text-[#333333]">Suggested Fix:</span>
                     <button
                       onClick={() => handleApplySuggestion(err.field_path, err.suggestion)}
-                      className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 font-mono text-xs font-bold rounded border border-emerald-300 shadow-xs transition flex items-center space-x-1"
+                      className="px-3 py-1 bg-white hover:bg-emerald-50 text-emerald-700 font-mono text-xs font-bold rounded-full border border-emerald-300 shadow-xs transition flex items-center space-x-1"
                     >
-                      <span>Click to Apply: {String(err.suggestion)}</span>
+                      <span>Apply Value: {String(err.suggestion)}</span>
                       <Check className="w-3 h-3" />
                     </button>
                   </div>
@@ -309,12 +320,12 @@ export default function BillDetail() {
 
             {/* Passed checks */}
             {checksPassed.length > 0 && (
-              <div className="pt-2">
-                <p className="text-xs font-semibold text-gray-500 mb-2">Automated Checks Passed:</p>
+              <div className="pt-1">
+                <p className="text-xs font-semibold text-[#696969] mb-2">Automated Checks Passed:</p>
                 <div className="flex flex-wrap gap-2">
                   {checksPassed.map((chk, i) => (
-                    <span key={i} className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs flex items-center space-x-1 font-mono">
-                      <CheckCircle className="w-3 h-3 text-emerald-600" />
+                    <span key={i} className="px-3 py-1 bg-[#F2F2F2] text-black rounded-full text-xs flex items-center space-x-1 font-mono border border-[#DBDBDB]">
+                      <CheckCircle className="w-3 h-3 text-[#4EA100]" />
                       <span>{chk}</span>
                     </span>
                   ))}
@@ -324,54 +335,54 @@ export default function BillDetail() {
           </div>
 
           {/* Extracted Fields Editor */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-4">
-            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700">
-                Extracted Fields & Provenance
+          <div className="reelo-card p-6 sm:p-8 bg-white shadow-sm space-y-5">
+            <div className="flex justify-between items-center border-b border-[#DBDBDB] pb-3">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black font-ui">
+                Extracted Fields &amp; Provenance
               </h2>
-              <span className="text-xs px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
-                High Confidence (96%)
+              <span className="reelo-pill py-0.5 px-3 text-[10px] bg-[#DCFFDB] text-[#4EA100] border-none font-bold">
+                PaddleOCR Conf: 96%
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Bill Number</label>
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-[#696969]">Bill Number</label>
                 <input
                   type="text"
                   value={editFields.bill_number}
                   onChange={(e) => setEditFields({ ...editFields, bill_number: e.target.value })}
-                  className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 border border-[#DBDBDB] bg-[#F2F2F2] rounded-2xl text-xs font-mono text-black focus:outline-none focus:border-black focus:bg-white transition"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Supplier Name</label>
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-[#696969]">Supplier Name</label>
                 <input
                   type="text"
                   value={editFields.supplier_name}
                   onChange={(e) => setEditFields({ ...editFields, supplier_name: e.target.value })}
-                  className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 border border-[#DBDBDB] bg-[#F2F2F2] rounded-2xl text-xs text-black focus:outline-none focus:border-black focus:bg-white transition"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Subtotal (₹)</label>
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-[#696969]">Subtotal (₹)</label>
                 <input
                   type="number"
                   value={editFields.subtotal}
                   onChange={(e) => setEditFields({ ...editFields, subtotal: parseFloat(e.target.value) || 0 })}
-                  className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 border border-[#DBDBDB] bg-[#F2F2F2] rounded-2xl text-xs font-mono text-black focus:outline-none focus:border-black focus:bg-white transition"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Total Amount (₹)</label>
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-[#696969]">Total Amount (₹)</label>
                 <input
                   type="number"
                   value={editFields.total_amount}
                   onChange={(e) => setEditFields({ ...editFields, total_amount: parseFloat(e.target.value) || 0 })}
-                  className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-mono font-bold text-emerald-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 border border-[#DBDBDB] bg-[#F2F2F2] rounded-2xl text-xs font-mono font-bold text-black focus:outline-none focus:border-black focus:bg-white transition"
                 />
               </div>
             </div>
@@ -380,61 +391,18 @@ export default function BillDetail() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-4 py-2 bg-gray-900 hover:bg-black text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1.5 disabled:opacity-50"
+                className="reelo-btn-black px-6 py-2.5 text-xs font-semibold gap-1.5 shadow-sm"
               >
                 <Save className="w-3.5 h-3.5" />
-                <span>{saving ? 'Saving...' : 'Save & Revalidate'}</span>
+                <span>{saving ? 'Saving...' : 'Save Revisions'}</span>
               </button>
             </div>
           </div>
 
-          {/* Payment & Reminder Card (Master Spec Section 13 & 14) */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-4">
-            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-gray-700 flex items-center space-x-2">
-                <Clock className="w-4 h-4 text-emerald-600" />
-                <span>Payment Schedule & Reminders</span>
-              </h2>
-              <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
-                Rule: 10 Days + Every 2 Days
-              </span>
-            </div>
-
-            <div className="space-y-3 text-sm">
-              <p className="text-xs text-gray-500">
-                Reminders are automatically scheduled 10 days after receipt, repeating every 2 days until marked as paid.
-              </p>
-
-              <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 space-y-2">
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500">First Scheduled Fire:</span>
-                  <span className="font-semibold text-gray-800">10 Days after Receipt (09:00 IST)</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500">Repeat Frequency:</span>
-                  <span className="font-semibold text-gray-800">Every 2 days while unpaid</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500">Google Calendar Sync:</span>
-                  <span className="font-semibold text-emerald-700">
-                    {calendarSynced ? 'Synced (RRULE:FREQ=DAILY;INTERVAL=2)' : 'Ready for Confirmation'}
-                  </span>
-                </div>
-              </div>
-
-              {!calendarSynced && invoice.payment_status !== 'paid' && (
-                <button
-                  onClick={() => setCalendarSynced(true)}
-                  className="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-xs font-semibold border border-emerald-300 transition flex items-center justify-center space-x-1.5"
-                >
-                  <Calendar className="w-4 h-4 text-emerald-600" />
-                  <span>Confirm & Sync to Google Calendar (Simulator)</span>
-                </button>
-              )}
-            </div>
-          </div>
         </div>
+
       </div>
+
     </div>
   );
 }

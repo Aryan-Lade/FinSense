@@ -32,95 +32,94 @@ export default function Reminders() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-ui">
+      
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Upcoming Payment Reminders</h1>
-          <p className="text-sm text-gray-500">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="reelo-pill py-0.5 px-3 text-xs bg-white">
+              <Calendar className="w-3.5 h-3.5 text-[#0099FF]" />
+              <span>Statutory Calendar</span>
+            </span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-black font-heading">
+            Payment Reminders
+          </h1>
+          <p className="text-sm text-[#696969] mt-1">
             Automatic schedules: First reminder 10 days after receipt, recurring every 2 days while unpaid.
           </p>
         </div>
 
         {/* Demo Clock Simulator */}
-        <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-center space-x-3">
+        <div className="reelo-card p-3.5 bg-white border border-[#DBDBDB] flex items-center space-x-4 shadow-sm">
           <div>
-            <span className="text-[11px] font-bold uppercase text-amber-800 tracking-wider block">
-              Demo Clock (Simulated)
+            <span className="text-[10px] font-bold uppercase text-[#999999] tracking-wider block">
+              Time Simulator
             </span>
-            <span className="text-xs font-mono font-semibold text-gray-800">
+            <span className="text-xs font-mono font-bold text-black">
               +{simulatedDays} Days Advanced
             </span>
           </div>
           <button
             onClick={() => handleAdvance(2)}
-            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-xs"
+            className="reelo-btn-black px-4 py-2 text-xs font-semibold flex items-center space-x-1.5"
           >
             <FastForward className="w-3.5 h-3.5" />
             <span>+2 Days</span>
           </button>
-          <button
-            onClick={() => handleAdvance(10)}
-            className="px-3 py-1.5 bg-gray-900 hover:bg-black text-white rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-xs"
-          >
-            <FastForward className="w-3.5 h-3.5" />
-            <span>+10 Days</span>
-          </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        {reminders.length === 0 ? (
-          <div className="p-12 text-center space-y-2 text-gray-500">
-            <Clock className="w-10 h-10 text-gray-400 mx-auto" />
-            <p className="font-semibold text-gray-800">No scheduled reminders active</p>
-            <p className="text-xs">Reminders are scheduled automatically when unpaid bills are processed.</p>
+      {/* Main List */}
+      <div className="reelo-card p-6 sm:p-8 bg-white shadow-sm space-y-4">
+        <h2 className="text-xl font-bold font-heading text-black">Scheduled Due Dates</h2>
+
+        {loading ? (
+          <div className="p-12 text-center text-sm text-[#999999] flex flex-col items-center justify-center gap-3">
+            <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+            <span>Loading scheduled reminders...</span>
+          </div>
+        ) : reminders.length === 0 ? (
+          <div className="p-12 text-center space-y-2">
+            <p className="text-sm font-bold text-black font-heading">No pending payment reminders</p>
+            <p className="text-xs text-[#696969]">All invoices are settled or scheduled beyond the alert window.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-600">
-              <thead className="bg-gray-50 text-xs uppercase font-semibold text-gray-500 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-3">Invoice ID</th>
-                  <th className="px-6 py-3">Rule Policy</th>
-                  <th className="px-6 py-3">First Fire At</th>
-                  <th className="px-6 py-3">Repeat Cycle</th>
-                  <th className="px-6 py-3">Calendar Sync</th>
-                  <th className="px-6 py-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {reminders.map((rem) => (
-                  <tr key={rem.id} className="hover:bg-gray-50/80 transition-colors">
-                    <td className="px-6 py-4 font-mono font-medium text-gray-900">
-                      {rem.invoice_id?.slice(0, 8)}...
-                    </td>
-                    <td className="px-6 py-4 font-semibold text-gray-800">
-                      {rem.rule_type === 'after_receipt' ? '10 Days Post-Receipt' : rem.rule_type}
-                    </td>
-                    <td className="px-6 py-4 text-gray-500 font-mono text-xs">
-                      {rem.first_fire_at ? new Date(rem.first_fire_at).toLocaleString() : 'N/A'}
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      Every {rem.repeat_every_days || 2} days
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        <Calendar className="w-3 h-3 mr-1" />
-                        {rem.calendar_sync_status || 'Pending'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                        {rem.status || 'Scheduled'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-3">
+            {reminders.map((rem, idx) => (
+              <div 
+                key={idx}
+                className="p-4 rounded-2xl bg-[#F2F2F2] border border-[#DBDBDB] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:bg-[#E6E6E6]/60 transition"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-2xl bg-white border border-[#DBDBDB] flex items-center justify-center text-amber-500">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-black font-heading">
+                      {rem.supplier_name || 'Vendor Payment'}
+                    </h4>
+                    <p className="text-xs text-[#696969] font-mono">
+                      Bill #{rem.bill_number || 'N/A'} • Due: {rem.due_date ? new Date(rem.due_date).toLocaleDateString() : 'Immediate'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="reelo-pill py-0.5 px-3 text-xs font-mono font-bold bg-white text-black">
+                    ₹ {rem.total_amount?.toLocaleString('en-IN') || '0'}
+                  </span>
+                  <span className="reelo-pill py-0.5 px-2.5 text-[10px] bg-amber-100 text-amber-800 border-none font-bold">
+                    Active Alert
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
+
     </div>
   );
 }
