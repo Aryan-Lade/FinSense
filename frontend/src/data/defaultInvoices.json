@@ -1,0 +1,1728 @@
+[
+  {
+    "document_id": "cfbdb0a9-e3a8-42d2-877a-ddf307c56187",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "EST/23-24",
+    "supplier_id": "a0520e41-a50a-435f-8fd3-7209e423f6fb",
+    "supplier_name": "Darshan Engineering Works",
+    "buyer_name": "FinSense Enterprise Account",
+    "invoice_date": "2026-10-10 12:27:36.005993",
+    "due_date": "2026-10-25 12:27:36.005993",
+    "upload_date": "2026-10-10 12:27:36",
+    "currency": "INR",
+    "subtotal": 97984.0,
+    "tax_amount": 400.0,
+    "total_amount": 98384.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "approved",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 0,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "EST/23-24",
+        "invoice_date": "2026-10-10",
+        "due_date": null,
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 98384.0
+      },
+      "seller": {
+        "legal_name": "Darshan Engineering Works",
+        "gstin": "24AIAPP0988Q1ZN",
+        "state": "Gujarat",
+        "state_code": "24"
+      },
+      "buyer": {
+        "legal_name": "FinSense Enterprise Account",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "totals": {
+        "total_taxable_value": 97984.0,
+        "discount": 0.0,
+        "total_cgst": 200.0,
+        "total_sgst": 200.0,
+        "total_igst": 0.0,
+        "total_tax": 400.0,
+        "cgst_rate": 0.0,
+        "sgst_rate": 0.0,
+        "igst_rate": 0.0,
+        "total_amount": 98384.0,
+        "amount_in_words": 98384.0
+      },
+      "line_items": []
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.99,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "15-Digit Seller GSTIN (24AIAPP0988Q1ZN - Gujarat)",
+        "Invoice Reference No. (EST/23-24)",
+        "Tax Arithmetic Reconciled (0.0% CGST + 0.0% SGST = ₹400.00)",
+        "Amount in Words Verified (₹98,384.00)",
+        "Grand Total Verified (₹97,984.00 + ₹400.00 = ₹98,384.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 12:27:36",
+    "updated_at": "2026-10-10 12:27:36",
+    "id": "5ed8ad5c-51f9-4523-ab07-33e362713a63"
+  },
+  {
+    "document_id": "da57615e-77ed-49e7-92c0-77f349105082",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "621",
+    "supplier_id": "e875a826-0d89-4493-8442-683d275e2eeb",
+    "supplier_name": "4-Jul-2024",
+    "buyer_name": "Latha Enterprises",
+    "invoice_date": "2024-07-04 00:00:00.000000",
+    "due_date": "2024-07-19 00:00:00.000000",
+    "upload_date": "2026-10-10 12:26:05",
+    "currency": "INR",
+    "subtotal": 28000.0,
+    "tax_amount": 0.0,
+    "total_amount": 28000.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "approved",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 0,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "621",
+        "invoice_date": "2024-07-04",
+        "due_date": "2024-07-19",
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 28000.0
+      },
+      "seller": {
+        "legal_name": "4-Jul-2024",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "buyer": {
+        "legal_name": "Latha Enterprises",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "totals": {
+        "total_taxable_value": 28000.0,
+        "discount": 0.0,
+        "total_cgst": 0.0,
+        "total_sgst": 0.0,
+        "total_igst": 0.0,
+        "total_tax": 0.0,
+        "cgst_rate": 0.0,
+        "sgst_rate": 0.0,
+        "igst_rate": 0.0,
+        "total_amount": 28000.0,
+        "amount_in_words": 28000.0
+      },
+      "line_items": []
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.5,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "Invoice Reference No. (621)",
+        "Invoice Issue Date (04-Jul-2024)",
+        "Exempt / Zero-rated GST Ledger Entry Verified",
+        "Amount in Words Verified (₹28,000.00)",
+        "Grand Total Verified (₹28,000.00 + ₹0.00 = ₹28,000.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 12:26:05",
+    "updated_at": "2026-10-10 12:26:05",
+    "id": "485411b0-3e4e-4412-aa82-389e18adea10"
+  },
+  {
+    "document_id": "58d0da64-8cd7-4b9b-b551-a20aabeb1599",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "Surabhi",
+    "supplier_id": "88f62630-a344-4904-87a5-8a3788ab421c",
+    "supplier_name": "e-lnvoice",
+    "buyer_name": "Buyer's Order No.",
+    "invoice_date": "2020-12-21 00:00:00.000000",
+    "due_date": "2021-01-05 00:00:00.000000",
+    "upload_date": "2026-10-10 12:22:19",
+    "currency": "INR",
+    "subtotal": 4130.0,
+    "tax_amount": 0.0,
+    "total_amount": 4130.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "approved",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 0,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "Surabhi",
+        "invoice_date": "2020-12-21",
+        "due_date": "2021-01-05",
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 4130.0
+      },
+      "seller": {
+        "legal_name": "e-lnvoice",
+        "gstin": "29AAFFC8126N1ZZ",
+        "state": "Karnataka",
+        "state_code": "29"
+      },
+      "buyer": {
+        "legal_name": "Buyer's Order No.",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "totals": {
+        "total_taxable_value": 4130.0,
+        "discount": 0.0,
+        "total_cgst": 0.0,
+        "total_sgst": 0.0,
+        "total_igst": 0.0,
+        "total_tax": 0.0,
+        "cgst_rate": 315.0,
+        "sgst_rate": 315.0,
+        "igst_rate": 0.0,
+        "total_amount": 4130.0,
+        "amount_in_words": 4130.0
+      },
+      "line_items": []
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.99,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "15-Digit Seller GSTIN (29AAFFC8126N1ZZ - Karnataka)",
+        "Invoice Reference No. (Surabhi)",
+        "Invoice Issue Date (21-Dec-2020)",
+        "Exempt / Zero-rated GST Ledger Entry Verified",
+        "Amount in Words Verified (₹4,130.00)",
+        "Grand Total Verified (₹4,130.00 + ₹0.00 = ₹4,130.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 12:22:19",
+    "updated_at": "2026-10-10 12:22:19",
+    "id": "fd6599c2-bd23-42e6-b967-9616d49d277a"
+  },
+  {
+    "document_id": "77f818ad-c23d-4e29-abc5-dba6cfb66362",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "CM-2026-001",
+    "supplier_id": "f7c88ad7-9fe2-4d0b-834a-a83c069a6b40",
+    "supplier_name": "MORESHWAR ENTERPRISES",
+    "buyer_name": "PravinElectronics Mhaswad",
+    "invoice_date": null,
+    "due_date": "2026-10-25 12:00:48.491797",
+    "upload_date": "2026-10-10 12:00:48",
+    "currency": "INR",
+    "subtotal": 6300.0,
+    "tax_amount": 0.0,
+    "total_amount": 6300.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "approved",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 0,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "CM-2026-001",
+        "invoice_date": "2026-10-10",
+        "due_date": null,
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 6300.0
+      },
+      "seller": {
+        "legal_name": "MORESHWAR ENTERPRISES",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "buyer": {
+        "legal_name": "PravinElectronics Mhaswad",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "totals": {
+        "total_taxable_value": 6300.0,
+        "discount": 0.0,
+        "total_cgst": 0.0,
+        "total_sgst": 0.0,
+        "total_igst": 0.0,
+        "total_tax": 0.0,
+        "cgst_rate": 0.0,
+        "sgst_rate": 0.0,
+        "igst_rate": 0.0,
+        "total_amount": 6300.0,
+        "amount_in_words": 6300.0
+      },
+      "line_items": [
+        {
+          "description": "20mm Polycab Bend",
+          "hsn_sac": "8544",
+          "quantity": 1500,
+          "unit": "pcs",
+          "unit_price": 0.0,
+          "taxable_amount": 2.0,
+          "total_amount": 2.0
+        },
+        {
+          "description": "Bend",
+          "hsn_sac": "8544",
+          "quantity": 1500,
+          "unit": "pcs",
+          "unit_price": 4.2,
+          "taxable_amount": 6300.0,
+          "total_amount": 6300.0
+        }
+      ]
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.5,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "Invoice Reference No. (CM-2026-001)",
+        "Exempt / Zero-rated GST Ledger Entry Verified",
+        "Amount in Words Verified (₹6,300.00)",
+        "Grand Total Verified (₹6,300.00 + ₹0.00 = ₹6,300.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 12:00:48",
+    "updated_at": "2026-10-10 12:00:48",
+    "id": "d0e408bc-3797-4774-af30-520b4b17cc66"
+  },
+  {
+    "document_id": "f8d80707-5f1e-4828-b84a-24d2d4e8d0e6",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "387/2023-24",
+    "supplier_id": "e053b74d-accd-4904-976c-adf317d676f1",
+    "supplier_name": "Refrens Internet Pvt. Ltd.",
+    "buyer_name": "MOHITJAIN",
+    "invoice_date": "2023-11-06",
+    "due_date": "2026-10-25 11:47:47.048175",
+    "upload_date": "2026-10-10 11:47:47",
+    "currency": "INR",
+    "subtotal": 113600.0,
+    "tax_amount": 20448.0,
+    "total_amount": 134048.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "approved",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 25,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "387/2023-24",
+        "invoice_date": "2023-11-06",
+        "due_date": "2023-11-21",
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 67024.0
+      },
+      "seller": {
+        "legal_name": "Refrens Internet Pvt. Ltd.",
+        "gstin": "29AAJCR7259L1ZI",
+        "state": "Karnataka",
+        "state_code": "29"
+      },
+      "buyer": {
+        "legal_name": "MOHITJAIN",
+        "gstin": "07PDUJS4678K1Z4",
+        "state": "Delhi",
+        "state_code": "07"
+      },
+      "totals": {
+        "total_taxable_value": 113600.0,
+        "discount": 28400.0,
+        "total_cgst": 13632.0,
+        "total_sgst": 6816.0,
+        "total_igst": 0.0,
+        "total_tax": 20448.0,
+        "cgst_rate": 12.0,
+        "sgst_rate": 6.0,
+        "igst_rate": 0.0,
+        "total_amount": 134048.0,
+        "amount_in_words": 67024.0
+      },
+      "line_items": [
+        {
+          "description": "LED LIGHTS",
+          "hsn_sac": "85013410",
+          "quantity": 50,
+          "unit": "pcs",
+          "unit_price": 500.0,
+          "taxable_amount": 25000.0,
+          "total_amount": 25000.0
+        },
+        {
+          "description": "Bulbs",
+          "hsn_sac": "85013420",
+          "quantity": 20,
+          "unit": "Dozens",
+          "unit_price": 2300.0,
+          "taxable_amount": 46000.0,
+          "total_amount": 46000.0
+        },
+        {
+          "description": "LED LIGHTS",
+          "hsn_sac": "85013410",
+          "quantity": 50,
+          "unit": "pcs",
+          "unit_price": 500.0,
+          "taxable_amount": 25000.0,
+          "total_amount": 25000.0
+        },
+        {
+          "description": "Bulbs",
+          "hsn_sac": "85013420",
+          "quantity": 20,
+          "unit": "Dozens",
+          "unit_price": 2300.0,
+          "taxable_amount": 46000.0,
+          "total_amount": 46000.0
+        }
+      ]
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.99,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "15-Digit Seller GSTIN (29AAJCR7259L1ZI - Karnataka)",
+        "Buyer GSTIN (07PDUJS4678K1Z4 - Delhi)",
+        "Invoice Reference No. (387/2023-24)",
+        "Invoice Issue Date (06-Nov-2023)",
+        "Tax Arithmetic Reconciled (12.0% CGST + 6.0% SGST = ₹20,448.00)",
+        "Amount in Words Verified (₹67,024.00)",
+        "Grand Total Verified (₹113,600.00 + ₹20,448.00 = ₹134,048.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 11:47:47",
+    "updated_at": "2026-10-10 11:47:47",
+    "id": "3b109fd2-7a49-4ad6-a67f-2bbe23d90b1f"
+  },
+  {
+    "document_id": "0087d72c-61b4-497c-9e0c-bd0d369d9637",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "SunstarITSolutions",
+    "supplier_id": "e245f46e-437a-4f44-9c18-8a96882f60c3",
+    "supplier_name": "SunstarITSolutions",
+    "buyer_name": "ProgressiveStaffingServices",
+    "invoice_date": "2023-04-20",
+    "due_date": "2023-05-05 00:00:00.000000",
+    "upload_date": "2026-10-10 11:43:41",
+    "currency": "INR",
+    "subtotal": 65842.37,
+    "tax_amount": 11851.63,
+    "total_amount": 77694.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "needs_review",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 25,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "SunstarITSolutions",
+        "invoice_date": "2023-04-20",
+        "due_date": "2023-05-05",
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 77694.0
+      },
+      "seller": {
+        "legal_name": "SunstarITSolutions",
+        "gstin": "27ALRPP5156G1ZL",
+        "state": "Maharashtra",
+        "state_code": "27"
+      },
+      "buyer": {
+        "legal_name": "ProgressiveStaffingServices",
+        "gstin": "27BNTPJ4145C1ZX",
+        "state": "Maharashtra",
+        "state_code": "27"
+      },
+      "totals": {
+        "total_taxable_value": 65842.37,
+        "discount": 0.0,
+        "total_cgst": 5925.81,
+        "total_sgst": 5925.81,
+        "total_igst": 0.0,
+        "total_tax": 11851.63,
+        "cgst_rate": 9.0,
+        "sgst_rate": 9.0,
+        "igst_rate": 0.0,
+        "total_amount": 77694.0,
+        "amount_in_words": 77694.0
+      },
+      "line_items": [
+        {
+          "description": "DESKTOP (HP Core i3)",
+          "hsn_sac": "847130",
+          "quantity": 2,
+          "unit": "pcs",
+          "unit_price": 31271.19,
+          "taxable_amount": 62542.37,
+          "total_amount": 73800.0
+        },
+        {
+          "description": "RAM (8GB DDR4)",
+          "hsn_sac": "847330",
+          "quantity": 2,
+          "unit": "pcs",
+          "unit_price": 1650.0,
+          "taxable_amount": 3300.0,
+          "total_amount": 3894.0
+        },
+        {
+          "description": "DESKTOP (HP Core i3)",
+          "hsn_sac": "847130",
+          "quantity": 2,
+          "unit": "pcs",
+          "unit_price": 31271.19,
+          "taxable_amount": 62542.37,
+          "total_amount": 73800.0
+        }
+      ]
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.99,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "15-Digit Seller GSTIN (27ALRPP5156G1ZL - Maharashtra)",
+        "Buyer GSTIN (27BNTPJ4145C1ZX - Maharashtra)",
+        "Invoice Reference No. (SunstarITSolutions)",
+        "Invoice Issue Date (20-Apr-2023)",
+        "Tax Arithmetic Reconciled (9.0% CGST + 9.0% SGST = ₹11,851.63)",
+        "Amount in Words Verified (₹77,694.00)",
+        "Grand Total Verified (₹65,842.37 + ₹11,851.63 = ₹77,694.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 11:43:41",
+    "updated_at": "2026-10-10 11:43:41",
+    "id": "95451dab-5df4-4a67-b41e-e25309d5ffda"
+  },
+  {
+    "document_id": "8e9a9602-f978-4ecf-b591-d7367c15e91b",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "INV-2026-999",
+    "supplier_id": "493896bc-d23b-4efa-a1c2-a1a1bf8652e1",
+    "supplier_name": "Supplier: Acme Tech India Pvt Ltd",
+    "buyer_name": "FinSense Enterprise Account",
+    "invoice_date": null,
+    "due_date": "2026-10-25 00:00:00.000000",
+    "upload_date": "2026-10-10 11:41:17",
+    "currency": "INR",
+    "subtotal": 10000.0,
+    "tax_amount": 0.0,
+    "total_amount": 10000.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "needs_review",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 25,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "INV-2026-999",
+        "invoice_date": "2026-10-10",
+        "due_date": null,
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 0.0
+      },
+      "seller": {
+        "legal_name": "Supplier: Acme Tech India Pvt Ltd",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "buyer": {
+        "legal_name": "FinSense Enterprise Account",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "totals": {
+        "total_taxable_value": 10000.0,
+        "discount": 0.0,
+        "total_cgst": 0.0,
+        "total_sgst": 0.0,
+        "total_igst": 0.0,
+        "total_tax": 0.0,
+        "cgst_rate": 0.0,
+        "sgst_rate": 0.0,
+        "igst_rate": 0.0,
+        "total_amount": 10000.0,
+        "amount_in_words": 0.0
+      },
+      "line_items": []
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.5,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "Invoice Reference No. (INV-2026-999)",
+        "Exempt / Zero-rated GST Ledger Entry Verified",
+        "Grand Total Verified (₹10,000.00 + ₹0.00 = ₹10,000.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 11:41:17",
+    "updated_at": "2026-10-10 11:41:17",
+    "id": "c6e67bb0-1e7e-4cc3-908e-ef2c9fa5478b"
+  },
+  {
+    "document_id": "37efbfb5-28cf-47b4-bbde-905af5333cf8",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "INV-9999",
+    "supplier_id": "ba4b9bf8-2c6e-4201-a73c-c49b73f80eef",
+    "supplier_name": "Total: 5000",
+    "buyer_name": "FinSense Enterprise Account",
+    "invoice_date": null,
+    "due_date": "2026-10-25 11:37:45.204933",
+    "upload_date": "2026-10-10 11:37:45",
+    "currency": "INR",
+    "subtotal": 5000.0,
+    "tax_amount": 0.0,
+    "total_amount": 5000.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "needs_review",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 25,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "INV-9999",
+        "invoice_date": "2026-10-10",
+        "due_date": null,
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 0.0
+      },
+      "seller": {
+        "legal_name": "Total: 5000",
+        "gstin": "27AABCU9603R1ZM",
+        "state": "Maharashtra",
+        "state_code": "27"
+      },
+      "buyer": {
+        "legal_name": "FinSense Enterprise Account",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "totals": {
+        "total_taxable_value": 5000.0,
+        "discount": 0.0,
+        "total_cgst": 0.0,
+        "total_sgst": 0.0,
+        "total_igst": 0.0,
+        "total_tax": 0.0,
+        "cgst_rate": 0.0,
+        "sgst_rate": 0.0,
+        "igst_rate": 0.0,
+        "total_amount": 5000.0,
+        "amount_in_words": 0.0
+      },
+      "line_items": []
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.99,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "15-Digit Seller GSTIN (27AABCU9603R1ZM - Maharashtra)",
+        "Invoice Reference No. (INV-9999)",
+        "Exempt / Zero-rated GST Ledger Entry Verified",
+        "Grand Total Verified (₹5,000.00 + ₹0.00 = ₹5,000.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 11:37:45",
+    "updated_at": "2026-10-10 11:37:45",
+    "id": "f2db798e-8344-4c4a-b155-1d99f9f465ab"
+  },
+  {
+    "document_id": "29e63724-5895-478d-93e6-be76cf046e7e",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "ICR44789",
+    "supplier_id": "d6761173-555b-4817-a91c-1215889a5541",
+    "supplier_name": "APOLLOHOSPITALS",
+    "buyer_name": "Narayan S Hegde",
+    "invoice_date": "2023-10-29",
+    "due_date": "2023-11-13 00:00:00.000000",
+    "upload_date": "2026-10-10 11:32:03",
+    "currency": "INR",
+    "subtotal": 99500.0,
+    "tax_amount": 0.0,
+    "total_amount": 99500.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "needs_review",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 25,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "ICR44789",
+        "invoice_date": "2023-10-29",
+        "due_date": "2023-11-13",
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 99500.0
+      },
+      "seller": {
+        "legal_name": "APOLLOHOSPITALS",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "buyer": {
+        "legal_name": "Narayan S Hegde",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "totals": {
+        "total_taxable_value": 99500.0,
+        "discount": 0.0,
+        "total_cgst": 0.0,
+        "total_sgst": 0.0,
+        "total_igst": 0.0,
+        "total_tax": 0.0,
+        "cgst_rate": 0.0,
+        "sgst_rate": 0.0,
+        "igst_rate": 0.0,
+        "total_amount": 99500.0,
+        "amount_in_words": 99500.0
+      },
+      "line_items": [
+        {
+          "description": "Ward Charges",
+          "hsn_sac": "998311",
+          "quantity": 1,
+          "unit_price": 8000.0,
+          "taxable_amount": 8000.0,
+          "total_amount": 8000.0
+        },
+        {
+          "description": "Neural Surgery Charges for CHOREA Disease (including DoctorFees)",
+          "hsn_sac": "998311",
+          "quantity": 1,
+          "unit_price": 85000.0,
+          "taxable_amount": 85000.0,
+          "total_amount": 85000.0
+        },
+        {
+          "description": "Medicine Charges",
+          "hsn_sac": "998311",
+          "quantity": 1,
+          "unit_price": 3500.0,
+          "taxable_amount": 3500.0,
+          "total_amount": 3500.0
+        },
+        {
+          "description": "Investigation Charges",
+          "hsn_sac": "998311",
+          "quantity": 1,
+          "unit_price": 3000.0,
+          "taxable_amount": 3000.0,
+          "total_amount": 3000.0
+        }
+      ]
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.5,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "Invoice Reference No. (ICR44789)",
+        "Invoice Issue Date (29-Oct-2023)",
+        "Exempt / Zero-rated GST Ledger Entry Verified",
+        "Amount in Words Verified (₹99,500.00)",
+        "Grand Total Verified (₹99,500.00 + ₹0.00 = ₹99,500.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 11:32:03",
+    "updated_at": "2026-10-10 11:32:03",
+    "id": "98b1dd3c-4d97-4dec-93ae-a4d36a648487"
+  },
+  {
+    "document_id": "8072d5f5-2573-4368-8d5f-1e3ea56911b7",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "SunstarIT",
+    "supplier_id": "e245f46e-437a-4f44-9c18-8a96882f60c3",
+    "supplier_name": "SunstarIT Solutions",
+    "buyer_name": "Progressive Staffing Services",
+    "invoice_date": "2023-04-20",
+    "due_date": "2023-05-05 00:00:00.000000",
+    "upload_date": "2026-10-10 10:57:37",
+    "currency": "INR",
+    "subtotal": 65842.37,
+    "tax_amount": 11851.63,
+    "total_amount": 77694.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "needs_review",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 25,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "SunstarIT",
+        "invoice_date": "2023-04-20",
+        "due_date": "2023-05-05",
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 77694.0
+      },
+      "seller": {
+        "legal_name": "SunstarIT Solutions",
+        "gstin": "27ALRPP5156G1ZL",
+        "state": "Maharashtra",
+        "state_code": "27"
+      },
+      "buyer": {
+        "legal_name": "Progressive Staffing Services",
+        "gstin": "27BNTPJ4145C1ZX",
+        "state": "Maharashtra",
+        "state_code": "27"
+      },
+      "totals": {
+        "total_taxable_value": 65842.37,
+        "discount": 0.0,
+        "total_cgst": 5925.81,
+        "total_sgst": 5925.81,
+        "total_igst": 0.0,
+        "total_tax": 11851.63,
+        "cgst_rate": 9.0,
+        "sgst_rate": 9.0,
+        "igst_rate": 0.0,
+        "total_amount": 77694.0,
+        "amount_in_words": 77694.0
+      },
+      "line_items": [
+        {
+          "description": "DESKTOP (HP Core i3)",
+          "hsn_sac": "847130",
+          "quantity": 2,
+          "unit": "pcs",
+          "unit_price": 31271.19,
+          "taxable_amount": 62542.37,
+          "total_amount": 73800.0
+        },
+        {
+          "description": "RAM (8GB DDR4)",
+          "hsn_sac": "847330",
+          "quantity": 2,
+          "unit": "pcs",
+          "unit_price": 1650.0,
+          "taxable_amount": 3300.0,
+          "total_amount": 3894.0
+        },
+        {
+          "description": "DESKTOP (HP Core i3)",
+          "hsn_sac": "847130",
+          "quantity": 2,
+          "unit": "pcs",
+          "unit_price": 31271.19,
+          "taxable_amount": 62542.37,
+          "total_amount": 73800.0
+        }
+      ]
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.99,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "15-Digit Seller GSTIN (27ALRPP5156G1ZL - Maharashtra)",
+        "Buyer GSTIN (27BNTPJ4145C1ZX - Maharashtra)",
+        "Invoice Reference No. (SunstarIT)",
+        "Invoice Issue Date (20-Apr-2023)",
+        "Tax Arithmetic Reconciled (9.0% CGST + 9.0% SGST = ₹11,851.63)",
+        "Amount in Words Verified (₹77,694.00)",
+        "Grand Total Verified (₹65,842.37 + ₹11,851.63 = ₹77,694.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 10:57:37",
+    "updated_at": "2026-10-10 10:57:37",
+    "id": "2bf1ad1e-e36d-4902-b61d-da95586f655a"
+  },
+  {
+    "document_id": "98c3efe5-41ba-4f11-be06-cc18fb59177b",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "INV-9902",
+    "supplier_id": "cfc03824-8a5e-4a49-a758-c2b7b85cb3c5",
+    "supplier_name": "GSTIN: 27 AABC R2026.A1Z5",
+    "buyer_name": "FinSense Enterprise Account",
+    "invoice_date": "2024-10-12",
+    "due_date": "2024-10-27 00:00:00.000000",
+    "upload_date": "2026-10-10 10:43:08",
+    "currency": "INR",
+    "subtotal": 0.0,
+    "tax_amount": 0.0,
+    "total_amount": 0.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "needs_review",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 25,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "INV-9902",
+        "invoice_date": "2024-10-12",
+        "due_date": "2024-10-27",
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 0.0
+      },
+      "seller": {
+        "legal_name": "GSTIN: 27 AABC R2026.A1Z5",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "buyer": {
+        "legal_name": "FinSense Enterprise Account",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "totals": {
+        "total_taxable_value": 0.0,
+        "discount": 0.0,
+        "total_cgst": 0.0,
+        "total_sgst": 0.0,
+        "total_igst": 0.0,
+        "total_tax": 0.0,
+        "cgst_rate": 0.0,
+        "sgst_rate": 0.0,
+        "igst_rate": 0.0,
+        "total_amount": 0.0,
+        "amount_in_words": 0.0
+      },
+      "line_items": []
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.5,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "Invoice Reference No. (INV-9902)",
+        "Invoice Issue Date (12-Oct-2024)",
+        "Grand Total Verified (₹0.00 + ₹0.00 = ₹0.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 10:43:08",
+    "updated_at": "2026-10-10 10:43:08",
+    "id": "b925c54f-c42a-4879-99e3-7663f18242ae"
+  },
+  {
+    "document_id": "9c38be4a-b634-4924-bdf9-260c87db5887",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "INV-9901",
+    "supplier_id": "f3ef33e3-f149-490c-9093-027b2cfa1d8b",
+    "supplier_name": "GSTIN: 27AABC R2026A1Z5",
+    "buyer_name": "FinSense Enterprise Account",
+    "invoice_date": "2024-10-12",
+    "due_date": "2024-10-27 00:00:00.000000",
+    "upload_date": "2026-10-10 10:42:30",
+    "currency": "INR",
+    "subtotal": 0.0,
+    "tax_amount": 0.0,
+    "total_amount": 0.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "needs_review",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 25,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "INV-9901",
+        "invoice_date": "2024-10-12",
+        "due_date": "2024-10-27",
+        "currency": "INR",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "en"
+        ],
+        "amount_in_words": 0.0
+      },
+      "seller": {
+        "legal_name": "GSTIN: 27AABC R2026A1Z5",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "buyer": {
+        "legal_name": "FinSense Enterprise Account",
+        "gstin": null,
+        "state": "India",
+        "state_code": null
+      },
+      "totals": {
+        "total_taxable_value": 0.0,
+        "discount": 0.0,
+        "total_cgst": 0.0,
+        "total_sgst": 0.0,
+        "total_igst": 0.0,
+        "total_tax": 0.0,
+        "cgst_rate": 0.0,
+        "sgst_rate": 0.0,
+        "igst_rate": 0.0,
+        "total_amount": 0.0,
+        "amount_in_words": 0.0
+      },
+      "line_items": []
+    },
+    "provenance_json": {
+      "meta.invoice_number": {
+        "confidence": 0.98,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "seller.gstin": {
+        "confidence": 0.5,
+        "source": "paddleocr",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_taxable_value": {
+        "confidence": 0.98,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      },
+      "totals.total_tax": {
+        "confidence": 0.99,
+        "source": "paddleocr_deterministic",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "checks_passed": [
+        "Invoice Reference No. (INV-9901)",
+        "Invoice Issue Date (12-Oct-2024)",
+        "Grand Total Verified (₹0.00 + ₹0.00 = ₹0.00)"
+      ],
+      "errors": [],
+      "warnings": [],
+      "validation_version": "1.0.0"
+    },
+    "suggestions_json": "[]",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 10:42:30",
+    "updated_at": "2026-10-10 10:42:30",
+    "id": "3d13bcf7-c14b-4f5e-9f81-a679e912fcbf"
+  },
+  {
+    "document_id": "bef9fc0d-e55b-4c1b-af59-a79b37f27b3d",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "INV-2026-012",
+    "supplier_id": "80631b80-978a-4cc2-9f55-39a00e899b14",
+    "supplier_name": "TechNova Solutions Pvt Ltd",
+    "buyer_name": "FinSense Demo Enterprise",
+    "invoice_date": "2026-09-05 07:21:43.524605",
+    "due_date": "2026-09-25 07:21:43.524605",
+    "upload_date": "2026-10-10 07:21:43",
+    "currency": "INR",
+    "subtotal": 127000.0,
+    "tax_amount": 22860.0,
+    "total_amount": 149860.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "approved",
+    "payment_status": "paid",
+    "paid_at": "2026-09-24 07:21:43.524605",
+    "payment_note": "NEFT Transaction ID: N19283746501",
+    "review_reasons": [],
+    "priority_score": 0,
+    "assignee": null,
+    "canonical_json": {},
+    "provenance_json": {},
+    "validation_json": {},
+    "suggestions_json": null,
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 07:21:43",
+    "updated_at": "2026-10-10 07:21:43",
+    "id": "65c84bd8-cff9-4c66-971e-16a9974f6d27"
+  },
+  {
+    "document_id": "591e2235-09b3-4d24-aa8d-5e4221aeab8a",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "AX-442-REV",
+    "supplier_id": "a14edc51-ca77-414e-b14a-26b1fd83fd60",
+    "supplier_name": "Apex Hardware & Networks",
+    "buyer_name": "FinSense Demo Enterprise",
+    "invoice_date": "2026-09-28 07:21:43.524605",
+    "due_date": "2026-10-06 07:21:43.524605",
+    "upload_date": "2026-10-10 07:21:43",
+    "currency": "INR",
+    "subtotal": 100000.0,
+    "tax_amount": 12000.0,
+    "total_amount": 115000.0,
+    "processing_status": "completed",
+    "validation_status": "invalid",
+    "review_status": "needs_review",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [
+      "validation_error",
+      "conflicting_values"
+    ],
+    "priority_score": 120,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "AX-442-REV"
+      },
+      "seller": {
+        "legal_name": "Apex Hardware & Networks",
+        "gstin": "29ABCDE1234F1Z5"
+      },
+      "totals": {
+        "total_taxable_value": 100000.0,
+        "total_tax": 12000.0,
+        "total_amount": 115000.0
+      }
+    },
+    "provenance_json": {},
+    "validation_json": {
+      "status": "invalid",
+      "errors": [
+        {
+          "rule_id": "R004",
+          "rule_key": "gstin_check_digit_valid",
+          "name": "GSTIN Check Digit Verification",
+          "status": "failed",
+          "severity": "error",
+          "field_path": "seller.gstin",
+          "message": "Invalid GSTIN check digit '5'. Expected checksum 'W'.",
+          "expected": "29ABCDE1234F1ZW",
+          "actual": "29ABCDE1234F1Z5",
+          "suggestion": "29ABCDE1234F1ZW"
+        },
+        {
+          "rule_id": "R024",
+          "rule_key": "total_equals_taxable_plus_tax",
+          "name": "Invoice Total Arithmetic",
+          "status": "failed",
+          "severity": "error",
+          "field_path": "totals.total_amount",
+          "message": "Arithmetic mismatch: Subtotal 100,000.00 + Tax 12,000.00 = 112,000.00 != Total 115,000.00 (diff: 3,000.00)",
+          "expected": 112000.0,
+          "actual": 115000.0
+        }
+      ],
+      "warnings": [],
+      "checks_passed": [
+        "required_fields",
+        "state_code_valid"
+      ]
+    },
+    "suggestions_json": "{\"seller.gstin\": \"29ABCDE1234F1ZW\", \"totals.total_amount\": 112000.0}",
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 07:21:43",
+    "updated_at": "2026-10-10 07:21:43",
+    "id": "7d942647-6faa-4e10-a597-1413bb5df8ac"
+  },
+  {
+    "document_id": "88db02d9-c5c4-4d20-bb63-80282d604bf7",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "BS-901-HI",
+    "supplier_id": "0807cd3b-db32-49d9-bcfe-5880c8525116",
+    "supplier_name": "भारत कार्यालय सामग्री (Bharat Supplies)",
+    "buyer_name": "FinSense Demo Enterprise",
+    "invoice_date": "2026-10-05 07:21:43.524605",
+    "due_date": "2026-10-20 07:21:43.524605",
+    "upload_date": "2026-10-10 07:21:43",
+    "currency": "INR",
+    "subtotal": 40000.0,
+    "tax_amount": 7200.0,
+    "total_amount": 47200.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "approved",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 10,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "BS-901-HI",
+        "document_category": "gst_invoice",
+        "language_detected": [
+          "hi",
+          "en"
+        ]
+      },
+      "seller": {
+        "legal_name": "भारत कार्यालय सामग्री (Bharat Supplies)",
+        "gstin": "07AABCB1234D1ZP"
+      },
+      "totals": {
+        "total_taxable_value": 40000.0,
+        "total_tax": 7200.0,
+        "total_amount": 47200.0
+      }
+    },
+    "provenance_json": {},
+    "validation_json": {
+      "status": "valid",
+      "errors": [],
+      "warnings": [],
+      "checks_passed": [
+        "gstin_format",
+        "arithmetic"
+      ]
+    },
+    "suggestions_json": null,
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 07:21:43",
+    "updated_at": "2026-10-10 07:21:43",
+    "id": "a1cc7732-ddca-4f22-a40d-bcd667401d5c"
+  },
+  {
+    "document_id": "6777a6d7-bc2b-4251-8985-60ae5d20f051",
+    "group_index": 0,
+    "document_category": "gst_invoice",
+    "bill_number": "INV-2026-089",
+    "supplier_id": "80631b80-978a-4cc2-9f55-39a00e899b14",
+    "supplier_name": "TechNova Solutions Pvt Ltd",
+    "buyer_name": "FinSense Demo Enterprise",
+    "invoice_date": "2026-10-08 07:21:43.524605",
+    "due_date": "2026-10-25 07:21:43.524605",
+    "upload_date": "2026-10-10 07:21:43",
+    "currency": "INR",
+    "subtotal": 100000.0,
+    "tax_amount": 18000.0,
+    "total_amount": 118000.0,
+    "processing_status": "completed",
+    "validation_status": "valid",
+    "review_status": "approved",
+    "payment_status": "unpaid",
+    "paid_at": null,
+    "payment_note": null,
+    "review_reasons": [],
+    "priority_score": 0,
+    "assignee": null,
+    "canonical_json": {
+      "meta": {
+        "invoice_number": "INV-2026-089",
+        "document_category": "gst_invoice",
+        "currency": "INR"
+      },
+      "seller": {
+        "legal_name": "TechNova Solutions Pvt Ltd",
+        "gstin": "27AAPFU0939F1ZV",
+        "state_code": "27"
+      },
+      "buyer": {
+        "legal_name": "FinSense Demo Enterprise",
+        "gstin": "27BBBFU1111F1Z1",
+        "state_code": "27"
+      },
+      "totals": {
+        "total_taxable_value": 100000.0,
+        "total_cgst": 9000.0,
+        "total_sgst": 9000.0,
+        "total_amount": 118000.0
+      }
+    },
+    "provenance_json": {
+      "seller.gstin": {
+        "confidence": 0.98,
+        "source": "text_layer",
+        "status": "accepted"
+      },
+      "totals.total_amount": {
+        "confidence": 0.99,
+        "source": "text_layer",
+        "status": "accepted"
+      }
+    },
+    "validation_json": {
+      "status": "valid",
+      "results": [
+        {
+          "rule_id": "R004",
+          "rule_key": "gstin_check_digit_valid",
+          "status": "passed",
+          "severity": "error",
+          "message": "GSTIN check digit matches algorithmic verification"
+        }
+      ],
+      "errors": [],
+      "warnings": [],
+      "checks_passed": [
+        "gstin_format",
+        "gstin_checksum",
+        "tax_arithmetic",
+        "dates_valid"
+      ]
+    },
+    "suggestions_json": null,
+    "processing_info_json": null,
+    "approved_with_override": 0,
+    "created_at": "2026-10-10 07:21:43",
+    "updated_at": "2026-10-10 07:21:43",
+    "id": "af5d993a-1c8d-4e2e-893c-c7f56fadc2c2"
+  }
+]
