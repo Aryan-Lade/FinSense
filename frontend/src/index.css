@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* Custom styles to match demo website */
+:root {
+  --background-color: #f2f2f2; /* rgb(242, 242, 242) from demo site */
+  --text-color: #1a1a1a;
+  --font-sans: 'Manrope', system-ui, sans-serif;
+  --font-mono: 'Fragment Mono', monospace;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--font-sans);
+}
+
+/* Ensure proper font smoothing */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
