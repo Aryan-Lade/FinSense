@@ -20,6 +20,22 @@ import datetime
 router = APIRouter()
 
 
+def to_json_compatible(obj):
+    """
+    Recursively convert dates, datetimes, decimals, and UUIDs to JSON serializable objects.
+    Prevents (builtins.TypeError) Object of type date is not JSON serializable.
+    """
+    if isinstance(obj, (datetime.date, datetime.datetime)):
+        return obj.isoformat()
+    elif isinstance(obj, uuid.UUID):
+        return str(obj)
+    elif isinstance(obj, dict):
+        return {str(k): to_json_compatible(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple, set)):
+        return [to_json_compatible(item) for item in obj]
+    return obj
+
+
 @router.post("/upload")
 async def upload_file(
     file: UploadFile = File(...),
@@ -102,12 +118,22 @@ async def upload_file(
         total_amount = float(extracted_data.get("total_amount") or (subtotal + tax_amount))
 
         inv_date = extracted_data.get("invoice_date")
+        if isinstance(inv_date, str):
+            try:
+                inv_date = datetime.date.fromisoformat(inv_date)
+            except Exception:
+                inv_date = None
         if isinstance(inv_date, datetime.date) and not isinstance(inv_date, datetime.datetime):
             inv_date = datetime.datetime.combine(inv_date, datetime.time.min, tzinfo=datetime.timezone.utc)
         elif not inv_date:
             inv_date = now_utc
 
         due_date = extracted_data.get("due_date")
+        if isinstance(due_date, str):
+            try:
+                due_date = datetime.date.fromisoformat(due_date)
+            except Exception:
+                due_date = None
         if isinstance(due_date, datetime.date) and not isinstance(due_date, datetime.datetime):
             due_date = datetime.datetime.combine(due_date, datetime.time.min, tzinfo=datetime.timezone.utc)
         elif not due_date:
@@ -135,10 +161,10 @@ async def upload_file(
             review_status="approved" if is_valid else "needs_review",
             payment_status="unpaid",
             priority_score=priority_score,
-            canonical_json=canonical,
-            provenance_json=provenance,
-            validation_json=validation,
-            suggestions_json=validation.get("suggestions", [])
+            canonical_json=to_json_compatible(canonical),
+            provenance_json=to_json_compatible(provenance),
+            validation_json=to_json_compatible(validation),
+            suggestions_json=to_json_compatible(validation.get("suggestions", []))
         )
         db.add(invoice)
         db.commit()
@@ -174,7 +200,7 @@ async def upload_file(
             "invoice_number": bill_num,
             "supplier_name": supplier_name,
             "total_amount": total_amount,
-            "extracted_data": extracted_data,
+            "extracted_data": to_json_compatible(extracted_data),
             "validation_status": "valid" if is_valid else "invalid",
             "ocr_info": {
                 "character_count": processing_result.get("ocr_info", {}).get("character_count", 0),

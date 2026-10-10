@@ -149,6 +149,17 @@ class QualityProcessor:
         }
 
 
+def to_json_safe(obj: Any) -> Any:
+    """Recursively convert dates, datetimes, decimals to JSON serializable structures."""
+    if hasattr(obj, 'isoformat'):
+        return obj.isoformat()
+    elif isinstance(obj, dict):
+        return {str(k): to_json_safe(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple, set)):
+        return [to_json_safe(item) for item in obj]
+    return obj
+
+
 def process_invoice_quality(extracted_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Process invoice data through quality assessment pipeline.
@@ -161,8 +172,8 @@ def process_invoice_quality(extracted_data: Dict[str, Any]) -> Dict[str, Any]:
 
         # Prepare result
         result = {
-            "original_data": extracted_data,
-            "quality_assessment": quality_assessment,
+            "original_data": to_json_safe(extracted_data),
+            "quality_assessment": to_json_safe(quality_assessment),
             "processing_status": "quality_checked"
         }
 
@@ -187,10 +198,10 @@ def process_invoice_quality(extracted_data: Dict[str, Any]) -> Dict[str, Any]:
                     if is_valid and amount_float is not None:
                         cleaned_data[field] = round(amount_float, 2)
 
-            result["cleaned_data"] = cleaned_data
-            result["extracted_data"] = cleaned_data  # For compatibility
+            result["cleaned_data"] = to_json_safe(cleaned_data)
+            result["extracted_data"] = to_json_safe(cleaned_data)  # For compatibility
         else:
-            result["extracted_data"] = extracted_data
+            result["extracted_data"] = to_json_safe(extracted_data)
             result["cleaned_data"] = None
 
         return result

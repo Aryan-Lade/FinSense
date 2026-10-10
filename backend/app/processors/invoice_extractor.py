@@ -81,8 +81,8 @@ class InvoiceDataExtractor:
                 "seller_gstin": seller_gstin,
                 "buyer_name": buyer_name,
                 "buyer_gstin": buyer_gstin,
-                "invoice_date": inv_date,
-                "due_date": due_date,
+                "invoice_date": inv_date.strftime("%Y-%m-%d") if inv_date else None,
+                "due_date": due_date.strftime("%Y-%m-%d") if due_date else None,
                 "subtotal": totals["total_taxable_value"],
                 "tax_amount": totals["total_cgst"] + totals["total_sgst"] + totals["total_igst"],
                 "total_amount": totals["total_amount"]
