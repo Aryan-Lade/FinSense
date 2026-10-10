@@ -107,6 +107,9 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [visibleAudits, setVisibleAudits] = useState(6);
   const [faqOpen, setFaqOpen] = useState(0);
+  const [calcTaxable, setCalcTaxable] = useState(100000);
+  const [calcGstRate, setCalcGstRate] = useState(18);
+  const [calcType, setCalcType] = useState('B2B Bill');
 
   useEffect(() => {
     let isMounted = true;
@@ -143,6 +146,12 @@ export default function Home() {
   const totalSpend = safeInvoices.reduce((acc, curr) => acc + (Number(curr?.total_amount) || 0), 0);
   const validCount = safeInvoices.filter(i => i?.validation_status === 'valid').length;
   const reviewCount = safeInvoices.filter(i => i?.review_status === 'needs_review').length;
+
+  // Bill Calculator computed metrics
+  const halfRate = calcGstRate / 2;
+  const cgstAmount = (calcTaxable * halfRate) / 100;
+  const sgstAmount = (calcTaxable * halfRate) / 100;
+  const totalBillAmount = calcTaxable + (calcTaxable * calcGstRate) / 100;
 
   const architecturalPillars = [
     {
@@ -393,139 +402,134 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* 2. User Welcome Row */}
-                <div className="px-5 pt-1.5 pb-3 flex justify-between items-center z-10">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-xs font-bold font-mono border border-white/30">
-                      JM
+                {/* 2. Bill Calculator Title Row */}
+                <div className="px-5 pt-1.5 pb-2.5 flex justify-between items-center z-10">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-6 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center text-xs font-bold text-white border border-white/30">
+                      ₹
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-white/95">Welcome, Jeff</p>
+                      <span 
+                        style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}
+                        className="text-xs font-bold text-white tracking-normal"
+                      >
+                        GST Tax &amp; Bill Calculator
+                      </span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2 text-white/90">
-                    <div className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center cursor-pointer">
-                      <span className="text-xs">🔔</span>
-                    </div>
-                    <div className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center cursor-pointer">
-                      <span className="text-xs">⚙️</span>
-                    </div>
-                  </div>
+                  <span className="text-[10px] bg-white/15 px-2 py-0.5 rounded-full font-mono font-medium text-white/90">
+                    Live Engine
+                  </span>
                 </div>
 
-                {/* 3. Horizontal Pill Tabs (No scrollbar) */}
+                {/* 3. Horizontal Pill Tabs (B2B, B2C, Export) */}
                 <div className="px-4 py-1 flex items-center space-x-1.5 overflow-x-auto no-scrollbar text-[11px] font-semibold z-10">
-                  <span className="px-3.5 py-1 rounded-full bg-white text-[#0080FF] shadow-xs font-bold">
-                    Overview
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-white/15 text-white/80 hover:bg-white/25 transition cursor-pointer">
-                    Cards
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-white/15 text-white/80 hover:bg-white/25 transition cursor-pointer">
-                    Stocks
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-white/15 text-white/80 hover:bg-white/25 transition cursor-pointer">
-                    Cryptos
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-white/15 text-white/80 hover:bg-white/25 transition cursor-pointer">
-                    Cashb
-                  </span>
+                  {['B2B Bill', 'B2C Retail', 'SEZ / Export'].map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setCalcType(type)}
+                      className={`px-3 py-1 rounded-full transition-all text-[11px] cursor-pointer ${
+                        calcType === type
+                          ? 'bg-white text-[#0080FF] shadow-xs font-bold'
+                          : 'bg-white/15 text-white/80 hover:bg-white/25'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
                 </div>
 
-                {/* 4. Account Balance Display */}
-                <div className="px-5 pt-4 pb-6 text-center space-y-0.5 z-10">
-                  <p className="text-[11px] text-white/80 font-medium">Personal Account ▾</p>
-                  <p className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                    <span className="text-2xl font-light opacity-90 mr-0.5">₹</span>467.20
+                {/* 4. Calculated Total Display */}
+                <div className="px-5 pt-3 pb-4 text-center space-y-0.5 z-10">
+                  <p className="text-[10px] uppercase tracking-wider text-white/80 font-medium">
+                    Calculated Total Invoice Value
+                  </p>
+                  <p className="text-3xl sm:text-[34px] font-extrabold tracking-tight font-mono text-white">
+                    ₹{totalBillAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                 </div>
 
-                {/* 5. Curved White Card (Lower Section) */}
-                <div className="bg-white text-slate-900 rounded-t-[34px] p-4 pt-5 flex-1 space-y-3.5 shadow-2xl -mt-2">
+                {/* 5. Curved White Card (Bill Calculator Body) */}
+                <div className="bg-white text-slate-900 rounded-t-[32px] p-4 pt-4 flex-1 space-y-3 shadow-2xl -mt-1 select-text">
                   
-                  {/* Balance Header */}
-                  <div className="flex justify-between items-center text-xs font-bold px-1">
-                    <span className="text-slate-800 font-bold text-xs hover:text-[#0080FF] transition cursor-pointer">
-                      Balance &gt;
-                    </span>
-                    <span className="text-[10px] text-[#0080FF] bg-[#0080FF]/10 px-2 py-0.5 rounded-full font-mono font-medium">
-                      Live
-                    </span>
-                  </div>
-
-                  {/* Item 1: Cash (Direct from Image 2) */}
-                  <div className="flex items-center justify-between p-2 rounded-2xl hover:bg-slate-50 transition">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-9 h-9 rounded-full bg-[#22C55E]/15 text-[#16A34A] flex items-center justify-center font-bold text-sm shadow-xs">
-                        💵
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-slate-900">Cash</p>
-                        <p className="text-[10px] text-slate-400">Dollar &bull; Euro</p>
-                      </div>
+                  {/* Taxable Amount Row */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center text-[11px] font-semibold text-slate-500">
+                      <span>Taxable Amount</span>
+                      <span className="text-[10px] text-slate-400 font-mono">Base Subtotal</span>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs font-bold text-slate-900 font-mono">₹467.20</p>
-                      <p className="text-[9px] text-slate-400 font-mono">₹370.13 &bull; €98.07</p>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-sm">₹</span>
+                      <input
+                        type="number"
+                        min="1"
+                        step="1000"
+                        value={calcTaxable}
+                        onChange={(e) => setCalcTaxable(Math.max(0, Number(e.target.value) || 0))}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-7 pr-3 py-2 text-xs font-bold font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0080FF]/30 focus:border-[#0080FF] transition"
+                        placeholder="100000"
+                      />
                     </div>
                   </div>
 
-                  {/* Item 2: Stocks / GST Claim (Direct from Image 2) */}
-                  <div className="flex items-center justify-between p-2 rounded-2xl hover:bg-slate-50 transition">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-9 h-9 rounded-full bg-[#0080FF]/15 text-[#0080FF] flex items-center justify-center font-bold text-sm shadow-xs">
-                        📈
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-slate-900">Stocks</p>
-                        <p className="text-[10px] text-slate-400">3 verified stocks</p>
-                      </div>
+                  {/* GST Rate Selector Pills */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center text-[11px] font-semibold text-slate-500">
+                      <span>GST Rate</span>
+                      <span className="text-[10px] text-[#0080FF] font-mono font-bold">{calcGstRate}% Bracket</span>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs font-bold text-slate-900 font-mono">₹2,067.83</p>
-                      <p className="text-[9px] text-emerald-600 font-mono font-bold">+3.17%</p>
-                    </div>
-                  </div>
-
-                  {/* Item 3: Live Verified Bill */}
-                  <div className="flex items-center justify-between p-2 rounded-2xl hover:bg-slate-50 transition">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs shadow-xs">
-                        🧾
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-slate-900">Refrens IT Bill</p>
-                        <p className="text-[10px] text-slate-400 font-mono">INV-387 &bull; 18% GST</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs font-bold text-slate-900 font-mono">₹1,34,048.00</p>
-                      <p className="text-[9px] text-emerald-600 font-mono font-bold">100% Valid</p>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {[5, 12, 18, 28].map((rate) => (
+                        <button
+                          key={rate}
+                          type="button"
+                          onClick={() => setCalcGstRate(rate)}
+                          className={`py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                            calcGstRate === rate
+                              ? 'bg-[#0080FF] text-white shadow-sm ring-2 ring-[#0080FF]/30 scale-102'
+                              : 'bg-slate-100 hover:bg-slate-200/70 text-slate-700'
+                          }`}
+                        >
+                          {rate}%
+                        </button>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Cards Header */}
-                  <div className="pt-1 flex justify-between items-center text-xs font-bold px-1">
-                    <span className="text-slate-800 font-bold text-xs hover:text-[#0080FF] transition cursor-pointer">
-                      Cards &gt;
-                    </span>
+                  {/* CGST / SGST Breakdown */}
+                  <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-100 space-y-1.5 text-xs">
+                    <div className="flex justify-between items-center text-slate-600">
+                      <span className="text-[11px] font-medium">CGST ({halfRate}%)</span>
+                      <span className="font-mono font-bold text-slate-900">
+                        ₹{cgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-slate-600">
+                      <span className="text-[11px] font-medium">SGST ({halfRate}%)</span>
+                      <span className="font-mono font-bold text-slate-900">
+                        ₹{sgstAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                    <div className="pt-1 border-t border-slate-200/60 flex justify-between items-center">
+                      <span className="text-[10px] text-emerald-700 font-bold bg-emerald-100/80 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        100% Math Verified
+                      </span>
+                      <span className="text-[11px] font-mono text-slate-500">
+                        Tax: ₹{(cgstAmount + sgstAmount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Mini Corporate / Glow Debit Card (Image 2 style) */}
-                  <div className="bg-gradient-to-r from-[#0080FF] via-[#0070DF] to-[#0099FF] text-white p-3 rounded-2xl shadow-md flex items-center justify-between">
-                    <div className="flex items-center space-x-2.5">
-                      <div className="w-7 h-5 rounded-md bg-white/20 border border-white/30 flex items-center justify-center text-[9px] font-bold">
-                        💳
-                      </div>
-                      <div>
-                        <p className="text-[11px] font-bold">Main</p>
-                        <p className="text-[9px] text-white/80 font-mono">Debit - 2424</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs font-bold font-mono">₹368.13</p>
-                    </div>
-                  </div>
+                  {/* Calculate & Audit CTA */}
+                  <Link
+                    to="/upload"
+                    className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center space-x-1.5 transition-all shadow-sm active:scale-98"
+                  >
+                    <span>Audit Bill with PaddleOCR</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
 
                 </div>
 
