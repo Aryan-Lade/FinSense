@@ -28,10 +28,10 @@ class InvoiceBase(BaseSchema):
 class InvoiceCreate(InvoiceBase):
     """Schema for creating an invoice."""
     document_id: str
-    supplier_id: Optional[str] = None
-    canonical_json: Optional[Dict[str, Any]] = None
-    provenance_json: Optional[Dict[str, Any]] = None
-    validation_json: Optional[Dict[str, Any]] = None
+    canonical_json: Optional[Any] = None
+    provenance_json: Optional[Any] = None
+    validation_json: Optional[Any] = None
+    suggestions_json: Optional[Any] = None
 
 
 class InvoiceUpdate(BaseSchema):
@@ -62,11 +62,11 @@ class InvoiceResponse(InvoiceBase):
     review_reasons: Optional[List[str]] = None
     priority_score: int = 0
     assignee: Optional[str] = None
-    canonical_json: Optional[Dict[str, Any]] = None
-    provenance_json: Optional[Dict[str, Any]] = None
-    validation_json: Optional[Dict[str, Any]] = None
-    suggestions_json: Optional[Dict[str, Any]] = None
-    processing_info_json: Optional[Dict[str, Any]] = None
+    canonical_json: Optional[Any] = None
+    provenance_json: Optional[Any] = None
+    validation_json: Optional[Any] = None
+    suggestions_json: Optional[Any] = None
+    processing_info_json: Optional[Any] = None
     approved_with_override: bool = False
     created_at: datetime
     updated_at: datetime
