@@ -11,8 +11,8 @@ class ReminderBase(BaseSchema):
     """Base reminder schema."""
     invoice_id: str
     rule_type: str = Field(..., max_length=20)  # after_receipt, before_due_date, on_due_date, custom, none
-    interval_days: Optional[int] = Field(None, gt=0)  # For after_receipt rule
-    repeat_every_days: Optional[int] = Field(None, gt=0)  # For repeating reminders
+    interval_days: Optional[int] = Field(None, ge=0)  # For after_receipt rule
+    repeat_every_days: Optional[int] = Field(None, ge=0)  # For repeating reminders
     first_fire_at: datetime
     next_fire_at: Optional[datetime] = None
     timezone: str = Field(default="Asia/Kolkata", max_length=50)
@@ -33,8 +33,8 @@ class ReminderUpdate(BaseSchema):
     """Schema for updating a reminder."""
     invoice_id: Optional[str] = None
     rule_type: Optional[str] = Field(None, max_length=20)
-    interval_days: Optional[int] = Field(None, gt=0)
-    repeat_every_days: Optional[int] = Field(None, gt=0)
+    interval_days: Optional[int] = Field(None, ge=0)
+    repeat_every_days: Optional[int] = Field(None, ge=0)
     first_fire_at: Optional[datetime] = None
     next_fire_at: Optional[datetime] = None
     timezone: Optional[str] = Field(None, max_length=50)

@@ -10,8 +10,14 @@ export default function Reminders() {
   const loadData = () => {
     setLoading(true);
     getReminders()
-      .then((res) => setReminders(res.data || []))
-      .catch((err) => console.error(err))
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : (res.data?.items || []);
+        setReminders(data);
+      })
+      .catch((err) => {
+        console.error('Failed to load reminders:', err);
+        setReminders([]);
+      })
       .finally(() => setLoading(false));
   };
 
