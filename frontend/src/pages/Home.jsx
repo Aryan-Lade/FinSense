@@ -265,28 +265,12 @@ export default function Home() {
           
           {/* Left Column: Hero Content & CTAs */}
           <div className="lg:col-span-7 xl:col-span-6 text-left space-y-7">
-            
-            {/* Top Rating Badges (App Store & Google Play) */}
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="px-3.5 py-1.5 rounded-xl bg-white border border-[#E2E8F0] text-xs font-semibold flex items-center gap-2 shadow-xs">
-                <div className="w-5 h-5 rounded-md bg-[#007AFF] text-white flex items-center justify-center text-[10px] font-black">
-                  
-                </div>
-                <span className="font-bold text-[#0F172A]">4.9 ★</span>
-                <span className="text-[#64748B]">on App Store</span>
-              </div>
-
-              <div className="px-3.5 py-1.5 rounded-xl bg-white border border-[#E2E8F0] text-xs font-semibold flex items-center gap-2 shadow-xs">
-                <div className="w-5 h-5 rounded-md bg-gradient-to-tr from-[#EA4335] via-[#FBBC05] to-[#34A853] text-white flex items-center justify-center text-[9px] font-black">
-                  ▶
-                </div>
-                <span className="font-bold text-[#0F172A]">4.8 ★</span>
-                <span className="text-[#64748B]">on Google Play</span>
-              </div>
-            </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[66px] font-extrabold text-[#0F172A] tracking-[-0.035em] leading-[1.08]">
+            <h1 
+              style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
+              className="text-4xl sm:text-5xl lg:text-[68px] font-extrabold text-[#0F172A] tracking-[-0.025em] leading-[1.12]"
+            >
               Send, spend,<br className="hidden sm:inline" /> and save smarter
             </h1>
 
