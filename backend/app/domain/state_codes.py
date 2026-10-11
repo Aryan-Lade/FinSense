@@ -1,6 +1,7 @@
 """
 Indian state codes for GST.
 """
+from typing import Optional, Dict
 
 # State code mapping as per GSTN
 STATE_CODES = {

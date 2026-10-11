@@ -138,11 +138,25 @@ export default function Navbar() {
                       <span>My Documents & Bills</span>
                     </Link>
                     <Link
-                      to="/analytics"
+                      to="/batches"
                       onClick={() => setUserDropdownOpen(false)}
                       className="flex items-center gap-2 px-3 py-2 text-xs font-ui text-[#333333] hover:text-black hover:bg-[#F5F5F5] rounded-xl transition"
                     >
-                      <span>Financial Analytics</span>
+                      <span>Batch Processing</span>
+                    </Link>
+                    <Link
+                      to="/inbox"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 text-xs font-ui text-[#333333] hover:text-black hover:bg-[#F5F5F5] rounded-xl transition"
+                    >
+                      <span>Omnichannel Inbox</span>
+                    </Link>
+                    <Link
+                      to="/settings/integrations"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 text-xs font-ui text-[#333333] hover:text-black hover:bg-[#F5F5F5] rounded-xl transition"
+                    >
+                      <span>Settings & Integrations</span>
                     </Link>
                   </div>
 
@@ -232,6 +246,28 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
+
+          <Link
+            to="/batches"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2 text-[#333333] hover:text-black"
+          >
+            Batch Processing
+          </Link>
+          <Link
+            to="/inbox"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2 text-[#333333] hover:text-black"
+          >
+            Omnichannel Inbox
+          </Link>
+          <Link
+            to="/settings/integrations"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2 text-[#333333] hover:text-black"
+          >
+            Settings &amp; Integrations
+          </Link>
 
           <div className="pt-3 border-t border-[#DBDBDB] space-y-2">
             <Link

@@ -12,6 +12,9 @@ import ReviewQueue from './pages/ReviewQueue';
 import Suppliers from './pages/Suppliers';
 import Analytics from './pages/Analytics';
 import Reminders from './pages/Reminders';
+import Batches from './pages/Batches';
+import Inbox from './pages/Inbox';
+import Integrations from './pages/Integrations';
 import Login from './pages/Login';
 import ResetPassword from './pages/ResetPassword';
 import './App.css';
@@ -37,6 +40,9 @@ export default function App() {
               <Route path="/suppliers" element={<Suppliers />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/reminders" element={<Reminders />} />
+              <Route path="/batches" element={<Batches />} />
+              <Route path="/inbox" element={<Inbox />} />
+              <Route path="/settings/integrations" element={<Integrations />} />
             </Routes>
           </main>
         </div>

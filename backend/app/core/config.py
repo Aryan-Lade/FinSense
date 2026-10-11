@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     VLM_MODEL: str = "Qwen/Qwen2.5-VL-7B-Instruct"
     VLM_API_KEY: str = ""
     VLM_TIMEOUT_S: int = 120
+    GEMINI_API_KEY: str = ""
     
     # Processing limits
     REREAD_MAX_RETRIES: int = 2
@@ -77,6 +78,33 @@ class Settings(BaseSettings):
     
     # Reviewers
     REVIEWERS: str = ""  # Comma-separated names
+    
+    # Demo mode
+    DEMO_MODE: bool = True
+    
+    # OCR Settings
+    OCR_LANG_STRATEGY: str = "auto"
+    OCR_DEVICE: str = "cpu"
+    OCR_CPU_THREADS: int = 4
+    OCR_MODEL_DIR: str = ""
+    OCR_CONCURRENCY: int = 1
+    OCR_PAGE_TIMEOUT_S: int = 60
+    OCR_MIN_SCORE: float = 0.5
+    OCR_WARMUP: bool = True
+
+    # VLM fallback ladder
+    VLM_FALLBACK_MODELS: str = ""
+    
+    # Retention
+    RETENTION_DAYS: int = 0
+    DEFAULT_EXPORT_PROFILE: str = "finsense"
+
+    # Omnichannel / Integrations
+    WHATSAPP_VERIFY_TOKEN: str = ""
+    WHATSAPP_APP_SECRET: str = ""
+    WHATSAPP_ACCESS_TOKEN: str = ""
+    WHATSAPP_PHONE_NUMBER_ID: str = ""
+    EMAIL_MODE: str = "simulated"
     
     class Config:
         env_file = ".env"

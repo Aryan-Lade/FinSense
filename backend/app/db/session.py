@@ -26,6 +26,18 @@ def get_db() -> Session:
         db.close()
 
 
+from contextlib import contextmanager
+
+@contextmanager
+def get_db_context():
+    """Context manager to get and close database session cleanly."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 def create_tables():
     """Create all database tables."""
     from app.models.base import Base

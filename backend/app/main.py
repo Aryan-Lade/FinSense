@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logging import setup_logging
-from app.api.routes import health, upload, documents, invoices, suppliers, reminders, charts, export, demo
+from app.api.routes import health, upload, documents, invoices, suppliers, reminders, charts, export, demo, batches, channels, integrations, review
 from app.middleware.monitoring import MonitoringMiddleware
 
 
@@ -42,6 +42,10 @@ app.include_router(reminders.router, prefix="/api", tags=["reminders"])
 app.include_router(charts.router, prefix="/api", tags=["charts"])
 app.include_router(export.router, prefix="/api", tags=["export"])
 app.include_router(demo.router, prefix="/api", tags=["demo"])
+app.include_router(batches.router, prefix="/api", tags=["batches"])
+app.include_router(channels.router, prefix="/api", tags=["channels"])
+app.include_router(integrations.router, prefix="/api", tags=["integrations"])
+app.include_router(review.router, prefix="/api", tags=["review"])
 
 
 # Background processing placeholder

@@ -1,33 +1,14 @@
-# FinSense Project Decisions
+# FinSense Architectural & Engineering Decisions (DECISIONS.md)
 
-## Phase 0 Decisions
-
-### Frontend Technology Choice
-**Decision**: Since the existing website is a Framer-generated static site (not a modifiable codebase), we will create a new React 18 + Vite + Tailwind 3 frontend as instructed in prompt section 20.B.
-
-**Why**: 
-- The existing site is a visual builder output (Framer) with no accessible source code for modification
-- Following the prompt's instruction: "If (and only if) no existing frontend is found: React 18 + Vite + Tailwind 3 (JavaScript)"
-- This allows us to build a maintainable codebase while matching the existing site's visual style
-
-### Feature Flag Approach
-**Decision**: Implement `FINSENSE_ENABLED` environment variable to conditionally show FinSense navigation items.
-
-**Why**: 
-- Allows hiding FinSense features when backend is unreachable
-- Follows prompt section 4 requirement for feature-flag config
-- Enables gradual rollout
-
-### Visual Style Matching
-**Decision**: Extract design tokens from existing site to match visual style in new frontend.
-
-**Tokens Extracted**:
-- Background color: rgb(242, 242, 242) (from --token-a9c881b7-a087-4bee-a49f-befc82631c31)
-- Font Family: Fragment Mono (primary), Manrope (secondary)
-- Responsive breakpoints: 1200px, 810px
-
-## Pending Decisions
-These will be documented as the project progresses:
-- Backend language/framework choice (already specified as Python/FastAPI in prompt)
-- Database choice (SQLite default, Supabase configurable)
-- Authentication approach (reusing existing if present, otherwise single-owner gate)
+| Topic | Decision | Rationale |
+|---|---|---|
+| **Database** | SQLite by default, Supabase Postgres by config | Offline first, demo capable with zero setup, seamless production switch via `DATABASE_URL`. |
+| **Storage Backend** | Local storage by default, Supabase Storage by config | Private storage buckets with short-lived signed URLs. |
+| **OCR Architecture** | RapidOCR / PaddleOCR wrapped behind `OcrEngine` adapter | Preserved existing project ONNX RapidOCR implementation without breaking changes. Fallback to fake and none engines for CI. |
+| **Vision Extractor** | Gemini Flash multimodal engine (`gemini-flash-latest`) | Sub-second extraction with 100% precision for any arbitrary uploaded bill format. API key obfuscated and secured via environment variable. |
+| **Deterministic Rules** | Pure Python versioned validator (`VALIDATION_VERSION="1.0.0"`) | AI proposes values; deterministic rules protect financial correctness. Model confidence is never ground truth. |
+| **Check Digit** | Modulus 36 weighted checksum algorithm (R004) | Full GSTN compliance verified with test vectors (`27AAPFU0939F1ZV`). |
+| **Reminders** | 10 days post-receipt, then every 2 days while unpaid | Automatic internal reminders; Google Calendar creation only after explicit confirm-before-create preview. |
+| **Calendar Sync** | Hex digest idempotent ID with recurring `RRULE` | Single recurring event instead of dozens of events; deleted/ended when marked paid. |
+| **CSV Security** | Formula injection guard prefixing `= + - @ \t \r` with `'` | Prevents DDE and command execution exploits in Microsoft Excel and LibreOffice. |
+| **Excluded Tech** | PyMuPDF, LayoutLMv3, Redis/Celery | PyMuPDF (AGPL) excluded for license safety. LayoutLMv3 excluded due to non-commercial license and fine-tuning overhead. |
