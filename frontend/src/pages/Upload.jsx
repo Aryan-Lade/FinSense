@@ -18,20 +18,27 @@ import {
   FileCheck
 } from 'lucide-react';
 import { uploadFile } from '../api';
+import { useAuth } from '../context/AuthContext';
 
 export default function UploadPage() {
   const navigate = useNavigate();
+  const { isAuthenticated, openAuthModal } = useAuth();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState(0); // 0: Idle, 1: Ingest, 2: PaddleOCR, 3: Validate, 4: Complete
   const [error, setError] = useState('');
 
   const onDrop = useCallback((acceptedFiles) => {
+    if (!isAuthenticated) {
+      openAuthModal('login');
+      setError('Authentication required. Please sign in or register to upload and audit bills.');
+      return;
+    }
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]);
       setError('');
     }
-  }, []);
+  }, [isAuthenticated, openAuthModal]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -47,6 +54,11 @@ export default function UploadPage() {
   });
 
   const handleProcess = async () => {
+    if (!isAuthenticated) {
+      openAuthModal('login');
+      setError('Authentication required. Please sign in or create an account to process and audit bills.');
+      return;
+    }
     if (!file) return;
 
     try {
@@ -126,9 +138,41 @@ export default function UploadPage() {
       {/* Main Upload Card */}
       <div className="reelo-card p-6 sm:p-12 space-y-8 bg-white shadow-sm">
         
+        {/* Authentication Gate Notice */}
+        {!isAuthenticated && (
+          <div className="p-5 rounded-3xl bg-amber-50/80 border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center space-x-3.5">
+              <div className="w-10 h-10 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 shrink-0 shadow-xs">
+                <Lock className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-sm text-black">Sign In Required to Upload Bills</h3>
+                <p className="text-xs text-[#666666]">
+                  FinSense requires authenticated access to audit, validate GST checksums, and persist ledgers.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => openAuthModal('login')}
+              className="reelo-btn-black px-5 py-2.5 text-xs font-semibold whitespace-nowrap shadow-xs"
+            >
+              Sign In / Register
+            </button>
+          </div>
+        )}
+
         {/* Dropzone */}
         <div
-          {...getRootProps()}
+          {...getRootProps({
+            onClick: (e) => {
+              if (!isAuthenticated) {
+                e.stopPropagation();
+                openAuthModal('login');
+                setError('Authentication required. Please sign in or register to upload and audit bills.');
+              }
+            }
+          })}
           className={`border-2 border-dashed rounded-[32px] p-10 sm:p-14 text-center cursor-pointer transition-all ${
             isDragActive
               ? 'border-black bg-neutral-100 scale-[0.99]'
@@ -257,11 +301,20 @@ export default function UploadPage() {
             <button
               type="button"
               onClick={handleProcess}
-              disabled={!file || uploading}
+              disabled={uploading || (!file && isAuthenticated)}
               className="reelo-btn-black px-7 py-3 text-xs font-semibold inline-flex items-center space-x-2 disabled:opacity-50 shadow-sm"
             >
-              <Cpu className="w-4 h-4 text-[#0099FF]" />
-              <span>{uploading ? 'Processing with PaddleOCR...' : 'Run PaddleOCR Pipeline'}</span>
+              {!isAuthenticated ? (
+                <>
+                  <Lock className="w-4 h-4 text-amber-300" />
+                  <span>Sign In to Upload Bill</span>
+                </>
+              ) : (
+                <>
+                  <Cpu className="w-4 h-4 text-[#0099FF]" />
+                  <span>{uploading ? 'Processing with PaddleOCR...' : 'Run PaddleOCR Pipeline'}</span>
+                </>
+              )}
             </button>
           </div>
         </div>

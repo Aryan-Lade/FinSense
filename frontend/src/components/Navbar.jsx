@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Upload, LogIn, LogOut, User, ChevronDown, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,6 +7,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
   const { user, isAuthenticated, signOut, openAuthModal } = useAuth();
@@ -88,13 +89,20 @@ export default function Navbar() {
 
         {/* Right CTA & Auth Buttons */}
         <div className="hidden sm:flex items-center gap-3">
-          <Link
-            to="/upload"
-            className="reelo-btn-black px-5 py-2.5 text-sm font-semibold gap-1.5 shadow-sm"
+          <button
+            type="button"
+            onClick={() => {
+              if (!isAuthenticated) {
+                openAuthModal('login');
+              } else {
+                navigate('/upload');
+              }
+            }}
+            className="reelo-btn-black px-5 py-2.5 text-sm font-semibold gap-1.5 shadow-sm inline-flex items-center"
           >
             <Upload className="w-4 h-4" />
             <span>Upload Bill</span>
-          </Link>
+          </button>
 
           {isAuthenticated ? (
             /* Logged In User Profile Pill */
@@ -270,14 +278,21 @@ export default function Navbar() {
           </Link>
 
           <div className="pt-3 border-t border-[#DBDBDB] space-y-2">
-            <Link
-              to="/upload"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full reelo-btn-black py-3 text-sm justify-center gap-2"
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (!isAuthenticated) {
+                  openAuthModal('login');
+                } else {
+                  navigate('/upload');
+                }
+              }}
+              className="w-full reelo-btn-black py-3 text-sm justify-center gap-2 flex items-center"
             >
               <Upload className="w-4 h-4" />
               <span>Upload Bill</span>
-            </Link>
+            </button>
 
             {!isAuthenticated && (
               <button
