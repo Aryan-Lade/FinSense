@@ -314,20 +314,25 @@ export const resetDemo = () => api.post('/demo/reset');
 export const advanceClock = (days = 2) => api.post(`/demo/advance-clock?days=${days}`);
 
 export const uploadFile = async (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
+  const isLocalhost = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const hasCustomBackend = Boolean(import.meta.env.VITE_API_URL);
 
-  // 1. Try FastAPI backend if reachable
-  try {
-    const res = await api.post('/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 120000,
-    });
-    if (res.data?.invoice_id) {
-      return res;
+  // 1. Try FastAPI backend ONLY if running on localhost or explicit backend URL is configured
+  if (isLocalhost || hasCustomBackend) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await api.post('/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 5000,
+      });
+      if (res.data?.invoice_id) {
+        return res;
+      }
+    } catch (err) {
+      console.warn('Backend server upload unavailable, activating browser processor...');
     }
-  } catch (err) {
-    console.warn('Backend server upload unavailable, activating cloud processing...');
   }
 
   // 2. Cloud / Standalone in-browser OCR processor
