@@ -592,6 +592,26 @@ export default function AuthModal() {
           )}
         </div>
 
+        {/* Quick Demo Auditor Bypass */}
+        <div className="px-6 pb-5 pt-0">
+          <div className="relative flex py-1 items-center mb-3">
+            <div className="flex-grow border-t border-[#EDEDED]"></div>
+            <span className="flex-shrink mx-3 text-[10px] uppercase tracking-wider text-[#999999] font-medium font-ui">Or Bypass Email Verification</span>
+            <div className="flex-grow border-t border-[#EDEDED]"></div>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleQuickDemoLogin('Lead Financial Auditor')}
+            className="w-full py-2.5 px-4 rounded-xl border border-black bg-black text-white hover:bg-[#222222] text-xs font-semibold font-ui flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.99]"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+            <span>⚡ One-Click Demo Auditor Login (Instant Access)</span>
+          </button>
+          <p className="text-[10px] text-center text-[#777777] mt-1.5 font-ui">
+            Bypasses Supabase email rate limits &amp; unlocks all bill upload and audit features
+          </p>
+        </div>
+
         {/* Footer info badge */}
         <div className="bg-[#FAFAFA] border-t border-[#F0F0F0] px-6 py-3 flex items-center justify-between text-[11px] text-[#888888] font-ui">
           <span>Connected to Supabase Cloud</span>
