@@ -197,22 +197,22 @@ class InvoiceDataExtractor:
         if m_fy:
             return m_fy[0]
 
-        # 2. Look for explicit "Bill No: XYZ" or "Invoice No: XYZ"
-        m_explicit = re.search(r'(?:Bill\s*No\.?|Bill\s*#|Invoice\s*No\.?|Invoice\s*#|Inv\s*#|Challan\s*No\.?)\s*[:\-]?\s*([A-Za-z0-9\/\-_]{3,25})', text, re.IGNORECASE)
+        # 2. Look for explicit "Bill No: XYZ" or "Invoice No: XYZ" or "Challan No: 32"
+        m_explicit = re.search(r'(?:Bill\s*No\.?|Bill\s*#|Invoice\s*No\.?|Invoice\s*#|Inv\s*#|Challan\s*No\.?|Estimate\s*No\.?)\s*[:\-]?\s*([A-Za-z0-9\/\-_]{1,25})', text, re.IGNORECASE)
         if m_explicit:
             val = m_explicit.group(1).strip()
-            if len(val) >= 3 and not val.lower().startswith("gst") and val.lower() not in ["dated", "date", "bill"]:
+            if len(val) >= 1 and not val.lower().startswith("gst") and val.lower() not in ["dated", "date", "bill"]:
                 return val
 
         # 3. Look near labels with multi-line lookahead (e.g. Sunstar: Invoice No.\n...\nSSIT007)
-        labels = ["invoice no", "invoiceno", "invoice #", "bill no", "bill #", "inv no", "tax invoice no", "challan no", "चालान", "बिल", "no."]
+        labels = ["invoice no", "invoiceno", "invoice #", "bill no", "bill #", "inv no", "tax invoice no", "challan no", "estimate no", "चालान", "बिल", "no."]
         for i, line in enumerate(lines):
             l_lower = line.lower().replace(" ", "").replace(".", "").replace(":", "")
             for lbl in labels:
                 clean_lbl = lbl.replace(" ", "")
                 if clean_lbl in l_lower:
                     after = re.split(re.escape(lbl), line, flags=re.IGNORECASE)[-1]
-                    tokens = [t for t in re.findall(r'[A-Za-z0-9\-_/]{3,20}', after) if not cls.GSTIN_PATTERN.match(t) and t.lower() not in ["dated", "date", "bill", "supply", "place"]]
+                    tokens = [t for t in re.findall(r'[A-Za-z0-9\-_/]{1,20}', after) if not cls.GSTIN_PATTERN.match(t) and t.lower() not in ["dated", "date", "bill", "supply", "place"]]
                     if tokens:
                         return tokens[0]
                     # Check next 8 lines
