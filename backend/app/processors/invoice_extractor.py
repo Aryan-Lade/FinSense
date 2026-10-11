@@ -437,7 +437,7 @@ class InvoiceDataExtractor:
         # 3. CGST Rate and Amount
         cgst_rate = 0.0
         cgst_amount = 0.0
-        m_cgst = re.search(r'(?:ADD\s*)?CGST\s*(?:@\s*)?(\d+(?:\.\d+)?)?%?\s*[:\-]?\s*(?:₹|INR|Rs\.?)?\s*([0-9,.\/+\-]+)', text, re.IGNORECASE)
+        m_cgst = re.search(r'(?:ADD\s*)?CGST\s*\(?\s*(\d+(?:\.\d+)?)\s*%?\s*\)?\s*[:\-]?\s*(?:₹|INR|Rs\.?)?\s*([0-9,.\/+\-]+)', text, re.IGNORECASE)
         if m_cgst:
             if m_cgst.group(1):
                 cgst_rate = float(m_cgst.group(1))
@@ -453,7 +453,7 @@ class InvoiceDataExtractor:
         # 4. SGST Rate and Amount
         sgst_rate = 0.0
         sgst_amount = 0.0
-        m_sgst = re.search(r'(?:ADD\s*)?S(?:G|UT)ST\s*(?:@\s*)?(\d+(?:\.\d+)?)?%?\s*[:\-]?\s*(?:₹|INR|Rs\.?)?\s*([0-9,.\/+\-]+)', text, re.IGNORECASE)
+        m_sgst = re.search(r'(?:ADD\s*)?S(?:G|UT)ST\s*\(?\s*(\d+(?:\.\d+)?)\s*%?\s*\)?\s*[:\-]?\s*(?:₹|INR|Rs\.?)?\s*([0-9,.\/+\-]+)', text, re.IGNORECASE)
         if m_sgst:
             if m_sgst.group(1):
                 sgst_rate = float(m_sgst.group(1))
@@ -469,7 +469,7 @@ class InvoiceDataExtractor:
         # 5. IGST Rate and Amount
         igst_rate = 0.0
         igst_amount = 0.0
-        m_igst = re.search(r'(?:ADD\s*)?IGST\s*(?:@\s*)?(\d+(?:\.\d+)?)?%?\s*[:\-]?\s*(?:₹|INR|Rs\.?)?\s*([0-9,.\/+\-]+)', text, re.IGNORECASE)
+        m_igst = re.search(r'(?:ADD\s*)?IGST\s*\(?\s*(\d+(?:\.\d+)?)\s*%?\s*\)?\s*[:\-]?\s*(?:₹|INR|Rs\.?)?\s*([0-9,.\/+\-]+)', text, re.IGNORECASE)
         if m_igst:
             if m_igst.group(1):
                 igst_rate = float(m_igst.group(1))

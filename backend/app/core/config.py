@@ -19,8 +19,10 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "./data/uploads"
     SUPABASE_URL: str = ""
     SUPABASE_KEY: str = ""
+    SUPABASE_ANON_KEY: str = ""
     SUPABASE_SERVICE_ROLE_KEY: str = ""
-    SUPABASE_BUCKET: str = "finsense-files"
+    SUPABASE_JWT_SECRET: str = ""
+    SUPABASE_BUCKET: str = "invoices"
     
     # File limits
     MAX_UPLOAD_MB: int = 15

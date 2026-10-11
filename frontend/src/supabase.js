@@ -100,7 +100,7 @@ export async function fetchSupabaseSuppliers() {
 /**
  * Upload a file directly to Supabase storage bucket.
  */
-export async function uploadToSupabaseBucket(file, bucket = 'finsense-files') {
+export async function uploadToSupabaseBucket(file, bucket = import.meta.env.VITE_SUPABASE_BUCKET || 'invoices') {
   if (!supabase) throw new Error('Supabase is not configured.');
   const filePath = `${Date.now()}_${file.name}`;
   const { data, error } = await supabase.storage.from(bucket).upload(filePath, file);
@@ -108,4 +108,104 @@ export async function uploadToSupabaseBucket(file, bucket = 'finsense-files') {
   
   const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(filePath);
   return { path: filePath, url: publicUrl };
+}
+
+/**
+ * Authentication Utilities
+ */
+
+/**
+ * Sign in with email and password
+ */
+export async function signInWithEmail(email, password) {
+  if (!supabase) throw new Error('Supabase is not configured.');
+  return await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+}
+
+/**
+ * Sign up with email, password, and optional metadata
+ */
+export async function signUpWithEmail(email, password, metadata = {}) {
+  if (!supabase) throw new Error('Supabase is not configured.');
+  return await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: metadata,
+      emailRedirectTo: `${window.location.origin}/`,
+    },
+  });
+}
+
+/**
+ * Send magic link / OTP to email
+ */
+export async function signInWithMagicLink(email) {
+  if (!supabase) throw new Error('Supabase is not configured.');
+  return await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: `${window.location.origin}/`,
+    },
+  });
+}
+
+/**
+ * Sign in with OAuth provider (e.g. 'google', 'github')
+ */
+export async function signInWithProvider(provider) {
+  if (!supabase) throw new Error('Supabase is not configured.');
+  return await supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: `${window.location.origin}/`,
+    },
+  });
+}
+
+/**
+ * Sign out current user
+ */
+export async function signOutUser() {
+  if (!supabase) return { error: null };
+  return await supabase.auth.signOut();
+}
+
+/**
+ * Send password reset email
+ */
+export async function resetPasswordForEmail(email) {
+  if (!supabase) throw new Error('Supabase is not configured.');
+  return await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  });
+}
+
+/**
+ * Update current user's password
+ */
+export async function updatePassword(newPassword) {
+  if (!supabase) throw new Error('Supabase is not configured.');
+  return await supabase.auth.updateUser({
+    password: newPassword,
+  });
+}
+
+/**
+ * Get current session
+ */
+export async function getSession() {
+  if (!supabase) return { data: { session: null }, error: null };
+  return await supabase.auth.getSession();
+}
+
+/**
+ * Get current user
+ */
+export async function getUser() {
+  if (!supabase) return { data: { user: null }, error: null };
+  return await supabase.auth.getUser();
 }

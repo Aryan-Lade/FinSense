@@ -48,6 +48,12 @@ class ReminderUpdate(BaseSchema):
 class ReminderResponse(ReminderBase):
     """Schema for reminder response."""
     id: str
+    supplier_name: Optional[str] = None
+    bill_number: Optional[str] = None
+    total_amount: Optional[float] = None
+    due_date: Optional[datetime] = None
+    msme_category: Optional[str] = None
+    payment_status: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

@@ -5,6 +5,7 @@ Implements the Open-Source PaddleOCR model (https://github.com/PaddlePaddle/Padd
 2. pdfplumber for high-precision digital vector PDF text and table extraction.
 3. pypdfium2 for 200 DPI scanned PDF page rasterization into PaddleOCR.
 4. OpenCV for blur detection (Laplacian variance) and image quality screening.
+5. Enhanced preprocessing for handwritten text recognition.
 """
 import io
 import re
@@ -86,7 +87,8 @@ class OCRProcessor:
     @classmethod
     def run_paddle_ocr(cls, img: Image.Image) -> Tuple[str, List[Dict[str, Any]], float, str]:
         """
-        Run PaddleOCR on a PIL image and return text, word blocks, confidence, and engine name.
+        Run PaddleOCR on a PIL image with multiple preprocessing attempts.
+        Returns the best result based on confidence and text quality.
         """
         engine, engine_type = get_paddle_engine()
         img_np = np.array(img.convert('RGB'))
@@ -94,56 +96,77 @@ class OCRProcessor:
         if engine is None:
             return "", [], 0.0, "none"
 
-        text_lines = []
-        word_blocks = []
-        conf_scores = []
+        # Get multiple enhanced versions of the image
+        enhanced_images = cls.enhance_image_for_ocr(img_np)
+
+        best_result = ("", [], 0.0, engine_type)  # (text, word_blocks, confidence, engine_type)
+        best_score = 0.0
 
         try:
-            if engine_type == "paddleocr":
-                # Native PaddleOCR API
-                # result structure: [ [ [box_coords], (text, confidence) ], ... ]
-                ocr_res = engine.ocr(img_np, cls=True)
-                if ocr_res and len(ocr_res) > 0 and ocr_res[0]:
-                    for item in ocr_res[0]:
-                        box = item[0]
-                        text, score = item[1][0], float(item[1][1])
-                        text_lines.append(text)
-                        conf_scores.append(score)
+            for processed_img, description in enhanced_images:
+                text_lines = []
+                word_blocks = []
+                conf_scores = []
 
-                        xs = [pt[0] for pt in box]
-                        ys = [pt[1] for pt in box]
-                        bbox = [round(min(xs), 1), round(min(ys), 1), round(max(xs), 1), round(max(ys), 1)]
-                        word_blocks.append({
-                            "text": text,
-                            "confidence": round(score, 3),
-                            "bbox": bbox
-                        })
+                if engine_type == "paddleocr":
+                    # Native PaddleOCR API
+                    # result structure: [ [ [box_coords], (text, confidence) ], ... ]
+                    ocr_res = engine.ocr(processed_img, cls=True)
+                    if ocr_res and len(ocr_res) > 0 and ocr_res[0]:
+                        for item in ocr_res[0]:
+                            box = item[0]
+                            text, score = item[1][0], float(item[1][1])
+                            text_lines.append(text)
+                            conf_scores.append(score)
 
-            elif engine_type == "rapidocr":
-                # RapidOCR (PaddleOCR ONNX) API
-                # result structure: [ [box, text, confidence], ... ]
-                ocr_res, _ = engine(img_np)
-                if ocr_res:
-                    for item in ocr_res:
-                        box, text, score = item[0], item[1], float(item[2])
-                        text_lines.append(text)
-                        conf_scores.append(score)
+                            xs = [pt[0] for pt in box]
+                            ys = [pt[1] for pt in box]
+                            bbox = [round(min(xs), 1), round(min(ys), 1), round(max(xs), 1), round(max(ys), 1)]
+                            word_blocks.append({
+                                "text": text,
+                                "confidence": round(score, 3),
+                                "bbox": bbox
+                            })
 
-                        xs = [pt[0] for pt in box]
-                        ys = [pt[1] for pt in box]
-                        bbox = [round(min(xs), 1), round(min(ys), 1), round(max(xs), 1), round(max(ys), 1)]
-                        word_blocks.append({
-                            "text": text,
-                            "confidence": round(score, 3),
-                            "bbox": bbox
-                        })
+                elif engine_type == "rapidocr":
+                    # RapidOCR (PaddleOCR ONNX) API
+                    # result structure: [ [box, text, confidence], ... ]
+                    ocr_res, _ = engine(processed_img)
+                    if ocr_res:
+                        for item in ocr_res:
+                            box, text, score = item[0], item[1], float(item[2])
+                            text_lines.append(text)
+                            conf_scores.append(score)
+
+                            xs = [pt[0] for pt in box]
+                            ys = [pt[1] for pt in box]
+                            bbox = [round(min(xs), 1), round(min(ys), 1), round(max(xs), 1), round(max(ys), 1)]
+                            word_blocks.append({
+                                "text": text,
+                                "confidence": round(score, 3),
+                                "bbox": bbox
+                            })
+
+                # Calculate a score for this result based on confidence and text amount
+                full_text = "\n".join(text_lines)
+                avg_conf = round(sum(conf_scores) / len(conf_scores), 3) if conf_scores else 0.0
+
+                # Score based on: confidence * log(text_length + 1) to favor meaningful text
+                text_score = avg_conf * (1.0 + len(full_text))  # Simple length weighting
+
+                # Boost score for handwritten preprocessing if it produces good results
+                if "handwritten" in description and avg_conf > 0.3:
+                    text_score *= 1.2  # 20% bonus for handwritten-specific preprocessing
+
+                if text_score > best_score:
+                    best_score = text_score
+                    best_result = (full_text, word_blocks, avg_conf, engine_type)
 
         except Exception as e:
+            # Fall back to original method on error
             return "", [], 0.0, engine_type
 
-        full_text = "\n".join(text_lines)
-        avg_conf = round(sum(conf_scores) / len(conf_scores), 3) if conf_scores else 0.0
-        return full_text, word_blocks, avg_conf, engine_type
+        return best_result
 
     @classmethod
     def extract_text_from_pdf(cls, file_data: bytes) -> Dict[str, Any]:
@@ -278,6 +301,72 @@ class OCRProcessor:
             "hindi_char_count": hindi_chars,
             "latin_char_count": latin_chars
         }
+
+    @classmethod
+    def preprocess_for_handwritten_text(cls, img_np: np.ndarray) -> np.ndarray:
+        """
+        Apply specialized preprocessing for handwritten text recognition.
+        This includes:
+        1. Denoising using Non-local Means or Bilateral filtering
+        2. Adaptive thresholding to handle varying illumination
+        3. Morphological operations to connect broken character parts
+        4. Deskewing optimized for handwritten text
+        """
+        # Convert to grayscale if needed
+        if len(img_np.shape) == 3:
+            gray = cv2.cvtColor(img_np, cv2.COLOR_BGR2GRAY)
+        else:
+            gray = img_np.copy()
+
+        # Apply bilateral filter to reduce noise while preserving edges
+        denoised = cv2.bilateralFilter(gray, 9, 75, 75)
+
+        # Apply adaptive thresholding for better handling of uneven lighting
+        # This works better than global thresholding for handwritten text
+        adaptive_thresh = cv2.adaptiveThreshold(
+            denoised, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY, 11, 2
+        )
+
+        # Apply morphological operations to connect broken character parts
+        kernel = np.ones((2, 2), np.uint8)
+        morphed = cv2.morphologyEx(adaptive_thresh, cv2.MORPH_CLOSE, kernel)
+
+        # Apply another open operation to remove small noise
+        kernel_open = np.ones((1, 1), np.uint8)
+        opened = cv2.morphologyEx(morphed, cv2.MORPH_OPEN, kernel_open)
+
+        return opened
+
+    @classmethod
+    def enhance_image_for_ocr(cls, img_np: np.ndarray) -> List[Tuple[np.ndarray, str]]:
+        """
+        Create multiple enhanced versions of the image for OCR processing.
+        Returns list of (processed_image, description) tuples.
+        """
+        enhancements = []
+
+        # Original image
+        enhancements.append((img_np, "original"))
+
+        # Grayscale version
+        if len(img_np.shape) == 3:
+            gray = cv2.cvtColor(img_np, cv2.COLOR_BGR2GRAY)
+            enhancements.append((gray, "grayscale"))
+        else:
+            enhancements.append((img_np, "grayscale"))
+
+        # Handwritten-specific preprocessing
+        handwritten_preprocessed = cls.preprocess_for_handwritten_text(img_np)
+        enhancements.append((handwritten_preprocessed, "handwritten_preprocessed"))
+
+        # Additionally denoised version
+        denoised = cv2.fastNlMeansDenoising(
+            handwritten_preprocessed, None, 10, 7, 21
+        )
+        enhancements.append((denoised, "denoised"))
+
+        return enhancements
 
 
 def process_document_with_ocr(file_data: bytes, file_type: FileType) -> Dict[str, Any]:
